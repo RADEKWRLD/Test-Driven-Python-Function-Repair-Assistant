@@ -2,6 +2,9 @@
 
 一个用于研究“pytest 失败反馈是否真正帮助模型修复 Python 函数”的小型可复现课设。
 
+完整的本机验收、对照实验、指标口径和答辩流程见
+[`docs/OPERATIONS.md`](docs/OPERATIONS.md)。
+
 项目只处理短小纯函数，比较三种策略：
 
 - `single-shot`：只允许一次修复；
@@ -30,8 +33,11 @@ export DEEPSEEK_API_KEY=...
 运行全部三组对照实验：
 
 ```bash
-.venv/bin/repair-agent benchmark benchmarks/tasks
+.venv/bin/repair-agent benchmark benchmarks/tasks \
+  --repetitions 10 --seed 20261016
 ```
+
+该命令会用固定 seed 随机化执行顺序，并在一份报告中跨 10 次重复聚合。
 
 聚合报告会分策略输出首次/最终公开与隐藏测试通过率、超时率、隐藏功能回归率、保护测试违规率和真实模型调用/token/延迟。由于模型价格会变，程序保留原始 token 用量，`currency_cost` 不做猜测而记为 `null`。
 

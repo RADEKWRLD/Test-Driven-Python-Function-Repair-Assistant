@@ -25,6 +25,7 @@ class VerificationResult:
     passed: bool
     command_result: CommandResult
     protected_files_unchanged: bool = True
+    workspace_policy_compliant: bool = True
     violations: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
@@ -32,5 +33,6 @@ class VerificationResult:
             "passed": self.passed,
             "command_result": self.command_result.to_dict(),
             "protected_files_unchanged": self.protected_files_unchanged,
+            "workspace_policy_compliant": self.workspace_policy_compliant,
             "violations": list(self.violations),
         }

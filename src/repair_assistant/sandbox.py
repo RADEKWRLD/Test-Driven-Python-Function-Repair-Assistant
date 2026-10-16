@@ -38,6 +38,7 @@ class DockerSandbox:
         cpus: float = 1.0,
         memory: str = "512m",
         pids_limit: int = 128,
+        workspace_readonly: bool = False,
     ) -> None:
         self.workspace = workspace.resolve()
         self.container_name = "function-repair-" + re.sub(r"[^a-zA-Z0-9_.-]", "-", run_id)[:48]
@@ -46,6 +47,7 @@ class DockerSandbox:
         self.cpus = cpus
         self.memory = memory
         self.pids_limit = pids_limit
+        self.workspace_readonly = workspace_readonly
         self._started = False
 
     def start(self) -> None:
@@ -84,9 +86,11 @@ class DockerSandbox:
             "PYTHONUNBUFFERED=1",
             "--env",
             "PYTEST_ADDOPTS=-p no:cacheprovider",
-            "--mount",
-            f"type=bind,src={self.workspace},dst=/workspace",
         ]
+        workspace_mount = f"type=bind,src={self.workspace},dst=/workspace"
+        if self.workspace_readonly:
+            workspace_mount += ",readonly"
+        command.extend(["--mount", workspace_mount])
         for source, target in self.readonly_mounts:
             source = source.resolve()
             if not source.is_dir():

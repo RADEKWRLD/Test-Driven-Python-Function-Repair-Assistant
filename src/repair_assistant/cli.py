@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import platform
+import random
 import shutil
 import subprocess
 import sys
@@ -16,7 +17,7 @@ from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 
 from repair_assistant import __version__
-from repair_assistant.agent import RepairStrategy
+from repair_assistant.agent import MAX_ATTEMPTS, RepairStrategy
 from repair_assistant.evaluation import aggregate_summaries
 from repair_assistant.event_log import EventLog
 from repair_assistant.model import DeepSeekAdapter
@@ -36,7 +37,7 @@ def _parser() -> argparse.ArgumentParser:
         choices=[item.value for item in RepairStrategy],
         default=RepairStrategy.TEST_FEEDBACK.value,
     )
-    run.add_argument("--max-attempts", type=int, default=3)
+    run.add_argument("--max-attempts", type=_attempt_count, default=MAX_ATTEMPTS)
     run.add_argument("--max-turns", type=int, default=12)
     run.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-chat"))
     run.add_argument("--image", default="function-repair/sandbox-python:dev")
@@ -49,8 +50,20 @@ def _parser() -> argparse.ArgumentParser:
         choices=[item.value for item in RepairStrategy],
         dest="strategies",
     )
-    benchmark.add_argument("--max-attempts", type=int, default=3)
+    benchmark.add_argument("--max-attempts", type=_attempt_count, default=MAX_ATTEMPTS)
     benchmark.add_argument("--max-turns", type=int, default=12)
+    benchmark.add_argument(
+        "--repetitions",
+        type=_positive_int,
+        default=1,
+        help="Repeat every task/strategy pair this many times.",
+    )
+    benchmark.add_argument(
+        "--seed",
+        type=int,
+        default=0,
+        help="Seed used to randomize benchmark execution order.",
+    )
     benchmark.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-chat"))
     benchmark.add_argument("--image", default="function-repair/sandbox-python:dev")
     benchmark.add_argument("--data-dir", type=Path, default=_data_dir())
@@ -62,6 +75,20 @@ def _parser() -> argparse.ArgumentParser:
 
 def _data_dir() -> Path:
     return Path(os.getenv("REPAIR_ASSISTANT_DATA_DIR", "var"))
+
+
+def _attempt_count(value: str) -> int:
+    parsed = int(value)
+    if not 1 <= parsed <= MAX_ATTEMPTS:
+        raise argparse.ArgumentTypeError(f"must be from 1 to {MAX_ATTEMPTS}")
+    return parsed
+
+
+def _positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("must be positive")
+    return parsed
 
 
 def _load_environment() -> None:
@@ -137,29 +164,52 @@ def _benchmark(args: argparse.Namespace) -> int:
         print(f"No task manifests found under {args.tasks_dir}", file=sys.stderr)
         return 2
     strategy_values = args.strategies or [item.value for item in RepairStrategy]
+    schedule = _benchmark_schedule(
+        task_paths,
+        strategy_values,
+        repetitions=args.repetitions,
+        seed=args.seed,
+    )
     summaries: list[dict[str, object]] = []
     service = RunService(data_dir=args.data_dir, image=args.image)
-    for strategy_value in strategy_values:
-        for task_path in task_paths:
-            task = TaskSpec.load(task_path)
-            model = DeepSeekAdapter(
-                api_key=api_key,
-                model=args.model,
-                base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
-            )
-            result = service.execute(
-                task=task,
-                model=model,
-                strategy=RepairStrategy(strategy_value),
-                max_attempts=args.max_attempts,
-                max_turns_per_attempt=args.max_turns,
-            )
-            summary = json.loads((result.run_dir / "summary.json").read_text(encoding="utf-8"))
-            summary["task_id"] = task.task_id
-            summaries.append(summary)
-            print(f"{strategy_value:24} {task.task_id:28} {result.outcome}")
+    execution_order: list[dict[str, object]] = []
+    for repetition, strategy_value, task_path in schedule:
+        task = TaskSpec.load(task_path)
+        model = DeepSeekAdapter(
+            api_key=api_key,
+            model=args.model,
+            base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+        )
+        result = service.execute(
+            task=task,
+            model=model,
+            strategy=RepairStrategy(strategy_value),
+            max_attempts=args.max_attempts,
+            max_turns_per_attempt=args.max_turns,
+        )
+        summary = json.loads((result.run_dir / "summary.json").read_text(encoding="utf-8"))
+        summary["task_id"] = task.task_id
+        summary["repetition"] = repetition
+        summaries.append(summary)
+        execution_order.append(
+            {
+                "position": len(execution_order) + 1,
+                "repetition": repetition,
+                "strategy": strategy_value,
+                "task_id": task.task_id,
+                "run_id": result.run_id,
+            }
+        )
+        print(f"r{repetition:02d} {strategy_value:24} {task.task_id:28} {result.outcome}")
     report = aggregate_summaries(summaries)
     report["created_at"] = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    report["design"] = {
+        "repetitions": args.repetitions,
+        "randomization_seed": args.seed,
+        "max_attempts": args.max_attempts,
+        "max_turns_per_attempt": args.max_turns,
+        "execution_order": execution_order,
+    }
     report["raw_runs"] = summaries
     report_dir = args.data_dir.resolve() / "benchmarks"
     report_dir.mkdir(parents=True, exist_ok=True)
@@ -169,6 +219,25 @@ def _benchmark(args: argparse.Namespace) -> int:
     )
     print(f"Report: {report_path}")
     return 0
+
+
+def _benchmark_schedule(
+    task_paths: Sequence[Path],
+    strategy_values: Sequence[str],
+    *,
+    repetitions: int,
+    seed: int,
+) -> list[tuple[int, str, Path]]:
+    if repetitions < 1:
+        raise ValueError("repetitions must be positive")
+    jobs = [
+        (repetition, strategy, task_path)
+        for repetition in range(1, repetitions + 1)
+        for strategy in strategy_values
+        for task_path in task_paths
+    ]
+    random.Random(seed).shuffle(jobs)
+    return jobs
 
 
 def _events(args: argparse.Namespace) -> int:

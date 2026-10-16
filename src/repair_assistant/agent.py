@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import shutil
 import time
@@ -15,7 +14,7 @@ from repair_assistant.event_log import EventLog
 from repair_assistant.model import Message, ModelAdapter, ToolDefinition
 from repair_assistant.redaction import REDACTED, redact
 from repair_assistant.sandbox import Sandbox
-from repair_assistant.task import TaskSpec
+from repair_assistant.task import TaskSpec, WorkspaceBaseline, snapshot_workspace
 from repair_assistant.types import VerificationResult
 from repair_assistant.verifier import PublicVerifier
 
@@ -50,6 +49,9 @@ class RepairStrategy(StrEnum):
     SINGLE_SHOT = "single-shot"
     RETRY_WITHOUT_FEEDBACK = "retry-without-feedback"
     TEST_FEEDBACK = "test-feedback"
+
+
+MAX_ATTEMPTS = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,20 +100,22 @@ class TestDrivenRepairAgent:
         sandbox: Sandbox,
         event_log: EventLog,
         workspace: Path,
-        protected_baseline: dict[str, str],
+        workspace_baseline: WorkspaceBaseline,
         attempts_dir: Path,
         strategy: RepairStrategy,
         max_attempts: int = 3,
         max_turns_per_attempt: int = 12,
         verifier: PublicVerifier | None = None,
     ) -> None:
-        if max_attempts < 1 or max_turns_per_attempt < 1:
+        if not 1 <= max_attempts <= MAX_ATTEMPTS:
+            raise ValueError(f"max_attempts must be from 1 to {MAX_ATTEMPTS}")
+        if max_turns_per_attempt < 1:
             raise ValueError("attempt and turn limits must be positive")
         self.model = model
         self.sandbox = sandbox
         self.event_log = event_log
         self.workspace = workspace.resolve()
-        self.protected_baseline = protected_baseline
+        self.workspace_baseline = workspace_baseline
         self.attempts_dir = attempts_dir.resolve()
         self.strategy = strategy
         self.max_attempts = 1 if strategy is RepairStrategy.SINGLE_SHOT else max_attempts
@@ -149,7 +153,7 @@ class TestDrivenRepairAgent:
                 task=task,
                 sandbox=self.sandbox,
                 workspace=self.workspace,
-                protected_baseline=self.protected_baseline,
+                workspace_baseline=self.workspace_baseline,
             )
             snapshot = self._snapshot(number)
             self.event_log.append(
@@ -290,14 +294,10 @@ class TestDrivenRepairAgent:
         shutil.copytree(
             self.workspace,
             destination,
+            symlinks=True,
             ignore=shutil.ignore_patterns("__pycache__", ".pytest_cache", "*.pyc"),
         )
-        manifest: dict[str, str] = {}
-        for path in sorted(destination.rglob("*")):
-            if path.is_file():
-                manifest[path.relative_to(destination).as_posix()] = hashlib.sha256(
-                    path.read_bytes()
-                ).hexdigest()
+        manifest = snapshot_workspace(destination)
         self.event_log.append(
             "snapshot_created", "controller", {"attempt": attempt, "files": manifest}
         )
@@ -312,6 +312,7 @@ def _feedback(result: VerificationResult, attempt: int) -> str:
         f"exit_code={command.exit_code}\n"
         f"timed_out={command.timed_out}\n"
         f"protected_files_unchanged={result.protected_files_unchanged}\n"
+        f"workspace_policy_compliant={result.workspace_policy_compliant}\n"
         f"violations:\n{violations}\nstdout:\n{command.stdout}\nstderr:\n{command.stderr}\n"
         "Repair the implementation without modifying tests."
     )

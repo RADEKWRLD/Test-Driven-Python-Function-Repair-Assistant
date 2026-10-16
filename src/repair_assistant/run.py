@@ -48,7 +48,7 @@ class RunService:
         run_id = f"run_{uuid4().hex[:12]}"
         run_dir = self.data_dir / "runs" / run_id
         workspace = run_dir / "workspace"
-        baseline = prepare_workspace(task, workspace)
+        workspace_baseline = prepare_workspace(task, workspace)
         log = EventLog(run_dir / "events.jsonl", run_id=run_id, task_id=task.task_id)
         log.append(
             "run_started",
@@ -85,7 +85,7 @@ class RunService:
                 sandbox=agent_sandbox,
                 event_log=log,
                 workspace=workspace,
-                protected_baseline=baseline,
+                workspace_baseline=workspace_baseline,
                 attempts_dir=run_dir / "attempts",
                 strategy=strategy,
                 max_attempts=max_attempts,
@@ -143,6 +143,7 @@ class RunService:
             run_id=run_id,
             image=self.image,
             readonly_mounts=((task.hidden_tests_dir, "/hidden_tests"),),
+            workspace_readonly=True,
         )
         try:
             sandbox.start()
@@ -176,12 +177,16 @@ def _summary(result: RunResult, model: ModelAdapter) -> dict[str, object]:
         "final_public_passed": attempts[-1].public_verification.passed,
         "first_hidden_passed": result.first_hidden.passed,
         "final_hidden_passed": result.final_hidden.passed,
+        "hidden_improvement": not result.first_hidden.passed and result.final_hidden.passed,
         "hidden_regression": result.first_hidden.passed and not result.final_hidden.passed,
         "timed_out": any(item.public_verification.command_result.timed_out for item in attempts)
         or result.first_hidden.command_result.timed_out
         or result.final_hidden.command_result.timed_out,
         "protected_test_violation": any(
             not item.public_verification.protected_files_unchanged for item in attempts
+        ),
+        "workspace_policy_violation": any(
+            not item.public_verification.workspace_policy_compliant for item in attempts
         ),
         "cost": {
             "model_calls": calls,

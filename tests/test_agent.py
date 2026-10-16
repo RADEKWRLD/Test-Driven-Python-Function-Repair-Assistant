@@ -2,10 +2,12 @@ import json
 from collections.abc import Sequence
 from pathlib import Path
 
-from repair_assistant.agent import RepairStrategy, TestDrivenRepairAgent
+import pytest
+
+from repair_assistant.agent import MAX_ATTEMPTS, RepairStrategy, TestDrivenRepairAgent
 from repair_assistant.event_log import EventLog
 from repair_assistant.model import Message, ModelResponse, ToolCall, ToolDefinition
-from repair_assistant.task import TaskSpec, snapshot_paths
+from repair_assistant.task import TaskSpec, capture_workspace_baseline
 from repair_assistant.types import CommandResult
 
 
@@ -87,7 +89,7 @@ def _build(
         sandbox=sandbox,
         event_log=log,
         workspace=workspace,
-        protected_baseline=snapshot_paths(workspace, task.protected_paths),
+        workspace_baseline=capture_workspace_baseline(task, workspace),
         attempts_dir=tmp_path / "attempts",
         strategy=strategy,
     )
@@ -138,6 +140,28 @@ def test_single_shot_forces_one_attempt(tmp_path: Path) -> None:
 
     assert result.status == "attempt_limit"
     assert len(result.attempts) == 1
+
+
+def test_attempt_count_cannot_exceed_hard_limit(tmp_path: Path) -> None:
+    model = RecordingModel([ModelResponse(content="done")])
+    agent, _task, _log = _build(
+        tmp_path,
+        model,
+        FakeSandbox([_result(1, "failed")]),
+        RepairStrategy.TEST_FEEDBACK,
+    )
+
+    with pytest.raises(ValueError, match="max_attempts"):
+        TestDrivenRepairAgent(
+            model=agent.model,
+            sandbox=agent.sandbox,
+            event_log=agent.event_log,
+            workspace=agent.workspace,
+            workspace_baseline=agent.workspace_baseline,
+            attempts_dir=agent.attempts_dir,
+            strategy=RepairStrategy.TEST_FEEDBACK,
+            max_attempts=MAX_ATTEMPTS + 1,
+        )
 
 
 def test_tool_result_is_returned_as_next_model_turn(tmp_path: Path) -> None:

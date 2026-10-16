@@ -8,6 +8,7 @@
     "Do not add dependencies or modify tests.",
     "Keep the public function name and two-argument signature unchanged."
   ],
+  "editable_paths": ["solution.py"],
   "public_verification": {
     "command": "python -m pytest -q tests",
     "protected_paths": ["tests"]
