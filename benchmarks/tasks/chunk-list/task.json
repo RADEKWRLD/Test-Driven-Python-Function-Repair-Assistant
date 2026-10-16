@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "task_id": "chunk-list",
+  "title": "Repair list chunk boundaries",
+  "goal": "Implement chunk_list(items, size) to return consecutive list chunks of at most size elements. Empty input returns an empty list. A non-positive size raises ValueError. Do not mutate items.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function name and two-argument signature unchanged."
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": ["tests"]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  }
+}

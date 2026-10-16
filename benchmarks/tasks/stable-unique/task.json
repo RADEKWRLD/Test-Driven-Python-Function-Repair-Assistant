@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "task_id": "stable-unique",
+  "title": "Repair stable duplicate removal",
+  "goal": "Implement unique_stable(items) so it returns the first occurrence of each hashable item while preserving input order. It must not mutate the input.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function name and one-argument signature unchanged."
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": ["tests"]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  }
+}
