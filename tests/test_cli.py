@@ -24,6 +24,6 @@ def test_benchmark_schedule_repeats_every_pair_and_is_seeded() -> None:
     assert Counter(first) == Counter(canonical)
 
 
-def test_cli_rejects_more_than_three_attempts() -> None:
+def test_cli_rejects_more_than_five_attempts() -> None:
     with pytest.raises(SystemExit):
-        _parser().parse_args(["run", "task", "--max-attempts", "4"])
+        _parser().parse_args(["run", "task", "--max-attempts", "6"])

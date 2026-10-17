@@ -7,7 +7,7 @@
 ### 已实现
 
 - 三种策略：`single-shot`、`retry-without-feedback`、`test-feedback`。
-- 默认一次初始提交，后两组最多追加两次提交，即最多 3 次。
+- 默认一次初始提交，后两组最多追加四次提交，即最多 5 次。
 - 模型只能通过容器内 `shell` tool 操作每次 run 的独立 workspace。
 - 控制器独立执行公开 pytest，并将失败信息只反馈给 `test-feedback` 组。
 - 公开测试在 Agent 运行前计算 SHA-256 基线，修改、增加或删除受保护测试都会使验证失败。
@@ -19,7 +19,7 @@
 - 3 个任务共 30 个独立测试函数：15 个公开测试、15 个隐藏测试。
 - 聚合报告包含首次/最终公开与隐藏通过率、超时、隐藏回归、测试保护违规、模型调用数、token 和模型延迟。
 - benchmark 支持重复次数、固定 seed 的随机执行顺序，以及同一报告内的跨重复聚合。
-- 最大提交次数在 CLI 和 Agent 两层硬限制为 3。
+- 最大提交次数在 CLI 和 Agent 两层硬限制为 5。
 - `public-pass-hidden-fail` 可演示“5 个公开测试通过，但 5 个隐藏测试全部失败”。
 
 ### 尚未完成或需要加强
@@ -51,7 +51,13 @@ docker build \
   -t function-repair/sandbox-python:dev .
 ```
 
-不要把 API Key 写入 Dockerfile、镜像、任务 workspace 或提交到 Git。可在项目根目录创建被 `.gitignore` 排除的 `.env`：
+不要使用 `export`，也不要把 API Key 写入 Dockerfile、镜像、任务 workspace 或提交到 Git。复制项目提供的模板，创建被 `.gitignore` 排除的 `.env`：
+
+```bash
+cp .env.example .env
+```
+
+然后只在本机编辑 `.env`：
 
 ```text
 DEEPSEEK_API_KEY=你的密钥
@@ -99,16 +105,16 @@ docker version --format '{{.Server.Version}}'
 
 ```bash
 .venv/bin/repair-agent run benchmarks/tasks/chunk-list \
-  --strategy single-shot --max-attempts 3 --max-turns 12
+  --strategy single-shot --max-attempts 5 --max-turns 12
 
 .venv/bin/repair-agent run benchmarks/tasks/chunk-list \
-  --strategy retry-without-feedback --max-attempts 3 --max-turns 12
+  --strategy retry-without-feedback --max-attempts 5 --max-turns 12
 
 .venv/bin/repair-agent run benchmarks/tasks/chunk-list \
-  --strategy test-feedback --max-attempts 3 --max-turns 12
+  --strategy test-feedback --max-attempts 5 --max-turns 12
 ```
 
-`single-shot` 内部会强制只提交一次；统一写 `--max-attempts 3` 便于保留一致的实验命令。
+`single-shot` 内部会强制只提交一次；统一写 `--max-attempts 5` 便于保留一致的实验命令。
 
 每次运行会输出 `run_id` 和 `summary.json` 路径。检查摘要：
 
@@ -126,21 +132,35 @@ var/runs/<run_id>/workspace/
 var/runs/<run_id>/attempts/attempt-1/
 var/runs/<run_id>/attempts/attempt-2/
 var/runs/<run_id>/attempts/attempt-3/
+var/runs/<run_id>/attempts/attempt-4/
+var/runs/<run_id>/attempts/attempt-5/
 ```
 
 `events` 命令显示 `Integrity: OK` 才能把该日志纳入结果。
 
 ## 5. 标准对照实验
 
-当前 CLI 的一次完整实验命令为：
+推荐使用自定义 Make 启动命令，它会先执行 `make check`、Docker 集成测试和 `doctor`，全部通过后才开始真实模型实验：
+
+```bash
+make experiment
+```
+
+默认参数等价于：
 
 ```bash
 .venv/bin/repair-agent benchmark benchmarks/tasks \
-  --max-attempts 3 \
+  --max-attempts 5 \
   --max-turns 12 \
   --repetitions 10 \
   --seed 20261016 \
   --model deepseek-chat
+```
+
+需要低成本冒烟或更换实验配置时，可覆盖 Make 变量：
+
+```bash
+make experiment REPETITIONS=1 SEED=42 MODEL=deepseek-chat
 ```
 
 上述命令执行 3 道题 × 3 种策略 × 10 次重复，共 90 个 run，并生成：
@@ -154,7 +174,7 @@ var/benchmarks/benchmark-<UTC时间>.json
 - Git commit 与 Docker 镜像 ID；
 - 模型名称、API 提供方、temperature 和最大输出 token；
 - 任务集合、重复次数与随机化 seed；
-- `max-attempts=3`、`max-turns=12`；
+- `max-attempts=5`、`max-turns=12`；
 - 容器 CPU、内存、PID 和测试超时；
 - 同一时间段或随机化后的运行顺序，避免服务端模型更新和负载变化造成偏差。
 
@@ -270,3 +290,17 @@ currency_cost
 ### API Key 缺失
 
 CLI 会在发起实验前退出。检查 `.env` 或当前 shell 的 `DEEPSEEK_API_KEY`，不要把 Key 传给容器或写入命令日志。
+
+### `CERTIFICATE_VERIFY_FAILED`
+
+项目默认使用 `certifi` 的 Mozilla CA 根证书，不依赖 Python Framework 是否安装了系统 `cert.pem`。修改依赖后先执行：
+
+```bash
+.venv/bin/pip install -e '.[dev]'
+```
+
+如果所在组织使用私有 HTTPS 根证书，将 PEM 证书包路径写入 `.env`，不要关闭 SSL 验证：
+
+```dotenv
+REPAIR_ASSISTANT_CA_BUNDLE=/absolute/path/to/organization-ca-bundle.pem
+```

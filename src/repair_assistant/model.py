@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import json
+import ssl
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Protocol, cast
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+
+import certifi
 
 Message = dict[str, Any]
 ToolDefinition = dict[str, Any]
@@ -72,6 +75,7 @@ class DeepSeekAdapter:
         base_url: str = "https://api.deepseek.com",
         timeout_seconds: int = 120,
         max_tokens: int = 8192,
+        ca_bundle: str | None = None,
     ) -> None:
         if not api_key:
             raise ValueError("DeepSeek API key is required")
@@ -80,6 +84,10 @@ class DeepSeekAdapter:
         self.base_url = base_url.rstrip("/")
         self.timeout_seconds = timeout_seconds
         self.max_tokens = max_tokens
+        try:
+            self.ssl_context = ssl.create_default_context(cafile=ca_bundle or certifi.where())
+        except (OSError, ssl.SSLError) as exc:
+            raise ValueError(f"invalid CA bundle: {ca_bundle}") from exc
 
     @property
     def name(self) -> str:
@@ -115,7 +123,11 @@ class DeepSeekAdapter:
             method="POST",
         )
         try:
-            with urlopen(request, timeout=self.timeout_seconds) as response:
+            with urlopen(
+                request,
+                timeout=self.timeout_seconds,
+                context=self.ssl_context,
+            ) as response:
                 body = response.read().decode()
         except HTTPError as exc:
             detail = exc.read().decode(errors="replace")

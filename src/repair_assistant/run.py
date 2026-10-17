@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
 
-from repair_assistant.agent import AgentResult, RepairStrategy, TestDrivenRepairAgent
+from repair_assistant.agent import MAX_ATTEMPTS, AgentResult, RepairStrategy, TestDrivenRepairAgent
 from repair_assistant.event_log import EventLog
 from repair_assistant.model import ModelAdapter
 from repair_assistant.sandbox import DockerSandbox
@@ -42,7 +42,7 @@ class RunService:
         task: TaskSpec,
         model: ModelAdapter,
         strategy: RepairStrategy = RepairStrategy.TEST_FEEDBACK,
-        max_attempts: int = 3,
+        max_attempts: int = MAX_ATTEMPTS,
         max_turns_per_attempt: int = 12,
     ) -> RunResult:
         run_id = f"run_{uuid4().hex[:12]}"

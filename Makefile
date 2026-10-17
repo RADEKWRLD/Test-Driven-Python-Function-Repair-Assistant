@@ -1,8 +1,15 @@
 PYTHON ?= python3.12
 VENV ?= .venv
 IMAGE ?= function-repair/sandbox-python:dev
+TASKS_DIR ?= benchmarks/tasks
+MAX_ATTEMPTS ?= 5
+MAX_TURNS ?= 12
+REPETITIONS ?= 10
+SEED ?= 20261016
+MODEL ?= deepseek-chat
+DATA_DIR ?= var
 
-.PHONY: bootstrap format lint typecheck test check sandbox-build sandbox-test
+.PHONY: bootstrap format lint typecheck test check sandbox-build sandbox-test experiment
 
 bootstrap:
 	$(PYTHON) -m venv $(VENV)
@@ -29,3 +36,14 @@ sandbox-build:
 
 sandbox-test:
 	$(VENV)/bin/pytest -m sandbox
+
+experiment: check sandbox-test
+	$(VENV)/bin/repair-agent doctor
+	$(VENV)/bin/repair-agent benchmark $(TASKS_DIR) \
+		--max-attempts $(MAX_ATTEMPTS) \
+		--max-turns $(MAX_TURNS) \
+		--repetitions $(REPETITIONS) \
+		--seed $(SEED) \
+		--model $(MODEL) \
+		--image $(IMAGE) \
+		--data-dir $(DATA_DIR)

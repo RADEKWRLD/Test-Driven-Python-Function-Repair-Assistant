@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A controlled test-feedback experiment for repairing small Python functions."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["python-dotenv>=1.2,<2"]
+dependencies = ["certifi>=2025.1.31,<2027", "python-dotenv>=1.2,<2"]
 
 [project.optional-dependencies]
 dev = ["mypy>=1.14,<2", "pytest>=8.3,<9", "ruff>=0.9,<1"]

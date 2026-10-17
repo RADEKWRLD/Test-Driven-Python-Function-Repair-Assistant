@@ -51,7 +51,7 @@ class RepairStrategy(StrEnum):
     TEST_FEEDBACK = "test-feedback"
 
 
-MAX_ATTEMPTS = 3
+MAX_ATTEMPTS = 5
 
 
 @dataclass(frozen=True, slots=True)
@@ -103,7 +103,7 @@ class TestDrivenRepairAgent:
         workspace_baseline: WorkspaceBaseline,
         attempts_dir: Path,
         strategy: RepairStrategy,
-        max_attempts: int = 3,
+        max_attempts: int = MAX_ATTEMPTS,
         max_turns_per_attempt: int = 12,
         verifier: PublicVerifier | None = None,
     ) -> None:

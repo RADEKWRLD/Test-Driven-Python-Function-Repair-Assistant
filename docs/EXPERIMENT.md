@@ -9,10 +9,10 @@
 | 策略 | 初始提交 | 追加修复 | 控制器 pytest 失败输出 |
 | --- | ---: | ---: | --- |
 | `single-shot` | 1 | 0 | 不回馈 |
-| `retry-without-feedback` | 1 | 最多 2 | 不回馈，下一次使用新对话记忆 |
-| `test-feedback` | 1 | 最多 2 | 回馈 exit code、timeout、stdout、stderr 和测试保护违规 |
+| `retry-without-feedback` | 1 | 最多 4 | 不回馈，下一次使用新对话记忆 |
+| `test-feedback` | 1 | 最多 4 | 回馈 exit code、timeout、stdout、stderr 和测试保护违规 |
 
-两个多次尝试组都是最多 3 次提交、每次最多 12 个模型 turn；提交次数在 CLI 和 Agent 两层硬限制为 3。三组都拥有相同的容器 `shell` tool，因此模型主动运行 pytest 属于 Agent 行为；组间差异只是 Agent 停止一次提交后，控制器是否将独立验证的失败输出写入下一轮记忆。
+两个多次尝试组都是最多 5 次提交、每次最多 12 个模型 turn；提交次数在 CLI 和 Agent 两层硬限制为 5。三组都拥有相同的容器 `shell` tool，因此模型主动运行 pytest 属于 Agent 行为；组间差异只是 Agent 停止一次提交后，控制器是否将独立验证的失败输出写入下一轮记忆。
 
 ## 3. 执行协议
 

@@ -8,8 +8,8 @@
 项目只处理短小纯函数，比较三种策略：
 
 - `single-shot`：只允许一次修复；
-- `retry-without-feedback`：最多三次，但不把控制器的 pytest 结果交给下一轮；
-- `test-feedback`：最多三次，把确定性 pytest 输出加入下一轮记忆。
+- `retry-without-feedback`：最多五次，但不把控制器的 pytest 结果交给下一轮；
+- `test-feedback`：最多五次，把确定性 pytest 输出加入下一轮记忆。
 
 Agent 只拥有一个容器内 `shell` tool。容器默认断网、限制 CPU/内存/进程数、丢弃 Linux capabilities，且只挂载本次 run 的 workspace。API Key、个人文件、原始基准目录和隐藏测试都不会进入 Agent 容器。
 
@@ -22,10 +22,12 @@ make sandbox-build
 .venv/bin/repair-agent doctor
 ```
 
-设置 DeepSeek API Key（只供宿主控制面调用模型）：
+从项目根目录的 `.env` 注入 DeepSeek API Key（只供宿主控制面调用模型，不会传入 Docker 容器）：
 
 ```bash
-export DEEPSEEK_API_KEY=...
+cp .env.example .env
+# 编辑 .env，填写 DEEPSEEK_API_KEY
+chmod 600 .env
 .venv/bin/repair-agent run benchmarks/tasks/public-pass-hidden-fail \
   --strategy test-feedback
 ```
@@ -33,11 +35,14 @@ export DEEPSEEK_API_KEY=...
 运行全部三组对照实验：
 
 ```bash
-.venv/bin/repair-agent benchmark benchmarks/tasks \
-  --repetitions 10 --seed 20261016
+make experiment
 ```
 
-该命令会用固定 seed 随机化执行顺序，并在一份报告中跨 10 次重复聚合。
+该命令会先完成本地及 Docker 验收，再以最多 5 次提交、固定 seed 和 10 次重复运行实验。可按需覆盖参数，例如：
+
+```bash
+make experiment REPETITIONS=1 SEED=42 MODEL=deepseek-chat
+```
 
 聚合报告会分策略输出首次/最终公开与隐藏测试通过率、超时率、隐藏功能回归率、保护测试违规率和真实模型调用/token/延迟。由于模型价格会变，程序保留原始 token 用量，`currency_cost` 不做猜测而记为 `null`。
 

@@ -137,6 +137,7 @@ def _run(args: argparse.Namespace) -> int:
         api_key=api_key,
         model=args.model,
         base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+        ca_bundle=os.getenv("REPAIR_ASSISTANT_CA_BUNDLE"),
     )
     result = RunService(data_dir=args.data_dir, image=args.image).execute(
         task=task,
@@ -179,6 +180,7 @@ def _benchmark(args: argparse.Namespace) -> int:
             api_key=api_key,
             model=args.model,
             base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+            ca_bundle=os.getenv("REPAIR_ASSISTANT_CA_BUNDLE"),
         )
         result = service.execute(
             task=task,
