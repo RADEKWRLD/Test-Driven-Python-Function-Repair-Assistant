@@ -33,33 +33,41 @@ def test_scripted_repair_and_hidden_verification_are_isolated(tmp_path: Path) ->
     root = Path(__file__).resolve().parents[1]
     task = TaskSpec.load(root / "benchmarks/tasks/chunk-list")
 
-    def call(call_id: str, command: str) -> ModelResponse:
-        return ModelResponse(
-            content=None,
-            tool_calls=(ToolCall(call_id, "shell", json.dumps({"command": command})),),
-            finish_reason="tool_calls",
-        )
-
     model = ScriptedModel(
         [
-            call("check-hidden", "test ! -e /hidden_tests"),
-            call(
-                "fix",
-                'python -c "from pathlib import Path; '
-                "Path('solution.py').write_text('def chunk_list(items, size):\\n'"
-                "+ '    if size <= 0: raise ValueError(\\\"size must be positive\\\")\\n'"
-                "+ '    return [items[i:i + size] for i in range(0, len(items), size)]\\n')\"",
+            ModelResponse(
+                content=None,
+                tool_calls=(
+                    ToolCall(
+                        "fix",
+                        "submit_solution",
+                        json.dumps(
+                            {
+                                "content": (
+                                    "def chunk_list(items, size):\n"
+                                    "    if size <= 0:\n"
+                                    '        raise ValueError("size must be positive")\n'
+                                    "    return [items[i:i + size] "
+                                    "for i in range(0, len(items), size)]\n"
+                                )
+                            }
+                        ),
+                    ),
+                ),
+                finish_reason="tool_calls",
             ),
-            ModelResponse(content="fixed"),
         ]
     )
 
     result = RunService(data_dir=tmp_path, image=IMAGE).execute(
         task=task,
         model=model,
-        strategy=RepairStrategy.SINGLE_SHOT,
+        strategy=RepairStrategy.TEST_FEEDBACK,
     )
 
     assert result.outcome == "passed"
+    assert result.first_public.passed is True
     assert result.first_hidden.passed is True
+    assert result.agent.attempts[0].repair_verification is not None
+    assert result.agent.attempts[0].repair_verification.passed is True
     assert not (result.run_dir / "workspace/hidden_tests").exists()

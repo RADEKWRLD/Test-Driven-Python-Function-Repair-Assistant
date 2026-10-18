@@ -3,7 +3,6 @@ VENV ?= .venv
 IMAGE ?= function-repair/sandbox-python:dev
 TASKS_DIR ?= benchmarks/tasks
 MAX_ATTEMPTS ?= 5
-MAX_TURNS ?= 12
 REPETITIONS ?= 10
 SEED ?= 20261016
 MODEL ?= deepseek-chat
@@ -41,7 +40,6 @@ experiment: check sandbox-test
 	$(VENV)/bin/repair-agent doctor
 	$(VENV)/bin/repair-agent benchmark $(TASKS_DIR) \
 		--max-attempts $(MAX_ATTEMPTS) \
-		--max-turns $(MAX_TURNS) \
 		--repetitions $(REPETITIONS) \
 		--seed $(SEED) \
 		--model $(MODEL) \

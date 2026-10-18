@@ -1,4 +1,4 @@
-"""Bounded test-driven Agent loop."""
+"""Bounded repair protocol with a single, non-executable submission tool."""
 
 from __future__ import annotations
 
@@ -18,27 +18,23 @@ from repair_assistant.task import TaskSpec, WorkspaceBaseline, snapshot_workspac
 from repair_assistant.types import VerificationResult
 from repair_assistant.verifier import PublicVerifier
 
-SYSTEM_PROMPT = """You are a test-driven Python function repair agent in an isolated workspace.
-Solve only the supplied short pure-function task. Use the shell tool for every file
-inspection, edit, and command. You may run the declared public pytest command. Never
-modify tests or attempt to find hidden tests. Preserve behavior not contradicted by
-the requirement or public tests. When your patch is ready, stop calling tools and
-briefly report the change. A deterministic controller will independently run pytest.
+SYSTEM_PROMPT = """You repair one short Python pure-function implementation.
+You cannot inspect files, execute commands, or run tests. The controller gives you the
+requirement, current solution.py, and public test source. Submit exactly one complete
+replacement for solution.py by calling submit_solution once. Do not include tests or
+create any other file. Preserve behavior not contradicted by the requirement or public
+tests. Hidden tests are unavailable.
 """
 
-SHELL_TOOL: ToolDefinition = {
+SUBMIT_SOLUTION_TOOL: ToolDefinition = {
     "type": "function",
     "function": {
-        "name": "shell",
-        "description": "Run one Bash command inside the isolated task workspace.",
+        "name": "submit_solution",
+        "description": "Submit the complete replacement content of solution.py.",
         "parameters": {
             "type": "object",
-            "properties": {
-                "command": {"type": "string"},
-                "cwd": {"type": "string"},
-                "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 300},
-            },
-            "required": ["command"],
+            "properties": {"content": {"type": "string"}},
+            "required": ["content"],
             "additionalProperties": False,
         },
     },
@@ -52,6 +48,7 @@ class RepairStrategy(StrEnum):
 
 
 MAX_ATTEMPTS = 5
+MAX_SOLUTION_BYTES = 64 * 1024
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,7 +69,7 @@ class AttemptResult:
     status: str
     turns: int
     final_message: str | None
-    public_verification: VerificationResult
+    repair_verification: VerificationResult | None
     cost: AttemptCost
     snapshot: Path
 
@@ -89,7 +86,7 @@ class AgentResult:
 
 
 class TestDrivenRepairAgent:
-    """Submit a patch, verify it, and optionally add failure evidence to memory."""
+    """Collect bounded submissions while exposing diagnostics only to the feedback arm."""
 
     __test__ = False
 
@@ -97,20 +94,19 @@ class TestDrivenRepairAgent:
         self,
         *,
         model: ModelAdapter,
-        sandbox: Sandbox,
+        sandbox: Sandbox | None,
         event_log: EventLog,
         workspace: Path,
         workspace_baseline: WorkspaceBaseline,
         attempts_dir: Path,
         strategy: RepairStrategy,
         max_attempts: int = MAX_ATTEMPTS,
-        max_turns_per_attempt: int = 12,
         verifier: PublicVerifier | None = None,
     ) -> None:
         if not 1 <= max_attempts <= MAX_ATTEMPTS:
             raise ValueError(f"max_attempts must be from 1 to {MAX_ATTEMPTS}")
-        if max_turns_per_attempt < 1:
-            raise ValueError("attempt and turn limits must be positive")
+        if strategy is not RepairStrategy.SINGLE_SHOT and sandbox is None:
+            raise ValueError("multi-attempt strategies require a public-test sandbox")
         self.model = model
         self.sandbox = sandbox
         self.event_log = event_log
@@ -119,173 +115,182 @@ class TestDrivenRepairAgent:
         self.attempts_dir = attempts_dir.resolve()
         self.strategy = strategy
         self.max_attempts = 1 if strategy is RepairStrategy.SINGLE_SHOT else max_attempts
-        self.max_turns = max_turns_per_attempt
         self.verifier = verifier or PublicVerifier()
 
     def run(self, task: TaskSpec) -> AgentResult:
-        base_messages: list[Message] = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": task.prompt()},
-        ]
-        messages = list(base_messages)
+        if task.editable_paths != ("solution.py",):
+            raise ValueError("the repair protocol requires editable_paths to be only solution.py")
+
         attempts: list[AttemptResult] = []
+        previous_feedback: str | None = None
         self.event_log.append("user_message", "user", {"content": task.prompt()})
 
         for number in range(1, self.max_attempts + 1):
-            if number > 1 and self.strategy is RepairStrategy.RETRY_WITHOUT_FEEDBACK:
-                messages = [
-                    *base_messages,
-                    {
-                        "role": "user",
-                        "content": (
-                            "Make another independent repair attempt in the current workspace. "
-                            "The controller supplies no previous test output."
-                        ),
-                    },
-                ]
+            messages: list[Message] = [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {
+                    "role": "user",
+                    "content": self._attempt_prompt(task, number, previous_feedback),
+                },
+            ]
             self.event_log.append(
                 "attempt_started",
                 "controller",
                 {"attempt": number, "strategy": self.strategy.value},
             )
-            status, turns, final_message, cost = self._model_attempt(messages, number)
-            verification = self.verifier.verify(
-                task=task,
-                sandbox=self.sandbox,
-                workspace=self.workspace,
-                workspace_baseline=self.workspace_baseline,
-            )
+            status, final_message, cost = self._model_submission(messages, number)
+
+            verification: VerificationResult | None = None
+            if self.strategy is not RepairStrategy.SINGLE_SHOT:
+                assert self.sandbox is not None
+                verification = self.verifier.verify(
+                    task=task,
+                    sandbox=self.sandbox,
+                    workspace=self.workspace,
+                    workspace_baseline=self.workspace_baseline,
+                )
+                self.event_log.append(
+                    "repair_public_verification",
+                    "verifier",
+                    {"attempt": number, **verification.to_dict()},
+                )
+
             snapshot = self._snapshot(number)
-            self.event_log.append(
-                "public_verification",
-                "verifier",
-                {"attempt": number, **verification.to_dict()},
-            )
             self.event_log.append(
                 "attempt_completed",
                 "controller",
                 {
                     "attempt": number,
                     "status": status,
-                    "turns": turns,
+                    "turns": 1,
                     "cost": cost.to_dict(),
+                    "repair_public_test_run": verification is not None,
+                    "detailed_feedback_enabled": self.strategy is RepairStrategy.TEST_FEEDBACK,
                     "snapshot": str(snapshot.relative_to(self.attempts_dir.parent)),
                 },
             )
-            attempt = AttemptResult(
-                number, status, turns, final_message, verification, cost, snapshot
+            attempts.append(
+                AttemptResult(number, status, 1, final_message, verification, cost, snapshot)
             )
-            attempts.append(attempt)
-            if verification.passed:
+
+            if verification is not None and verification.passed:
                 return AgentResult("public_tests_passed", self.strategy, tuple(attempts))
-            if number < self.max_attempts and self.strategy is RepairStrategy.TEST_FEEDBACK:
-                feedback = _feedback(verification, number)
-                messages.append({"role": "user", "content": feedback})
+            if (
+                verification is not None
+                and number < self.max_attempts
+                and self.strategy is RepairStrategy.TEST_FEEDBACK
+            ):
+                previous_feedback = _feedback(verification, number)
                 self.event_log.append(
-                    "feedback_added", "controller", {"attempt": number, "content": feedback}
+                    "feedback_added",
+                    "controller",
+                    {"attempt": number, "content": previous_feedback},
                 )
 
-        return AgentResult("attempt_limit", self.strategy, tuple(attempts))
+        status = "attempt_limit"
+        if self.strategy is RepairStrategy.SINGLE_SHOT:
+            status = "single_submission_complete"
+        elif self.strategy is RepairStrategy.RETRY_WITHOUT_FEEDBACK:
+            status = "retry_budget_complete"
+        return AgentResult(status, self.strategy, tuple(attempts))
 
-    def _model_attempt(
+    def _model_submission(
         self, messages: list[Message], attempt: int
-    ) -> tuple[str, int, str | None, AttemptCost]:
-        calls = prompt = completion = total = latency = 0
+    ) -> tuple[str, str | None, AttemptCost]:
         secrets = self.model.sensitive_values
-        for turn in range(1, self.max_turns + 1):
-            self.event_log.append(
-                "model_request",
-                "controller",
-                {
-                    "attempt": attempt,
-                    "turn": turn,
-                    "model": self.model.name,
-                    "messages": redact(messages, secrets=secrets),
-                    "tools": [SHELL_TOOL],
-                    "redaction": {"applied": True, "marker": REDACTED},
-                },
-            )
-            started = time.monotonic()
-            response = self.model.complete(messages, [SHELL_TOOL])
-            elapsed = round((time.monotonic() - started) * 1000)
-            calls += 1
-            latency += elapsed
-            prompt += _usage(response.usage, "prompt_tokens")
-            completion += _usage(response.usage, "completion_tokens")
-            total += _usage(response.usage, "total_tokens")
-            self.event_log.append(
-                "model_response",
-                "model",
-                {
-                    "attempt": attempt,
-                    "turn": turn,
-                    "provider": response.provider,
-                    "requested_model": self.model.name,
-                    "resolved_model": response.model,
-                    "response_id": response.response_id,
-                    "finish_reason": response.finish_reason,
-                    "latency_ms": elapsed,
-                    "content": redact(response.content, secrets=secrets),
-                    "tool_calls": redact(
-                        [tool_call.to_dict() for tool_call in response.tool_calls], secrets=secrets
-                    ),
-                    "usage": response.usage,
-                },
-            )
-            messages.append(response.as_message())
-            cost = AttemptCost(calls, prompt, completion, total, latency)
-            if not response.tool_calls:
-                status = (
-                    "model_finished" if response.finish_reason == "stop" else "model_incomplete"
-                )
-                return status, turn, response.content, cost
-            if response.finish_reason != "tool_calls":
-                return "model_protocol_error", turn, response.content, cost
-            for tool_call in response.tool_calls:
-                content = self._execute_tool(
-                    tool_call.name, tool_call.arguments_json, tool_call.call_id
-                )
-                messages.append(
-                    {"role": "tool", "tool_call_id": tool_call.call_id, "content": content}
-                )
-        return (
-            "turn_limit",
-            self.max_turns,
-            None,
-            AttemptCost(calls, prompt, completion, total, latency),
+        self.event_log.append(
+            "model_request",
+            "controller",
+            {
+                "attempt": attempt,
+                "turn": 1,
+                "model": self.model.name,
+                "messages": redact(messages, secrets=secrets),
+                "tools": [SUBMIT_SOLUTION_TOOL],
+                "redaction": {"applied": True, "marker": REDACTED},
+            },
+        )
+        started = time.monotonic()
+        response = self.model.complete(messages, [SUBMIT_SOLUTION_TOOL])
+        elapsed = round((time.monotonic() - started) * 1000)
+        cost = AttemptCost(
+            1,
+            _usage(response.usage, "prompt_tokens"),
+            _usage(response.usage, "completion_tokens"),
+            _usage(response.usage, "total_tokens"),
+            elapsed,
+        )
+        self.event_log.append(
+            "model_response",
+            "model",
+            {
+                "attempt": attempt,
+                "turn": 1,
+                "provider": response.provider,
+                "requested_model": self.model.name,
+                "resolved_model": response.model,
+                "response_id": response.response_id,
+                "finish_reason": response.finish_reason,
+                "latency_ms": elapsed,
+                "content": redact(response.content, secrets=secrets),
+                "tool_calls": redact(
+                    [tool_call.to_dict() for tool_call in response.tool_calls], secrets=secrets
+                ),
+                "usage": response.usage,
+            },
         )
 
-    def _execute_tool(self, name: str, arguments_json: str, call_id: str) -> str:
+        if len(response.tool_calls) != 1:
+            return "model_protocol_error", response.content, cost
+        tool_call = response.tool_calls[0]
         self.event_log.append(
             "tool_call",
             "model",
-            redact(
-                {"call_id": call_id, "name": name, "arguments": arguments_json},
-                secrets=self.model.sensitive_values,
-            ),
+            redact(tool_call.to_dict(), secrets=secrets),
         )
         try:
-            arguments = cast(dict[str, Any], json.loads(arguments_json))
-            if name != "shell":
-                raise ValueError(f"unknown tool: {name}")
-            command = arguments.get("command")
-            cwd = arguments.get("cwd", ".")
-            timeout = arguments.get("timeout_seconds", 120)
-            if not isinstance(command, str) or not command.strip():
-                raise ValueError("shell.command must be a non-empty string")
-            if not isinstance(cwd, str):
-                raise ValueError("shell.cwd must be a string")
-            if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 300:
-                raise ValueError("timeout_seconds must be an integer from 1 to 300")
-        except (json.JSONDecodeError, ValueError) as exc:
-            payload = {"call_id": call_id, "accepted": False, "error": str(exc)}
-            self.event_log.append("tool_result", "tool", payload)
-            return json.dumps(payload, ensure_ascii=False)
-        result = self.sandbox.execute(command, cwd=cwd, timeout_seconds=timeout)
-        payload = {"call_id": call_id, "accepted": True, **result.to_dict()}
-        safe_payload = cast(dict[str, Any], redact(payload, secrets=self.model.sensitive_values))
-        self.event_log.append("tool_result", "tool", safe_payload)
-        return json.dumps(safe_payload, ensure_ascii=False)
+            if tool_call.name != "submit_solution":
+                raise ValueError(f"unknown tool: {tool_call.name}")
+            arguments = cast(dict[str, Any], json.loads(tool_call.arguments_json))
+            if set(arguments) != {"content"} or not isinstance(arguments["content"], str):
+                raise ValueError("submit_solution requires only a string content field")
+            content = arguments["content"]
+            if len(content.encode("utf-8")) > MAX_SOLUTION_BYTES:
+                raise ValueError(f"solution.py exceeds {MAX_SOLUTION_BYTES} bytes")
+            target = self.workspace / "solution.py"
+            if not target.is_file() or target.is_symlink():
+                raise ValueError("solution.py must remain an existing regular file")
+            target.write_text(content, encoding="utf-8")
+        except (json.JSONDecodeError, UnicodeError, ValueError) as exc:
+            self.event_log.append(
+                "submission_rejected",
+                "controller",
+                {"attempt": attempt, "error": str(exc)},
+            )
+            return "model_protocol_error", response.content, cost
+        self.event_log.append(
+            "submission_accepted",
+            "controller",
+            {"attempt": attempt, "path": "solution.py", "bytes": len(content.encode("utf-8"))},
+        )
+        return "solution_submitted", response.content, cost
+
+    def _attempt_prompt(self, task: TaskSpec, attempt: int, previous_feedback: str | None) -> str:
+        current = (self.workspace / "solution.py").read_text(encoding="utf-8")
+        public_sources = _public_test_sources(task, self.workspace)
+        retry_note = ""
+        if attempt > 1:
+            retry_note = (
+                "\nThis is another repair attempt. Reconsider the current implementation "
+                "and submit a complete replacement.\n"
+            )
+        feedback = f"\n{previous_feedback}\n" if previous_feedback is not None else ""
+        return (
+            f"{task.prompt()}\n{retry_note}"
+            f"\nCurrent solution.py:\n```python\n{current}\n```\n"
+            f"\nPublic test source (read-only):\n{public_sources}\n"
+            f"{feedback}"
+        )
 
     def _snapshot(self, attempt: int) -> Path:
         destination = self.attempts_dir / f"attempt-{attempt}"
@@ -304,6 +309,19 @@ class TestDrivenRepairAgent:
         return destination
 
 
+def _public_test_sources(task: TaskSpec, workspace: Path) -> str:
+    sections: list[str] = []
+    for raw in task.protected_paths:
+        target = workspace / raw
+        paths = [target] if target.is_file() else sorted(target.rglob("*.py"))
+        for path in paths:
+            if not path.is_file() or path.is_symlink():
+                continue
+            relative = path.relative_to(workspace).as_posix()
+            sections.append(f"### {relative}\n```python\n{path.read_text(encoding='utf-8')}\n```")
+    return "\n\n".join(sections) or "(no public test source declared)"
+
+
 def _feedback(result: VerificationResult, attempt: int) -> str:
     command = result.command_result
     violations = "\n".join(f"- {item}" for item in result.violations) or "- none"
@@ -314,7 +332,7 @@ def _feedback(result: VerificationResult, attempt: int) -> str:
         f"protected_files_unchanged={result.protected_files_unchanged}\n"
         f"workspace_policy_compliant={result.workspace_policy_compliant}\n"
         f"violations:\n{violations}\nstdout:\n{command.stdout}\nstderr:\n{command.stderr}\n"
-        "Repair the implementation without modifying tests."
+        "Repair solution.py without changing tests."
     )
 
 

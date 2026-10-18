@@ -8,10 +8,15 @@
 项目只处理短小纯函数，比较三种策略：
 
 - `single-shot`：只允许一次修复；
-- `retry-without-feedback`：最多五次，但不把控制器的 pytest 结果交给下一轮；
-- `test-feedback`：最多五次，把确定性 pytest 输出加入下一轮记忆。
+- `retry-without-feedback`：最多五次，控制器运行公开 pytest；失败时只要求重新生成，不提供诊断；
+- `test-feedback`：最多五次，使用相同的 pytest 与停止规则，并把完整失败输出交给下一轮。
 
-Agent 只拥有一个容器内 `shell` tool。容器默认断网、限制 CPU/内存/进程数、丢弃 Linux capabilities，且只挂载本次 run 的 workspace。API Key、个人文件、原始基准目录和隐藏测试都不会进入 Agent 容器。
+模型没有 shell，也不能执行任何代码；每轮只有一次模型调用，并且只能通过
+`submit_solution(content)` 提交完整的 `solution.py`。两个多次提交组都由控制器执行
+公开测试并在通过时停止，唯一差异是模型能否看到详细诊断；三组结束后再由统一的
+隔离评测器对首轮和最终快照评分。
+所有候选代码只在无网络、受资源限制的 Docker 容器中执行。API Key、个人文件、
+原始基准目录和隐藏测试不会进入容器。
 
 ## 快速开始
 
@@ -44,14 +49,33 @@ make experiment
 make experiment REPETITIONS=1 SEED=42 MODEL=deepseek-chat
 ```
 
-聚合报告会分策略输出首次/最终公开与隐藏测试通过率、超时率、隐藏功能回归率、保护测试违规率和真实模型调用/token/延迟。由于模型价格会变，程序保留原始 token 用量，`currency_cost` 不做猜测而记为 `null`。
+聚合报告会分策略输出首次/最终公开与隐藏测试通过率、超时率、隐藏功能回归率、保护测试违规率和真实模型调用/token/延迟。实验结束后会自动生成 10 张 SVG 图、HTML 总览、Markdown 报告以及逐 run 和逐策略 CSV。由于模型价格会变，程序保留原始 token 用量，`currency_cost` 不做猜测而记为 `null`。
+
+实验报告目录如下：
+
+```text
+var/benchmarks/benchmark-<UTC时间>/
+├── report.json
+├── report.html
+├── report.md
+├── raw-runs.csv
+├── strategy-metrics.csv
+├── manifest.json
+└── figures/*.svg
+```
+
+已有 benchmark JSON 也可以重新生成图表：
+
+```bash
+.venv/bin/repair-agent report path/to/benchmark.json
+```
 
 一次 run 的产物位于 `var/runs/<run_id>/`：
 
 ```text
 events.jsonl             # 只追加、带哈希链的过程日志
 summary.json             # 首次/最终隐藏测试、超时和成本
-workspace/               # 最终 Agent 工作区
+workspace/               # 控制器维护的最终候选工作区
 attempts/attempt-*/       # 每轮提交时的代码快照
 ```
 
@@ -61,11 +85,11 @@ attempts/attempt-*/       # 每轮提交时的代码快照
 
 ```text
 task.json                 # 需求、公开验证命令、隐藏验证命令
-workspace/                # 复制给 Agent，包含错误函数和公开测试
+workspace/                # 错误函数与公开测试；只把文本放入模型上下文
 hidden_tests/             # 不复制、不挂载给 Agent
 ```
 
-隐藏测试只在 Agent 停止后由独立 verifier 容器以只读方式挂载；结果不会回馈给模型。`public-pass-hidden-fail` 的初始实现会通过公开测试但在制表符、换行和连续空格等隐藏边界上失败，用于现场演示“公开通过 ≠ 真正修复”。
+隐藏测试只在修复过程停止后由独立 verifier 容器以只读方式挂载；结果不会回馈给模型。`public-pass-hidden-fail` 的初始实现会通过公开测试但在制表符、换行和连续空格等隐藏边界上失败，用于现场演示“公开通过 ≠ 真正修复”。
 
 ## 验收
 

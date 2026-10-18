@@ -45,8 +45,8 @@ class TaskSpec:
         if not source_dir.is_dir() or not hidden_dir.is_dir():
             raise ValueError("workspace and hidden test directories must exist")
         editable_paths = tuple(str(item) for item in data.get("editable_paths", ["solution.py"]))
-        if not editable_paths:
-            raise ValueError("at least one editable path is required")
+        if editable_paths != ("solution.py",):
+            raise ValueError("editable_paths must contain only solution.py")
         for raw in editable_paths:
             relative = _workspace_relative_path(raw, label="editable")
             target = source_dir.joinpath(*relative.parts)

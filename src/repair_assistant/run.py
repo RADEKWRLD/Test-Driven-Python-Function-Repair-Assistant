@@ -11,9 +11,9 @@ from repair_assistant.agent import MAX_ATTEMPTS, AgentResult, RepairStrategy, Te
 from repair_assistant.event_log import EventLog
 from repair_assistant.model import ModelAdapter
 from repair_assistant.sandbox import DockerSandbox
-from repair_assistant.task import TaskSpec, prepare_workspace
+from repair_assistant.task import TaskSpec, WorkspaceBaseline, prepare_workspace
 from repair_assistant.types import VerificationResult
-from repair_assistant.verifier import HiddenVerifier
+from repair_assistant.verifier import HiddenVerifier, PublicVerifier
 
 
 @dataclass(frozen=True, slots=True)
@@ -22,6 +22,8 @@ class RunResult:
     run_dir: Path
     outcome: str
     agent: AgentResult
+    first_public: VerificationResult
+    final_public: VerificationResult
     first_hidden: VerificationResult
     final_hidden: VerificationResult
 
@@ -43,7 +45,6 @@ class RunService:
         model: ModelAdapter,
         strategy: RepairStrategy = RepairStrategy.TEST_FEEDBACK,
         max_attempts: int = MAX_ATTEMPTS,
-        max_turns_per_attempt: int = 12,
     ) -> RunResult:
         run_id = f"run_{uuid4().hex[:12]}"
         run_dir = self.data_dir / "runs" / run_id
@@ -54,42 +55,48 @@ class RunService:
             "run_started",
             "controller",
             {
+                "protocol_version": 2,
                 "strategy": strategy.value,
                 "model": model.name,
                 "provider": model.provider,
                 "image": self.image,
                 "network": "none",
                 "max_attempts": 1 if strategy is RepairStrategy.SINGLE_SHOT else max_attempts,
-                "max_turns_per_attempt": max_turns_per_attempt,
+                "model_calls_per_attempt": 1,
+                "repair_pytest_enabled": strategy is not RepairStrategy.SINGLE_SHOT,
+                "detailed_test_feedback_enabled": strategy is RepairStrategy.TEST_FEEDBACK,
             },
         )
-        agent_sandbox = DockerSandbox(
-            workspace=workspace,
-            run_id=f"{run_id}-agent",
-            image=self.image,
-        )
-        try:
-            agent_sandbox.start()
-            log.append(
-                "sandbox_started",
-                "controller",
-                {
-                    "purpose": "agent",
-                    "container": agent_sandbox.container_name,
-                    "mounted": ["run workspace"],
-                    "hidden_tests_mounted": False,
-                },
+        repair_sandbox = None
+        if strategy is not RepairStrategy.SINGLE_SHOT:
+            repair_sandbox = DockerSandbox(
+                workspace=workspace,
+                run_id=f"{run_id}-repair-public",
+                image=self.image,
+                workspace_readonly=True,
             )
+        try:
+            if repair_sandbox is not None:
+                repair_sandbox.start()
+                log.append(
+                    "sandbox_started",
+                    "controller",
+                    {
+                        "purpose": "repair-public-stopping",
+                        "container": repair_sandbox.container_name,
+                        "mounted": ["run workspace"],
+                        "hidden_tests_mounted": False,
+                    },
+                )
             agent = TestDrivenRepairAgent(
                 model=model,
-                sandbox=agent_sandbox,
+                sandbox=repair_sandbox,
                 event_log=log,
                 workspace=workspace,
                 workspace_baseline=workspace_baseline,
                 attempts_dir=run_dir / "attempts",
                 strategy=strategy,
                 max_attempts=max_attempts,
-                max_turns_per_attempt=max_turns_per_attempt,
             ).run(task)
         except Exception as exc:
             log.append(
@@ -99,7 +106,28 @@ class RunService:
             )
             raise
         finally:
-            agent_sandbox.close()
+            if repair_sandbox is not None:
+                repair_sandbox.close()
+
+        first_public = self._public_verify(
+            task=task,
+            workspace=agent.attempts[0].snapshot,
+            workspace_baseline=workspace_baseline,
+            run_id=f"{run_id}-public-first",
+            log=log,
+            label="first",
+        )
+        if len(agent.attempts) == 1:
+            final_public = first_public
+        else:
+            final_public = self._public_verify(
+                task=task,
+                workspace=agent.final_attempt.snapshot,
+                workspace_baseline=workspace_baseline,
+                run_id=f"{run_id}-public-final",
+                log=log,
+                label="final",
+            )
 
         first_hidden = self._hidden_verify(
             task=task,
@@ -119,14 +147,51 @@ class RunService:
                 label="final",
             )
 
-        public_passed = agent.final_attempt.public_verification.passed
-        outcome = "passed" if public_passed and final_hidden.passed else "failed"
-        result = RunResult(run_id, run_dir, outcome, agent, first_hidden, final_hidden)
+        outcome = "passed" if final_public.passed and final_hidden.passed else "failed"
+        result = RunResult(
+            run_id,
+            run_dir,
+            outcome,
+            agent,
+            first_public,
+            final_public,
+            first_hidden,
+            final_hidden,
+        )
         summary = _summary(result, model)
         (run_dir / "summary.json").write_text(
             json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
         log.append("run_completed", "controller", summary)
+        return result
+
+    def _public_verify(
+        self,
+        *,
+        task: TaskSpec,
+        workspace: Path,
+        workspace_baseline: WorkspaceBaseline,
+        run_id: str,
+        log: EventLog,
+        label: str,
+    ) -> VerificationResult:
+        sandbox = DockerSandbox(
+            workspace=workspace,
+            run_id=run_id,
+            image=self.image,
+            workspace_readonly=True,
+        )
+        try:
+            sandbox.start()
+            result = PublicVerifier().verify(
+                task=task,
+                sandbox=sandbox,
+                workspace=workspace,
+                workspace_baseline=workspace_baseline,
+            )
+        finally:
+            sandbox.close()
+        log.append("public_verification", "verifier", {"stage": label, **result.to_dict()})
         return result
 
     def _hidden_verify(
@@ -166,27 +231,46 @@ def _summary(result: RunResult, model: ModelAdapter) -> dict[str, object]:
     total = sum(item.cost.total_tokens for item in attempts)
     latency = sum(item.cost.latency_ms for item in attempts)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "run_id": result.run_id,
         "outcome": result.outcome,
         "strategy": result.agent.strategy.value,
         "model": model.name,
         "provider": model.provider,
         "attempts": len(attempts),
-        "first_public_passed": attempts[0].public_verification.passed,
-        "final_public_passed": attempts[-1].public_verification.passed,
+        "protocol": {
+            "version": 2,
+            "name": "shared-public-test-stopping",
+            "editable_paths": ["solution.py"],
+            "model_calls_per_attempt": 1,
+            "repair_pytest_enabled": result.agent.strategy is not RepairStrategy.SINGLE_SHOT,
+            "detailed_test_feedback_enabled": result.agent.strategy is RepairStrategy.TEST_FEEDBACK,
+            "repair_public_test_runs": sum(
+                item.repair_verification is not None for item in attempts
+            ),
+        },
+        "first_public_passed": result.first_public.passed,
+        "final_public_passed": result.final_public.passed,
         "first_hidden_passed": result.first_hidden.passed,
         "final_hidden_passed": result.final_hidden.passed,
         "hidden_improvement": not result.first_hidden.passed and result.final_hidden.passed,
         "hidden_regression": result.first_hidden.passed and not result.final_hidden.passed,
-        "timed_out": any(item.public_verification.command_result.timed_out for item in attempts)
+        "timed_out": result.first_public.command_result.timed_out
+        or result.final_public.command_result.timed_out
+        or any(
+            item.repair_verification is not None
+            and item.repair_verification.command_result.timed_out
+            for item in attempts
+        )
         or result.first_hidden.command_result.timed_out
         or result.final_hidden.command_result.timed_out,
         "protected_test_violation": any(
-            not item.public_verification.protected_files_unchanged for item in attempts
+            not verification.protected_files_unchanged
+            for verification in (result.first_public, result.final_public)
         ),
         "workspace_policy_violation": any(
-            not item.public_verification.workspace_policy_compliant for item in attempts
+            not verification.workspace_policy_compliant
+            for verification in (result.first_public, result.final_public)
         ),
         "cost": {
             "model_calls": calls,

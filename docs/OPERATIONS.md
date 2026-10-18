@@ -7,28 +7,28 @@
 ### 已实现
 
 - 三种策略：`single-shot`、`retry-without-feedback`、`test-feedback`。
-- 默认一次初始提交，后两组最多追加四次提交，即最多 5 次。
-- 模型只能通过容器内 `shell` tool 操作每次 run 的独立 workspace。
-- 控制器独立执行公开 pytest，并将失败信息只反馈给 `test-feedback` 组。
-- 公开测试在 Agent 运行前计算 SHA-256 基线，修改、增加或删除受保护测试都会使验证失败。
+- 默认一次初始提交；两个多次提交组最多再提交四次，并在公开测试通过时停止，即硬上限 5 次。
+- 每次提交只有一次模型调用；模型没有 shell，只能通过 `submit_solution(content)` 提交完整 `solution.py`。
+- `single-shot` 修复阶段不运行 pytest；两个多次提交组每次提交后都运行相同的公开 pytest，并在通过时停止。无反馈组失败后只收到重新生成要求，反馈组收到完整失败诊断。
+- 公开测试在修复开始前计算 SHA-256 基线，修改、增加或删除受保护测试都会使验证失败。
 - 每个任务显式声明 `editable_paths`；当前三题均只允许修改 `solution.py`。pytest 前后都会检查完整 workspace，新增、删除或修改其他路径都会使该轮失败。
-- 隐藏测试不进入 Agent workspace，只在 Agent 停止后挂载给独立 verifier，并且隐藏结果不反馈给模型。
+- 隐藏测试不进入模型上下文，只在修复停止后挂载给独立 verifier，并且隐藏结果不反馈给模型。
 - 隐藏验证时，attempt workspace 与隐藏测试都使用只读挂载。
 - Docker 执行器使用无网络、只读根文件系统、能力丢弃、`no-new-privileges`、CPU、内存、PID、超时和有限 `/tmp`。
-- 每轮保存代码快照、模型请求与响应、工具调用、pytest 输出、token、延迟和带哈希链的事件日志。
+- 每轮保存代码快照、模型请求与响应、solution 提交、可用的 pytest 输出、token、延迟和带哈希链的事件日志。
 - 3 个任务共 30 个独立测试函数：15 个公开测试、15 个隐藏测试。
 - 聚合报告包含首次/最终公开与隐藏通过率、超时、隐藏回归、测试保护违规、模型调用数、token 和模型延迟。
 - benchmark 支持重复次数、固定 seed 的随机执行顺序，以及同一报告内的跨重复聚合。
-- 最大提交次数在 CLI 和 Agent 两层硬限制为 5。
+- 最大提交次数在 CLI 和控制器两层硬限制为 5。
 - `public-pass-hidden-fail` 可演示“5 个公开测试通过，但 5 个隐藏测试全部失败”。
 
 ### 尚未完成或需要加强
 
-1. 仓库当前没有真实模型运行产物，`var/` 中没有 benchmark 报告。因此程序已经实现，但研究结论尚未产生。
+1. `var/benchmarks/benchmark-20261018T001614215512Z/` 使用旧的“无反馈组固定重试”协议，不能作为新协议的正式结果；修改后需要重新运行 benchmark。
 2. `currency_cost` 当前为 `null`。程序记录了实际调用数和 token，但若验收要求人民币或美元成本，需要锁定实验日期对应的模型价格并离线计算。
 3. 3 道题只能用于课程演示，不足以支持强统计结论；即使增加重复次数，也最好继续增加题目数和错误类型。
-4. 模型在三组中都可主动运行公开 pytest。当前实验测量的是“控制器在一次提交结束后回馈失败输出”的增益，而不是“是否允许模型看到任何测试输出”的增益。报告中必须明确这一点。
-5. 当前超时率包含控制器公开/隐藏验证超时，不包含模型主动执行 shell 命令时的所有超时；成本也只统计模型 API 延迟，不等同于端到端运行时间。
+4. `retry-without-feedback` 会从“继续重试”获得隐含的二值失败信号，但看不到失败用例、异常、stdout/stderr；报告中应将它准确解释为“无诊断反馈”，而不是完全没有任何信号。
+5. 当前超时率包含修复期和最终评测的公开/隐藏验证超时；模型不能执行 shell。成本只统计模型 API 延迟，不等同于端到端运行时间。
 6. 错误分析所需原始轨迹已经具备，但仓库还没有基于真实 run 编写的错误分类与案例分析报告。
 
 ## 2. 一次性安装
@@ -82,7 +82,7 @@ make sandbox-test
 
 - `doctor` 输出 `Sandbox image: ready`；
 - Ruff 与 mypy 无错误；
-- 10 个非 Docker 测试通过；
+- 20 个非 Docker 测试通过；
 - 1 个 Docker 集成测试通过。
 
 任何一项失败都不要运行真实模型实验。尤其不要为了绕过 Docker 问题而直接在宿主 Python 中执行候选代码。
@@ -105,13 +105,13 @@ docker version --format '{{.Server.Version}}'
 
 ```bash
 .venv/bin/repair-agent run benchmarks/tasks/chunk-list \
-  --strategy single-shot --max-attempts 5 --max-turns 12
+  --strategy single-shot --max-attempts 5
 
 .venv/bin/repair-agent run benchmarks/tasks/chunk-list \
-  --strategy retry-without-feedback --max-attempts 5 --max-turns 12
+  --strategy retry-without-feedback --max-attempts 5
 
 .venv/bin/repair-agent run benchmarks/tasks/chunk-list \
-  --strategy test-feedback --max-attempts 5 --max-turns 12
+  --strategy test-feedback --max-attempts 5
 ```
 
 `single-shot` 内部会强制只提交一次；统一写 `--max-attempts 5` 便于保留一致的实验命令。
@@ -151,7 +151,6 @@ make experiment
 ```bash
 .venv/bin/repair-agent benchmark benchmarks/tasks \
   --max-attempts 5 \
-  --max-turns 12 \
   --repetitions 10 \
   --seed 20261016 \
   --model deepseek-chat
@@ -166,7 +165,14 @@ make experiment REPETITIONS=1 SEED=42 MODEL=deepseek-chat
 上述命令执行 3 道题 × 3 种策略 × 10 次重复，共 90 个 run，并生成：
 
 ```text
-var/benchmarks/benchmark-<UTC时间>.json
+var/benchmarks/benchmark-<UTC时间>/
+├── report.json                 # 聚合指标与全部 raw_runs
+├── report.html                 # 可直接打开的可视化总览
+├── report.md                   # 适合纳入课题报告的图文索引
+├── raw-runs.csv                # 逐 run 可复核明细
+├── strategy-metrics.csv        # 逐策略聚合指标
+├── manifest.json               # 产物清单
+└── figures/                    # 10 张无外部依赖的 SVG 图
 ```
 
 正式比较时固定以下控制变量，不要在组间改变：
@@ -174,7 +180,7 @@ var/benchmarks/benchmark-<UTC时间>.json
 - Git commit 与 Docker 镜像 ID；
 - 模型名称、API 提供方、temperature 和最大输出 token；
 - 任务集合、重复次数与随机化 seed；
-- `max-attempts=5`、`max-turns=12`；
+- `max-attempts=5`，且每次提交固定一次模型调用；
 - 容器 CPU、内存、PID 和测试超时；
 - 同一时间段或随机化后的运行顺序，避免服务端模型更新和负载变化造成偏差。
 
@@ -236,20 +242,52 @@ currency_cost
 
 - 3 道题各跑一次时只能报告描述性结果，例如 `2/3`，不应声称具有统计显著性。
 - 有重复实验时，同时报告分子/分母、百分比和 95% 置信区间。
-- 同一个任务和重复编号下的两种策略应视为配对观察；可报告配对差值，并使用配对 bootstrap 或 McNemar 检验。
+- 同一个任务和重复编号下的两种策略应视为配对观察；报告配对差值时按任务聚类 bootstrap，避免把同一道题的重复运行误当成独立任务。样本足够时可另做 McNemar 检验。
 - 如果只保留 3 道题，应将结论限定为“在本课程 benchmark 上”；要推广到一般 Python 函数修复，应增加任务数量和错误类型。
 
-## 7. 如何判定课题完成
+## 7. 自动可视化报告
+
+`benchmark` 完成后会自动生成以下图表：
+
+1. 测试反馈相对无反馈重试的配对主效应、按任务聚类的 bootstrap 95% CI，以及胜/平/负数量；
+2. 三种策略的首次与最终隐藏通过率，并显示 Wilson 95% CI；
+3. 最终公开与最终隐藏通过率及公隐差距；
+4. 隐藏结果从首次到最终的改善、稳定通过、回归和稳定失败；
+5. 超时、测试保护违规和 workspace 策略违规率；
+6. 平均模型调用、平均 token、每成功 token 和平均模型延迟；
+7. prompt/completion token 构成；
+8. “策略 × 任务”的最终隐藏通过率热力图；
+9. 各重复编号的最终隐藏通过率趋势；
+10. 各策略实际提交次数分布。
+
+重新绘制已有聚合 JSON：
+
+```bash
+.venv/bin/repair-agent report path/to/benchmark.json
+```
+
+指定输出目录：
+
+```bash
+.venv/bin/repair-agent report path/to/benchmark.json \
+  --output-dir var/benchmarks/rebuilt-report
+```
+
+答辩时优先打开 `report.html`。论文或课程报告可直接引用 `figures/*.svg`；需要进一步使用 R、Excel 或 Python 分析时，使用两份 CSV，而不要从 SVG 反推数据。
+
+## 8. 如何判定课题完成
 
 ### 工程验收门槛
 
 - `make check` 与 `make sandbox-test` 全部通过；
 - `doctor` 通过；
 - 生成代码从未在宿主执行；
-- Agent 看不到隐藏测试，隐藏结果不进入后续模型上下文；
+- 模型看不到隐藏测试，隐藏结果不进入后续模型上下文；
+- 模型没有 shell，且只能提交 `solution.py`；
+- 两个多次提交组使用相同的公开 pytest 和通过即停止规则，只有详细诊断是否回传不同；
 - 每轮快照与完整事件日志存在且哈希链可验证；
 - 文件白名单生效，除允许的实现文件外不能修改或新增文件；
-- 三组尝试上限固定且一致；
+- 后两组的提交上限相同，`single-shot` 固定一次；
 - 30 个测试函数被自动检查。
 
 ### 实验验收门槛
@@ -263,7 +301,7 @@ currency_cost
 
 只有工程门槛和实验门槛都满足，才能说课题成果完整。当前仓库已达到工程原型要求，但仍需运行真实实验、补充更多题目、按实验日期计算货币成本并完成错误分析报告。
 
-## 8. 答辩演示流程
+## 9. 答辩演示流程
 
 1. 运行 `.venv/bin/repair-agent doctor`，展示隔离环境可用。
 2. 打开 `docker/sandbox-python.Dockerfile` 和 `src/repair_assistant/sandbox.py`，说明无网络、资源限制和挂载边界。
@@ -271,9 +309,9 @@ currency_cost
 4. 运行一个 `test-feedback` 任务，展示失败输出如何进入下一轮。
 5. 用 `repair-agent events <run_id>` 验证日志哈希链，再展示 `attempt-1` 与最终 attempt 的代码差异。
 6. 打开 benchmark JSON，只先讲最终隐藏通过率，再讲公隐差距、回归率和成本。
-7. 最后主动说明样本量、模型随机性、主动运行 pytest 和文件白名单等效度威胁。
+7. 最后主动说明样本量、模型随机性、无反馈组仍有隐含二值失败信号，以及文件白名单等效度威胁。
 
-## 9. 常见故障
+## 10. 常见故障
 
 ### APT 显示 `Unable to locate package`
 

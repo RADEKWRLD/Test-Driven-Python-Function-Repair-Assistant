@@ -21,6 +21,7 @@ from repair_assistant.agent import MAX_ATTEMPTS, RepairStrategy
 from repair_assistant.evaluation import aggregate_summaries
 from repair_assistant.event_log import EventLog
 from repair_assistant.model import DeepSeekAdapter
+from repair_assistant.reporting import generate_experiment_report
 from repair_assistant.run import RunService
 from repair_assistant.task import TaskSpec
 
@@ -38,7 +39,6 @@ def _parser() -> argparse.ArgumentParser:
         default=RepairStrategy.TEST_FEEDBACK.value,
     )
     run.add_argument("--max-attempts", type=_attempt_count, default=MAX_ATTEMPTS)
-    run.add_argument("--max-turns", type=int, default=12)
     run.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-chat"))
     run.add_argument("--image", default="function-repair/sandbox-python:dev")
     run.add_argument("--data-dir", type=Path, default=_data_dir())
@@ -51,7 +51,6 @@ def _parser() -> argparse.ArgumentParser:
         dest="strategies",
     )
     benchmark.add_argument("--max-attempts", type=_attempt_count, default=MAX_ATTEMPTS)
-    benchmark.add_argument("--max-turns", type=int, default=12)
     benchmark.add_argument(
         "--repetitions",
         type=_positive_int,
@@ -70,6 +69,9 @@ def _parser() -> argparse.ArgumentParser:
     events = commands.add_parser("events", help="Verify and print an event log.")
     events.add_argument("run_id")
     events.add_argument("--data-dir", type=Path, default=_data_dir())
+    report = commands.add_parser("report", help="Generate SVG, CSV, HTML, and Markdown reports.")
+    report.add_argument("report_json", type=Path)
+    report.add_argument("--output-dir", type=Path)
     return parser
 
 
@@ -144,7 +146,6 @@ def _run(args: argparse.Namespace) -> int:
         model=model,
         strategy=RepairStrategy(args.strategy),
         max_attempts=args.max_attempts,
-        max_turns_per_attempt=args.max_turns,
     )
     print(f"Run: {result.run_id}")
     print(f"Outcome: {result.outcome.upper()}")
@@ -187,7 +188,6 @@ def _benchmark(args: argparse.Namespace) -> int:
             model=model,
             strategy=RepairStrategy(strategy_value),
             max_attempts=args.max_attempts,
-            max_turns_per_attempt=args.max_turns,
         )
         summary = json.loads((result.run_dir / "summary.json").read_text(encoding="utf-8"))
         summary["task_id"] = task.task_id
@@ -204,22 +204,27 @@ def _benchmark(args: argparse.Namespace) -> int:
         )
         print(f"r{repetition:02d} {strategy_value:24} {task.task_id:28} {result.outcome}")
     report = aggregate_summaries(summaries)
-    report["created_at"] = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    created_at = datetime.now(UTC)
+    report["created_at"] = created_at.isoformat().replace("+00:00", "Z")
     report["design"] = {
+        "repair_protocol": "shared-public-test-stopping-v2",
         "repetitions": args.repetitions,
         "randomization_seed": args.seed,
         "max_attempts": args.max_attempts,
-        "max_turns_per_attempt": args.max_turns,
+        "model_calls_per_attempt": 1,
         "execution_order": execution_order,
     }
     report["raw_runs"] = summaries
-    report_dir = args.data_dir.resolve() / "benchmarks"
-    report_dir.mkdir(parents=True, exist_ok=True)
-    report_path = report_dir / f"benchmark-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}.json"
+    report_root = args.data_dir.resolve() / "benchmarks"
+    experiment_dir = report_root / f"benchmark-{created_at.strftime('%Y%m%dT%H%M%S%fZ')}"
+    experiment_dir.mkdir(parents=True, exist_ok=False)
+    report_path = experiment_dir / "report.json"
     report_path.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    visual_report = generate_experiment_report(report, experiment_dir)
     print(f"Report: {report_path}")
+    print(f"Visual report: {visual_report}")
     return 0
 
 
@@ -255,6 +260,26 @@ def _events(args: argparse.Namespace) -> int:
     return 0
 
 
+def _report(args: argparse.Namespace) -> int:
+    report_path = args.report_json.resolve()
+    if not report_path.is_file():
+        print(f"Benchmark report not found: {report_path}", file=sys.stderr)
+        return 2
+    data = json.loads(report_path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or not isinstance(data.get("raw_runs"), list):
+        print("The input is not a benchmark report with raw_runs.", file=sys.stderr)
+        return 2
+    if args.output_dir is not None:
+        output_dir = args.output_dir
+    elif report_path.name == "report.json":
+        output_dir = report_path.parent
+    else:
+        output_dir = report_path.parent / f"{report_path.stem}-visuals"
+    visual_report = generate_experiment_report(data, output_dir)
+    print(f"Visual report: {visual_report}")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     _load_environment()
     args = _parser().parse_args(argv)
@@ -266,4 +291,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _benchmark(args)
     if args.command == "events":
         return _events(args)
+    if args.command == "report":
+        return _report(args)
     raise AssertionError(f"unhandled command: {args.command}")

@@ -104,11 +104,18 @@ class DeepSeekAdapter:
     def complete(
         self, messages: Sequence[Message], tools: Sequence[ToolDefinition]
     ) -> ModelResponse:
+        tool_choice: str | dict[str, object] = "auto"
+        function = tools[0].get("function") if len(tools) == 1 else None
+        if isinstance(function, dict) and function.get("name") == "submit_solution":
+            tool_choice = {
+                "type": "function",
+                "function": {"name": "submit_solution"},
+            }
         payload = {
             "model": self._name,
             "messages": list(messages),
             "tools": list(tools),
-            "tool_choice": "auto",
+            "tool_choice": tool_choice,
             "temperature": 0,
             "max_tokens": self.max_tokens,
             "stream": False,

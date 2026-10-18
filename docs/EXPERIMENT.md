@@ -2,33 +2,37 @@
 
 ## 1. 研究问题
 
-在模型、题目、tool 权限、最大 turn 和最大提交次数可比的前提下，将确定性 pytest 失败输出加入模型记忆，是否会提高最终隐藏测试通过率，而不只是提高公开测试通过率？
+在模型、题目、输入材料和最大提交次数可比的前提下，只让实验组获得确定性 pytest 失败输出，是否会提高最终隐藏测试通过率，而不只是提高公开测试通过率？
 
 ## 2. 自变量与对照组
 
 | 策略 | 初始提交 | 追加修复 | 控制器 pytest 失败输出 |
 | --- | ---: | ---: | --- |
 | `single-shot` | 1 | 0 | 不回馈 |
-| `retry-without-feedback` | 1 | 最多 4 | 不回馈，下一次使用新对话记忆 |
-| `test-feedback` | 1 | 最多 4 | 回馈 exit code、timeout、stdout、stderr 和测试保护违规 |
+| `retry-without-feedback` | 1 | 最多 4 | 控制器运行 pytest；失败时只要求重新生成，不提供诊断 |
+| `test-feedback` | 1 | 最多 4 | 使用相同 pytest 和停止规则，并回馈 exit code、timeout、stdout、stderr 和策略违规 |
 
-两个多次尝试组都是最多 5 次提交、每次最多 12 个模型 turn；提交次数在 CLI 和 Agent 两层硬限制为 5。三组都拥有相同的容器 `shell` tool，因此模型主动运行 pytest 属于 Agent 行为；组间差异只是 Agent 停止一次提交后，控制器是否将独立验证的失败输出写入下一轮记忆。
+每次提交严格等于一次模型调用。模型没有 shell 或文件工具，只能调用一次
+`submit_solution(content)`，控制器只把内容写入 `solution.py`。`single-shot` 固定 1 次；
+两个多次提交组都最多 5 次，并在公开测试通过时立即停止。后两组每轮都重建上下文；
+失败后，无反馈组只收到中性的重新生成要求，实验组则额外收到上一轮完整 pytest 输出。
+因此两组拥有相同的执行和停止规则，唯一处理差异是详细诊断信息。
 
 ## 3. 执行协议
 
 1. 控制面复制 `workspace/` 到唯一 run 目录，对公开测试做 SHA-256 基线。
-2. Agent 容器只挂载该 run 的 workspace；`hidden_tests/`、`.env`、事件日志和 Docker socket 均不挂载。
-3. 模型通过结构化 `shell` tool 检查、写入和执行命令。完整 tool result 成为后续 turn。
-4. 模型停止调用 tool 时视为提交；控制器用预先声明的命令运行公开 pytest，并在执行前后校验完整 workspace。除 `editable_paths` 声明的实现文件外，任何路径变化都会使该轮失败。
+2. 控制器把需求、当前 `solution.py` 和只读公开测试源码直接放入模型上下文；模型不能访问 workspace。
+3. 每轮只允许结构化调用 `submit_solution(content)` 一次；控制器拒绝 shell、额外文件、多个 tool call 和超过 64 KiB 的提交。
+4. 两个多次提交组每轮都启动相同的公开 pytest，并在通过时停止；无反馈组不接收测试内容，反馈组接收完整失败诊断。`single-shot` 不在修复阶段测试。
 5. 每轮提交复制为 `attempts/attempt-N/`，后续修复不覆盖旧快照。
-6. Agent 完全停止后，独立 verifier 容器才以只读方式挂载 attempt workspace 和隐藏测试目录，分别验证首轮和最终快照。
-7. 隐藏输出只写实验日志和结果，不再触发模型修复。
+6. 修复完全停止后，统一评测器才验证三组的首轮和最终公开测试；随后独立 verifier 以只读方式挂载快照和隐藏测试。
+7. 评测阶段的公开结果与全部隐藏结果只写日志，不再触发模型修复。
 
 ## 4. 安全不变量
 
 - 候选代码不得直接在宿主 Python 中执行。
 - 运行时必须使用 `--network none`、`--read-only`、`--cap-drop ALL`、`no-new-privileges`、CPU/内存/PID 限额和有限 `/tmp` tmpfs。
-- Agent 容器不传入宿主环境变量；只设置显式的 Python/pytest 运行变量。
+- 模型没有代码执行容器；pytest 容器不传入宿主环境变量，只设置显式的 Python/pytest 运行变量。
 - 修改、新增或删除受保护测试都使公开 verifier 失败，即使 pytest exit code 为 0。
 - 新增、删除或修改 `editable_paths` 之外的文件或目录同样使公开 verifier 失败。
 - `doctor` 未通过时不运行真实候选代码。
@@ -52,6 +56,8 @@ benchmark 可用固定随机 seed 打乱“重复 × 策略 × 题目”的执�
 
 货币成本不用可能过期的价格表推测，因此默认为 `null`。需要货币成本时，应在实验配置中锁定当日价格版本再由原始 token 重算。
 
+benchmark 完成后自动生成 HTML/Markdown 总览、两份 CSV 和 10 张 SVG。主效应图使用相同“任务 × 重复编号”的配对观察，报告 `test-feedback - retry-without-feedback` 的最终隐藏通过率差，并按任务聚类 bootstrap 计算 95% CI，避免把同一道题的多次重复误当成独立题目；通过率图同时给出描述性的 Wilson 95% CI。其余图覆盖公隐差距、改善/回归、可靠性、成本、逐题异质性、跨重复波动和提交次数。
+
 ## 6. 演示案例
 
-`public-pass-hidden-fail` 的错误实现只会分割普通空格。它能通过 5 个公开测试，但不能处理连续空格、制表符、换行和 Unicode 空白。因公开测试已通过，Agent 不会获得隐藏失败后的修复机会，这正好展示了为什么验收不能只报告公开 pytest。
+`public-pass-hidden-fail` 的错误实现只会分割普通空格。它能通过 5 个公开测试，但不能处理连续空格、制表符、换行和 Unicode 空白。`test-feedback` 看到公开测试通过后不会获得隐藏失败后的修复机会，这正好展示了为什么验收不能只报告公开 pytest。
