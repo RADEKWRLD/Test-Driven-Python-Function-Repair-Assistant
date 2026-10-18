@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-072",
+  "title": "HumanEvalPack repair: will_it_fly",
+  "goal": "Write a Python function `will_it_fly(q,w)` to solve the following problem:\nWrite a function that returns True if the object q will fly, and False otherwise.\nThe object q will fly if it's balanced (it is a palindromic list) and the sum of its elements is less than or equal the maximum possible weight w.\nExample:\nwill_it_fly([1, 2], 5) ➞ False\n# 1+2 is less than the maximum possible weight, but it's unbalanced.\nwill_it_fly([3, 2, 3], 1) ➞ False\n# it's balanced, but 3+2+3 is more than the maximum possible weight.\nwill_it_fly([3, 2, 3], 9) ➞ True\n# 3+2+3 is less than the maximum possible weight, and it's balanced.\nwill_it_fly([3], 5) ➞ True\n# 3 is less than the maximum possible weight, and it's balanced.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function will_it_fly and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/72",
+    "bug_type": "operator misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "d261fdc5caf2e3cf8bf34fc91a969940e8b3dba7ef1ac6ea405e5f4b0cffeeef",
+    "canonical_solution_included": false
+  }
+}

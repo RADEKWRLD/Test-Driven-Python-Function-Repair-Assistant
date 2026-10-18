@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import os
 import platform
@@ -20,6 +21,14 @@ from repair_assistant import __version__
 from repair_assistant.agent import MAX_ATTEMPTS, RepairStrategy
 from repair_assistant.evaluation import aggregate_summaries
 from repair_assistant.event_log import EventLog
+from repair_assistant.humanevalpack import (
+    DATASET_CONFIG,
+    DATASET_NAME,
+    DATASET_REVISION,
+    DATASET_SPLIT,
+    import_records,
+    select_useful_records,
+)
 from repair_assistant.model import DeepSeekAdapter
 from repair_assistant.reporting import generate_experiment_report
 from repair_assistant.run import RunService
@@ -72,6 +81,26 @@ def _parser() -> argparse.ArgumentParser:
     report = commands.add_parser("report", help="Generate SVG, CSV, HTML, and Markdown reports.")
     report.add_argument("report_json", type=Path)
     report.add_argument("--output-dir", type=Path)
+    importer = commands.add_parser(
+        "import-humanevalpack",
+        help="Download and freeze Python HumanEvalPack tasks in the local benchmark format.",
+    )
+    importer.add_argument(
+        "output_dir",
+        type=Path,
+        nargs="?",
+        default=Path("benchmarks/humanevalpack"),
+    )
+    importer.add_argument("--limit", type=_positive_int, default=50)
+    importer.add_argument("--seed", type=int, default=20261018)
+    importer.add_argument("--revision", default=DATASET_REVISION)
+    importer.add_argument(
+        "--selection",
+        choices=("useful", "random"),
+        default="useful",
+        help="Use Docker preflight filtering or plain seeded random selection.",
+    )
+    importer.add_argument("--image", default="function-repair/sandbox-python:dev")
     return parser
 
 
@@ -280,6 +309,74 @@ def _report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _import_humanevalpack(args: argparse.Namespace) -> int:
+    try:
+        datasets = importlib.import_module("datasets")
+    except ImportError:
+        print(
+            "The optional 'datasets' dependency is required. "
+            "Install it with: .venv/bin/pip install -e '.[dataset]'",
+            file=sys.stderr,
+        )
+        return 2
+    token = os.getenv("HF_TOKEN") or None
+    loaded = datasets.load_dataset(
+        DATASET_NAME,
+        DATASET_CONFIG,
+        split=DATASET_SPLIT,
+        revision=args.revision,
+        token=token,
+    )
+    records = [dict(row) for row in loaded]
+    selected_task_ids = None
+    selection_method = "seeded-random"
+    selection_scores = None
+    selection_details = None
+    if args.selection == "useful":
+        selection = select_useful_records(
+            records,
+            limit=args.limit,
+            seed=args.seed,
+            image=args.image,
+        )
+        selected_task_ids = selection.source_task_ids
+        selection_scores = selection.scores
+        selection_method = "public-failure-complexity-stratified"
+        selection_details = {
+            "structurally_eligible": selection.structurally_eligible,
+            "public_failure_eligible": selection.public_failure_eligible,
+            "criteria": {
+                "minimum_public_assertions": 2,
+                "minimum_hidden_assertions": 5,
+                "hidden_assertions_must_exceed_public": True,
+                "buggy_public_pytest_exit_code": 1,
+                "public_timeout_seconds": 5,
+            },
+        }
+        print(
+            f"Preflight: {selection.public_failure_eligible}/"
+            f"{selection.structurally_eligible} structurally useful records fail public pytest"
+        )
+    result = import_records(
+        records,
+        args.output_dir,
+        limit=args.limit,
+        seed=args.seed,
+        revision=args.revision,
+        selected_task_ids=selected_task_ids,
+        selection_method=selection_method,
+        selection_scores=selection_scores,
+        selection_details=selection_details,
+    )
+    print(
+        f"Imported: {result.imported}/{result.eligible_total} eligible "
+        f"({result.source_total} source records)"
+    )
+    print(f"Tasks: {result.output_dir}")
+    print(f"Manifest: {result.manifest}")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     _load_environment()
     args = _parser().parse_args(argv)
@@ -293,4 +390,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _events(args)
     if args.command == "report":
         return _report(args)
+    if args.command == "import-humanevalpack":
+        return _import_humanevalpack(args)
     raise AssertionError(f"unhandled command: {args.command}")

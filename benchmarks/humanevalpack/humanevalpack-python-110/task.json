@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-110",
+  "title": "HumanEvalPack repair: exchange",
+  "goal": "Write a Python function `exchange(lst1, lst2)` to solve the following problem:\nIn this problem, you will implement a function that takes two lists of numbers,\nand determines whether it is possible to perform an exchange of elements\nbetween them to make lst1 a list of only even numbers.\nThere is no limit on the number of exchanged elements between lst1 and lst2.\nIf it is possible to exchange elements between the lst1 and lst2 to make\nall the elements of lst1 to be even, return \"YES\".\nOtherwise, return \"NO\".\nFor example:\nexchange([1, 2, 3, 4], [1, 2, 3, 4]) => \"YES\"\nexchange([1, 2, 3, 4], [1, 5, 3, 4]) => \"NO\"\nIt is assumed that the input lists will be non-empty.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function exchange and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/110",
+    "bug_type": "variable misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "d2471fe3779ab174726b77a265933ad8fa9dbcef5b87648717fab209408f8eb7",
+    "canonical_solution_included": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-020",
+  "title": "HumanEvalPack repair: find_closest_elements",
+  "goal": "Write a Python function `find_closest_elements(numbers: List[float]) -> Tuple[float, float]` to solve the following problem:\nFrom a supplied list of numbers (of length at least two) select and return two that are the closest to each\nother and return them in order (smaller number, larger number).\n>>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])\n(2.0, 2.2)\n>>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])\n(2.0, 2.0)",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function find_closest_elements and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/20",
+    "bug_type": "operator misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "686f6d8a8e8b3f170b5b2f1263eddd518e8134d66363a37928313c288501ac6c",
+    "canonical_solution_included": false
+  }
+}

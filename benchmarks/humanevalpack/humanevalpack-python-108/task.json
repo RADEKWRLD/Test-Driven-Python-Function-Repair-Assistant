@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-108",
+  "title": "HumanEvalPack repair: count_nums",
+  "goal": "Write a Python function `count_nums(arr)` to solve the following problem:\nWrite a function count_nums which takes an array of integers and returns\nthe number of elements which has a sum of digits > 0.\nIf a number is negative, then its first signed digit will be negative:\ne.g. -123 has signed digits -1, 2, and 3.\n>>> count_nums([]) == 0\n>>> count_nums([-1, 11, -11]) == 1\n>>> count_nums([1, 1, 2]) == 3",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function count_nums and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/108",
+    "bug_type": "excess logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "c0a74c519d56b4051b37d04a88d4ce47f66f66ea4f94905091fccc195cb56759",
+    "canonical_solution_included": false
+  }
+}

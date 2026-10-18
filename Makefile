@@ -3,16 +3,19 @@ VENV ?= .venv
 IMAGE ?= function-repair/sandbox-python:dev
 TASKS_DIR ?= benchmarks/tasks
 MAX_ATTEMPTS ?= 5
-REPETITIONS ?= 10
+REPETITIONS ?= 1
 SEED ?= 20261016
 MODEL ?= deepseek-chat
 DATA_DIR ?= var
 
-.PHONY: bootstrap format lint typecheck test check sandbox-build sandbox-test experiment
+.PHONY: bootstrap dataset-bootstrap format lint typecheck test check sandbox-build sandbox-test experiment
 
 bootstrap:
 	$(PYTHON) -m venv $(VENV)
 	$(VENV)/bin/pip install -e '.[dev]'
+
+dataset-bootstrap:
+	$(VENV)/bin/pip install -e '.[dataset]'
 
 format:
 	$(VENV)/bin/ruff format src tests

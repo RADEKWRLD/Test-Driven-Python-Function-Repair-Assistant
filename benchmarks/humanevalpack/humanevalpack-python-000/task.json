@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-000",
+  "title": "HumanEvalPack repair: has_close_elements",
+  "goal": "Write a Python function `has_close_elements(numbers: List[float], threshold: float) -> bool` to solve the following problem:\nCheck if in given list of numbers, are any two numbers closer to each other than\ngiven threshold.\n>>> has_close_elements([1.0, 2.0, 3.0], 0.5)\nFalse\n>>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\nTrue",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function has_close_elements and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/0",
+    "bug_type": "missing logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "a9b6a056b7ba15ba3d059af0f5833695f0089d465e03df7569a5091152c85a21",
+    "canonical_solution_included": false
+  }
+}

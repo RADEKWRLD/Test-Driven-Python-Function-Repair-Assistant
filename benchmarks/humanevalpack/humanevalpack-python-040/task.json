@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-040",
+  "title": "HumanEvalPack repair: triples_sum_to_zero",
+  "goal": "Write a Python function `triples_sum_to_zero(l: list)` to solve the following problem:\ntriples_sum_to_zero takes a list of integers as an input.\nit returns True if there are three distinct elements in the list that\nsum to zero, and False otherwise.\n>>> triples_sum_to_zero([1, 3, 5, 0])\nFalse\n>>> triples_sum_to_zero([1, 3, -2, 1])\nTrue\n>>> triples_sum_to_zero([1, 2, 3, 7])\nFalse\n>>> triples_sum_to_zero([2, 4, -5, 3, 9, 7])\nTrue\n>>> triples_sum_to_zero([1])\nFalse",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function triples_sum_to_zero and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/40",
+    "bug_type": "value misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "f976fe5f2e2bf1f986b744f2ed824df1c3c85fffdc4fa75df987a762222c802f",
+    "canonical_solution_included": false
+  }
+}

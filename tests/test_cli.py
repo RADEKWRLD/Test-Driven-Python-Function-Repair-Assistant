@@ -40,3 +40,12 @@ def test_report_command_accepts_an_existing_report_path() -> None:
     assert args.command == "report"
     assert args.report_json == Path("benchmark.json")
     assert args.output_dir == Path("visuals")
+
+
+def test_humanevalpack_import_defaults_to_fifty_seeded_tasks() -> None:
+    args = _parser().parse_args(["import-humanevalpack"])
+
+    assert args.output_dir == Path("benchmarks/humanevalpack")
+    assert args.limit == 50
+    assert args.seed == 20261018
+    assert args.selection == "useful"

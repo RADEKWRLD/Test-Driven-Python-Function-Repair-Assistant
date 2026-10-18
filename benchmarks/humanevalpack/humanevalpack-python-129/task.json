@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-129",
+  "title": "HumanEvalPack repair: minPath",
+  "goal": "Write a Python function `minPath(grid, k)` to solve the following problem:\nGiven a grid with N rows and N columns (N >= 2) and a positive integer k,\neach cell of the grid contains a value. Every integer in the range [1, N * N]\ninclusive appears exactly once on the cells of the grid.\nYou have to find the minimum path of length k in the grid. You can start\nfrom any cell, and in each step you can move to any of the neighbor cells,\nin other words, you can go to cells which share an edge with you current\ncell.\nPlease note that a path of length k means visiting exactly k cells (not\nnecessarily distinct).\nYou CANNOT go off the grid.\nA path A (of length k) is considered less than a path B (of length k) if\nafter making the ordered lists of the values on the cells that A and B go\nthrough (let's call them lst_A and lst_B), lst_A is lexicographically less\nthan lst_B, in other words, there exist an integer index i (1 <= i <= k)\nsuch that lst_A[i] < lst_B[i] and for any j (1 <= j < i) we have\nlst_A[j] = lst_B[j].\nIt is guaranteed that the answer is unique.\nReturn an ordered list of the values on the cells that the minimum path go through.\nExamples:\nInput: grid = [ [1,2,3], [4,5,6], [7,8,9]], k = 3\nOutput: [1, 2, 1]\nInput: grid = [ [5,9,3], [4,1,6], [7,8,2]], k = 1\nOutput: [1]",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function minPath and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/129",
+    "bug_type": "value misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "29ae21da44d94f238cb5173a5bb24d19f3bdcfd2ddbd50609f02ab145682a2cd",
+    "canonical_solution_included": false
+  }
+}

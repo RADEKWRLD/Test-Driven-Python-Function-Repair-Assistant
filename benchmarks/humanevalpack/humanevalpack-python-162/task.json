@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-162",
+  "title": "HumanEvalPack repair: string_to_md5",
+  "goal": "Write a Python function `string_to_md5(text)` to solve the following problem:\nGiven a string 'text', return its md5 hash equivalent string.\nIf 'text' is an empty string, return None.\n>>> string_to_md5('Hello world') == '3e25960a79dbc69b674cd4ec67a72c62'",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function string_to_md5 and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/162",
+    "bug_type": "function misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "ee406896b41f6894d9f6684852ba7fe9443bfa1533967c8d326291532cc0d95b",
+    "canonical_solution_included": false
+  }
+}

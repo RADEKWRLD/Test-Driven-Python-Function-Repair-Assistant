@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-161",
+  "title": "HumanEvalPack repair: solve",
+  "goal": "Write a Python function `solve(s)` to solve the following problem:\nYou are given a string s.\nif s[i] is a letter, reverse its case from lower to upper or vise versa,\notherwise keep it as it is.\nIf the string contains no letters, reverse the string.\nThe function should return the resulted string.\nExamples\nsolve(\"1234\") = \"4321\"\nsolve(\"ab\") = \"AB\"\nsolve(\"#a@C\") = \"#A@c\"",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function solve and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/161",
+    "bug_type": "missing logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "b1a25cf3038cf08f0a9b0dc1ae764f5c6ed3a3c333b75ec5c87534735ddde67a",
+    "canonical_solution_included": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-137",
+  "title": "HumanEvalPack repair: compare_one",
+  "goal": "Write a Python function `compare_one(a, b)` to solve the following problem:\nCreate a function that takes integers, floats, or strings representing\nreal numbers, and returns the larger variable in its given variable type.\nReturn None if the values are equal.\nNote: If a real number is represented as a string, the floating point might be . or ,\ncompare_one(1, 2.5) ➞ 2.5\ncompare_one(1, \"2,3\") ➞ \"2,3\"\ncompare_one(\"5,1\", \"6\") ➞ \"6\"\ncompare_one(\"1\", 1) ➞ None",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function compare_one and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/137",
+    "bug_type": "excess logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "85906be8dd8e9cb51ff51a67e424020f40e569a4a439bf3b2a16ca96ed5e0bc0",
+    "canonical_solution_included": false
+  }
+}

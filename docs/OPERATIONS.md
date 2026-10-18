@@ -17,6 +17,7 @@
 - Docker 执行器使用无网络、只读根文件系统、能力丢弃、`no-new-privileges`、CPU、内存、PID、超时和有限 `/tmp`。
 - 每轮保存代码快照、模型请求与响应、solution 提交、可用的 pytest 输出、token、延迟和带哈希链的事件日志。
 - 3 个任务共 30 个独立测试函数：15 个公开测试、15 个隐藏测试。
+- 已冻结 50 道经过静态检查、公开失败预检、复杂度排序和 bug 类型分层的 HumanEvalPack Python 任务；标准答案未保存。
 - 聚合报告包含首次/最终公开与隐藏通过率、超时、隐藏回归、测试保护违规、模型调用数、token 和模型延迟。
 - benchmark 支持重复次数、固定 seed 的随机执行顺序，以及同一报告内的跨重复聚合。
 - 最大提交次数在 CLI 和控制器两层硬限制为 5。
@@ -151,7 +152,7 @@ make experiment
 ```bash
 .venv/bin/repair-agent benchmark benchmarks/tasks \
   --max-attempts 5 \
-  --repetitions 10 \
+  --repetitions 1 \
   --seed 20261016 \
   --model deepseek-chat
 ```
@@ -162,7 +163,7 @@ make experiment
 make experiment REPETITIONS=1 SEED=42 MODEL=deepseek-chat
 ```
 
-上述命令执行 3 道题 × 3 种策略 × 10 次重复，共 90 个 run，并生成：
+上述默认命令执行 3 道题 × 3 种策略 × 1 次重复，共 9 个 run，并生成：
 
 ```text
 var/benchmarks/benchmark-<UTC时间>/
@@ -184,7 +185,39 @@ var/benchmarks/benchmark-<UTC时间>/
 - 容器 CPU、内存、PID 和测试超时；
 - 同一时间段或随机化后的运行顺序，避免服务端模型更新和负载变化造成偏差。
 
-`--repetitions` 会重复每个“题目 × 策略”组合；所有 job 由 `--seed` 确定性打乱，实际执行顺序写入报告的 `design.execution_order`。同一个 benchmark 命令产生的所有重复会在同一份报告中按策略聚合。课程演示至少建议重复 5 次，更稳妥为 10 次；再次运行时保留相同 seed 可复现实验顺序，换 seed 可进行另一批随机化重复。
+`--repetitions` 会重复每个“题目 × 策略”组合；所有 job 由 `--seed` 确定性打乱，实际执行顺序写入报告的 `design.execution_order`。同一个 benchmark 命令产生的所有重复会在同一份报告中按策略聚合。默认 1 次是为了防止开发阶段意外产生大量 API 调用；正式实验建议显式指定 3～5 次。再次运行时保留相同 seed 可复现实验顺序，换 seed 可进行另一批随机化重复。
+
+### 5.1 HumanEvalPack 50 题实验
+
+仓库中的 `benchmarks/humanevalpack/` 来自固定 revision 的 Python split。164 条源记录中有 157 条通过静态检查；进一步要求至少 2 个公开断言、至少 5 个隐藏断言且隐藏断言更多，得到 111 条；其中 96 条错误实现会在受限 Docker 中让公开 pytest 正常失败。最终按 bug 类型分层，并优先选取控制流与测试覆盖更复杂的 50 条。筛选清单位于 `dataset-manifest.json`，仓库不保存 `canonical_solution`。
+
+重新生成到一个不存在的新目录（导入器拒绝覆盖已有目录）：
+
+```bash
+make dataset-bootstrap
+.venv/bin/repair-agent import-humanevalpack benchmarks/humanevalpack-new \
+  --limit 50 \
+  --seed 20261018 \
+  --selection useful
+```
+
+HumanEvalPack 是公开数据集，正常情况下不需要登录。若 Hugging Face 对当前网络要求认证或提高限流，可在宿主环境设置 `HF_TOKEN`；该令牌不会进入生成任务或 Docker 容器。
+
+先做单次重复的完整三组实验：
+
+```bash
+make experiment TASKS_DIR=benchmarks/humanevalpack REPETITIONS=1
+```
+
+运行数由下式决定：
+
+```text
+任务数 × 策略数 × 重复数
+50 × 3 × 1 = 150 run
+50 × 3 × 3 = 450 run
+```
+
+每个 run 内，`single-shot` 固定调用模型 1 次；另外两组公开测试通过即停止，最多调用 5 次。因此 150 个 run 不等于固定 750 次模型调用。
 
 ## 6. 指标体系
 

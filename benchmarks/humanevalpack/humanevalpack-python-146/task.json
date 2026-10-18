@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-146",
+  "title": "HumanEvalPack repair: specialFilter",
+  "goal": "Write a Python function `specialFilter(nums)` to solve the following problem:\nWrite a function that takes an array of numbers as input and returns\nthe number of elements in the array that are greater than 10 and both\nfirst and last digits of a number are odd (1, 3, 5, 7, 9).\nFor example:\nspecialFilter([15, -73, 14, -15]) => 1\nspecialFilter([33, -2, -3, 45, 21, 109]) => 2",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function specialFilter and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/146",
+    "bug_type": "excess logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "ed8f48835a364c9a9dacef77cadf61d6154741d3556d3f2d7fb306d4a72ddcc4",
+    "canonical_solution_included": false
+  }
+}

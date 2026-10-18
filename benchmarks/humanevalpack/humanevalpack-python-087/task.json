@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-087",
+  "title": "HumanEvalPack repair: get_row",
+  "goal": "Write a Python function `get_row(lst, x)` to solve the following problem:\nYou are given a 2 dimensional data, as a nested lists,\nwhich is similar to matrix, however, unlike matrices,\neach row may contain a different number of columns.\nGiven lst, and integer x, find integers x in the list,\nand return list of tuples, [(x1, y1), (x2, y2) ...] such that\neach tuple is a coordinate - (row, columns), starting with 0.\nSort coordinates initially by rows in ascending order.\nAlso, sort coordinates of the row by columns in descending order.\nExamples:\nget_row([\n[1,2,3,4,5,6],\n[1,2,3,4,1,6],\n[1,2,3,4,5,1]\n], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\nget_row([], 1) == []\nget_row([[], [1], [1, 2, 3]], 3) == [(2, 2)]",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function get_row and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/87",
+    "bug_type": "variable misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "b6c59d13208915c4881f0f8e73f9bdf125ac01c1678506ebbf639fbe01655b19",
+    "canonical_solution_included": false
+  }
+}

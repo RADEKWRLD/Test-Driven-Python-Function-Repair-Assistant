@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-132",
+  "title": "HumanEvalPack repair: is_nested",
+  "goal": "Write a Python function `is_nested(string)` to solve the following problem:\nCreate a function that takes a string as input which contains only square brackets.\nThe function should return True if and only if there is a valid subsequence of brackets\nwhere at least one bracket in the subsequence is nested.\nis_nested('[[]]') ➞ True\nis_nested('[]]]]]]][[[[[]') ➞ False\nis_nested('[][]') ➞ False\nis_nested('[]') ➞ False\nis_nested('[[][]]') ➞ True\nis_nested('[[]][[') ➞ True",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function is_nested and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/132",
+    "bug_type": "value misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "fc66d072abf6c82651f07128fc3e6d4c0fc4bff16ccf4a0159f696d0946acd72",
+    "canonical_solution_included": false
+  }
+}

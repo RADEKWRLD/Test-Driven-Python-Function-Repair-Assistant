@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-134",
+  "title": "HumanEvalPack repair: check_if_last_char_is_a_letter",
+  "goal": "Write a Python function `check_if_last_char_is_a_letter(txt)` to solve the following problem:\nCreate a function that returns True if the last character\nof a given string is an alphabetical character and is not\na part of a word, and False otherwise.\nNote: \"word\" is a group of characters separated by space.\nExamples:\ncheck_if_last_char_is_a_letter(\"apple pie\") ➞ False\ncheck_if_last_char_is_a_letter(\"apple pi e\") ➞ True\ncheck_if_last_char_is_a_letter(\"apple pi e \") ➞ False\ncheck_if_last_char_is_a_letter(\"\") ➞ False",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function check_if_last_char_is_a_letter and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/134",
+    "bug_type": "function misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "fb62fe76c1c1e5d232a7cb15ab88a3909f835e36d89c468cdc3b71a2204df783",
+    "canonical_solution_included": false
+  }
+}

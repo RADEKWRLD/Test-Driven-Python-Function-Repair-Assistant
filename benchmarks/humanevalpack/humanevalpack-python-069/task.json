@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-069",
+  "title": "HumanEvalPack repair: search",
+  "goal": "Write a Python function `search(lst)` to solve the following problem:\nYou are given a non-empty list of positive integers. Return the greatest integer that is greater than\nzero, and has a frequency greater than or equal to the value of the integer itself.\nThe frequency of an integer is the number of times it appears in the list.\nIf no such a value exist, return -1.\nExamples:\nsearch([4, 1, 2, 2, 3, 1]) == 2\nsearch([1, 2, 2, 3, 3, 3, 4, 4, 4]) == 3\nsearch([5, 5, 4, 4, 4]) == -1",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function search and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/69",
+    "bug_type": "value misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "6b178ab74a6202e72a078f8f1cfc667c46ff0c510f11a9c28405e9b12796c635",
+    "canonical_solution_included": false
+  }
+}

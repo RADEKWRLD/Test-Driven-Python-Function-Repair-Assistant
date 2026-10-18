@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-143",
+  "title": "HumanEvalPack repair: words_in_sentence",
+  "goal": "Write a Python function `words_in_sentence(sentence)` to solve the following problem:\nYou are given a string representing a sentence,\nthe sentence contains some words separated by a space,\nand you have to return a string that contains the words from the original sentence,\nwhose lengths are prime numbers,\nthe order of the words in the new string should be the same as the original one.\nExample 1:\nInput: sentence = \"This is a test\"\nOutput: \"is\"\nExample 2:\nInput: sentence = \"lets go for swimming\"\nOutput: \"go for\"\nConstraints:\n* 1 <= len(sentence) <= 100\n* sentence contains only letters",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function words_in_sentence and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/143",
+    "bug_type": "missing logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "2a90b08f48a539a35ff13138ef759b0c8a04afa4e670b7d66669f295c7f6cc0f",
+    "canonical_solution_included": false
+  }
+}

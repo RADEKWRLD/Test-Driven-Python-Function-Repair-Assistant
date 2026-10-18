@@ -43,7 +43,7 @@ chmod 600 .env
 make experiment
 ```
 
-该命令会先完成本地及 Docker 验收，再以最多 5 次提交、固定 seed 和 10 次重复运行实验。可按需覆盖参数，例如：
+该命令会先完成本地及 Docker 验收，再以最多 5 次提交、固定 seed 和 1 次重复运行实验。可按需覆盖参数，例如：
 
 ```bash
 make experiment REPETITIONS=1 SEED=42 MODEL=deepseek-chat
@@ -90,6 +90,31 @@ hidden_tests/             # 不复制、不挂载给 Agent
 ```
 
 隐藏测试只在修复过程停止后由独立 verifier 容器以只读方式挂载；结果不会回馈给模型。`public-pass-hidden-fail` 的初始实现会通过公开测试但在制表符、换行和连续空格等隐藏边界上失败，用于现场演示“公开通过 ≠ 真正修复”。
+
+### HumanEvalPack 50 题
+
+`benchmarks/humanevalpack/` 已冻结 50 道 Python 修复题。筛选器先排除空测试和语法损坏记录，再在受限 Docker 中确认错误实现会使公开 pytest 正常失败；同时要求至少 2 个公开断言、至少 5 个隐藏断言且隐藏测试更多。最后按 bug 类型分层，并优先保留控制流和隐藏断言更复杂的题。标准答案不会写入仓库。
+
+重新下载和生成一批任务时使用：
+
+```bash
+make dataset-bootstrap
+# 公开数据集通常不要求登录；需要令牌时只设置环境变量 HF_TOKEN
+.venv/bin/repair-agent import-humanevalpack benchmarks/humanevalpack-new \
+  --limit 50 --seed 20261018 --selection useful
+```
+
+对冻结的 50 题运行三组实验：
+
+```bash
+make experiment TASKS_DIR=benchmarks/humanevalpack REPETITIONS=1
+```
+
+这会产生 `50 × 3 × 1 = 150` 个 run。正式重复 3 次则是 450 个 run：
+
+```bash
+make experiment TASKS_DIR=benchmarks/humanevalpack REPETITIONS=3
+```
 
 ## 验收
 

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-148",
+  "title": "HumanEvalPack repair: bf",
+  "goal": "Write a Python function `bf(planet1, planet2)` to solve the following problem:\nThere are eight planets in our solar system: the closerst to the Sun\nis Mercury, the next one is Venus, then Earth, Mars, Jupiter, Saturn,\nUranus, Neptune.\nWrite a function that takes two planet names as strings planet1 and planet2.\nThe function should return a tuple containing all planets whose orbits are\nlocated between the orbit of planet1 and the orbit of planet2, sorted by\nthe proximity to the sun.\nThe function should return an empty tuple if planet1 or planet2\nare not correct planet names.\nExamples\nbf(\"Jupiter\", \"Neptune\") ==> (\"Saturn\", \"Uranus\")\nbf(\"Earth\", \"Mercury\") ==> (\"Venus\")\nbf(\"Mercury\", \"Uranus\") ==> (\"Venus\", \"Earth\", \"Mars\", \"Jupiter\", \"Saturn\")",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function bf and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/148",
+    "bug_type": "value misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "515095127d5b29c32ccf5a811691a32b813c88c5209473dd522fa16774d675f6",
+    "canonical_solution_included": false
+  }
+}

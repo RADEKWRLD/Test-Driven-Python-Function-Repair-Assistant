@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-096",
+  "title": "HumanEvalPack repair: count_up_to",
+  "goal": "Write a Python function `count_up_to(n)` to solve the following problem:\nImplement a function that takes an non-negative integer and returns an array of the first n\nintegers that are prime numbers and less than n.\nfor example:\ncount_up_to(5) => [2,3]\ncount_up_to(11) => [2,3,5,7]\ncount_up_to(0) => []\ncount_up_to(20) => [2,3,5,7,11,13,17,19]\ncount_up_to(1) => []\ncount_up_to(18) => [2,3,5,7,11,13,17]",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function count_up_to and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/96",
+    "bug_type": "variable misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "b326a03a06d94faf8aaf6cc486ee1d0a5d5e63a8b2796da2652a0f26a3d52c36",
+    "canonical_solution_included": false
+  }
+}

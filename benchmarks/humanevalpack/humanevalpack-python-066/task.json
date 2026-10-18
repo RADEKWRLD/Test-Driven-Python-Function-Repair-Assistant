@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-066",
+  "title": "HumanEvalPack repair: digitSum",
+  "goal": "Write a Python function `digitSum(s)` to solve the following problem:\nTask\nWrite a function that takes a string as input and returns the sum of the upper characters only'\nASCII codes.\nExamples:\ndigitSum(\"\") => 0\ndigitSum(\"abAB\") => 131\ndigitSum(\"abcCd\") => 67\ndigitSum(\"helloE\") => 69\ndigitSum(\"woArBld\") => 131\ndigitSum(\"aAaaaXa\") => 153",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function digitSum and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/66",
+    "bug_type": "function misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "cbe9899e5c048a620bbc01e3525d99903907ce3d4707dd7e95b0e387685ceea3",
+    "canonical_solution_included": false
+  }
+}

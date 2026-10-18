@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-105",
+  "title": "HumanEvalPack repair: by_length",
+  "goal": "Write a Python function `by_length(arr)` to solve the following problem:\nGiven an array of integers, sort the integers that are between 1 and 9 inclusive,\nreverse the resulting array, and then replace each digit by its corresponding name from\n\"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\nFor example:\narr = [2, 1, 1, 4, 5, 8, 2, 3]\n-> sort arr -> [1, 1, 2, 2, 3, 4, 5, 8]\n-> reverse arr -> [8, 5, 4, 3, 2, 2, 1, 1]\nreturn [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\nIf the array is empty, return an empty array:\narr = []\nreturn []\nIf the array has any strange number ignore it:\narr = [1, -1 , 55]\n-> sort arr -> [-1, 1, 55]\n-> reverse arr -> [55, 1, -1]\nreturn = ['One']",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function by_length and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/105",
+    "bug_type": "missing logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "12f3c5754733ae58c8e3b62fcc9bdd42d18d96ab43bc85c02136be43fac06c6c",
+    "canonical_solution_included": false
+  }
+}

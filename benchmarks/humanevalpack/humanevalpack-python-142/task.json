@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-142",
+  "title": "HumanEvalPack repair: sum_squares",
+  "goal": "Write a Python function `sum_squares(lst)` to solve the following problem:\n\"\nThis function will take a list of integers. For all entries in the list, the function shall square the integer entry if its index is a\nmultiple of 3 and will cube the integer entry if its index is a multiple of 4 and not a multiple of 3. The function will not\nchange the entries in the list whose indexes are not a multiple of 3 or 4. The function shall then return the sum of all entries.\nExamples:\nFor lst = [1,2,3] the output should be 6\nFor lst = []  the output should be 0\nFor lst = [-1,-5,2,-1,-5]  the output should be -126",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function sum_squares and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/142",
+    "bug_type": "missing logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "a9bf53e12207068a58d4eaaa5e15de3de77fdf4b38b6380249f7822fabcf172b",
+    "canonical_solution_included": false
+  }
+}

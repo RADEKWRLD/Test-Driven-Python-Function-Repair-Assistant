@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-107",
+  "title": "HumanEvalPack repair: even_odd_palindrome",
+  "goal": "Write a Python function `even_odd_palindrome(n)` to solve the following problem:\nGiven a positive integer n, return a tuple that has the number of even and odd\ninteger palindromes that fall within the range(1, n), inclusive.\nExample 1:\nInput: 3\nOutput: (1, 2)\nExplanation:\nInteger palindrome are 1, 2, 3. one of them is even, and two of them are odd.\nExample 2:\nInput: 12\nOutput: (4, 6)\nExplanation:\nInteger palindrome are 1, 2, 3, 4, 5, 6, 7, 8, 9, 11. four of them are even, and 6 of them are odd.\nNote:\n1. 1 <= n <= 10^3\n2. returned tuple has the number of even and odd integer palindromes respectively.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function even_odd_palindrome and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/107",
+    "bug_type": "value misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "42f87d7cdd312f80e694be59e7b19490d3a285e992ab0ec72c8ad67257784b58",
+    "canonical_solution_included": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-115",
+  "title": "HumanEvalPack repair: max_fill",
+  "goal": "Write a Python function `max_fill(grid, capacity):\n    import math` to solve the following problem:\nYou are given a rectangular grid of wells. Each row represents a single well,\nand each 1 in a row represents a single unit of water.\nEach well has a corresponding bucket that can be used to extract water from it,\nand all buckets have the same capacity.\nYour task is to use the buckets to empty the wells.\nOutput the number of times you need to lower the buckets.\nExample 1:\nInput:\ngrid : [[0,0,1,0], [0,1,0,0], [1,1,1,1]]\nbucket_capacity : 1\nOutput: 6\nExample 2:\nInput:\ngrid : [[0,0,1,1], [0,0,0,0], [1,1,1,1], [0,1,1,1]]\nbucket_capacity : 2\nOutput: 5\nExample 3:\nInput:\ngrid : [[0,0,0], [0,0,0]]\nbucket_capacity : 5\nOutput: 0\nConstraints:\n* all wells have the same length\n* 1 <= grid.length <= 10^2\n* 1 <= grid[:,1].length <= 10^2\n* grid[i][j] -> 0 | 1\n* 1 <= capacity <= 10",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function max_fill and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/115",
+    "bug_type": "function misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "048abe785aa3b2bad6e71b30dee2c51105146c364ecb8e8df50d6fb278f2c60f",
+    "canonical_solution_included": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-136",
+  "title": "HumanEvalPack repair: largest_smallest_integers",
+  "goal": "Write a Python function `largest_smallest_integers(lst)` to solve the following problem:\nCreate a function that returns a tuple (a, b), where 'a' is\nthe largest of negative integers, and 'b' is the smallest\nof positive integers in a list.\nIf there is no negative or positive integers, return them as None.\nExamples:\nlargest_smallest_integers([2, 4, 1, 3, 5, 7]) == (None, 1)\nlargest_smallest_integers([]) == (None, None)\nlargest_smallest_integers([0]) == (None, None)",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function largest_smallest_integers and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/136",
+    "bug_type": "excess logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "c5bde6d899dcdba1573e001c67fe25617e619ab3695e0be193924dab5e977ad9",
+    "canonical_solution_included": false
+  }
+}

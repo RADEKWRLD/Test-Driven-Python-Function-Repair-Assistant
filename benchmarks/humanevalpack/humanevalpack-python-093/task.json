@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-093",
+  "title": "HumanEvalPack repair: encode",
+  "goal": "Write a Python function `encode(message)` to solve the following problem:\nWrite a function that takes a message, and encodes in such a\nway that it swaps case of all letters, replaces all vowels in\nthe message with the letter that appears 2 places ahead of that\nvowel in the english alphabet.\nAssume only letters.\nExamples:\n>>> encode('test')\n'TGST'\n>>> encode('This is a message')\n'tHKS KS C MGSSCGG'",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function encode and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/93",
+    "bug_type": "missing logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "e1e84cb9716c42acf7d099bbbfe87a484f979b6750c99871d71987e9ded01217",
+    "canonical_solution_included": false
+  }
+}

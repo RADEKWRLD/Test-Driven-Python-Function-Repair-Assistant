@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-128",
+  "title": "HumanEvalPack repair: prod_signs",
+  "goal": "Write a Python function `prod_signs(arr)` to solve the following problem:\nYou are given an array arr of integers and you need to return\nsum of magnitudes of integers multiplied by product of all signs\nof each number in the array, represented by 1, -1 or 0.\nNote: return None for empty arr.\nExample:\n>>> prod_signs([1, 2, 2, -4]) == -9\n>>> prod_signs([0, 1]) == 0\n>>> prod_signs([]) == None",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function prod_signs and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/128",
+    "bug_type": "excess logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "3f910b9680547fd12297bae7be44b74656842ca942052a386f3b95f070049623",
+    "canonical_solution_included": false
+  }
+}

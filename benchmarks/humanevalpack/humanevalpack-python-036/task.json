@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-036",
+  "title": "HumanEvalPack repair: fizz_buzz",
+  "goal": "Write a Python function `fizz_buzz(n: int)` to solve the following problem:\nReturn the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\n>>> fizz_buzz(50)\n0\n>>> fizz_buzz(78)\n2\n>>> fizz_buzz(79)\n3",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function fizz_buzz and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/36",
+    "bug_type": "operator misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "f36d23cca6acd67c769f659d37fdde9232eb4bc6457bf07ee2b33e4555f54350",
+    "canonical_solution_included": false
+  }
+}

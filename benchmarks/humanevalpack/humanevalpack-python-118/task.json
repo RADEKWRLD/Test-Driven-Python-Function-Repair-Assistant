@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-118",
+  "title": "HumanEvalPack repair: get_closest_vowel",
+  "goal": "Write a Python function `get_closest_vowel(word)` to solve the following problem:\nYou are given a word. Your task is to find the closest vowel that stands between\ntwo consonants from the right side of the word (case sensitive).\nVowels in the beginning and ending doesn't count. Return empty string if you didn't\nfind any vowel met the above condition.\nYou may assume that the given string contains English letter only.\nExample:\nget_closest_vowel(\"yogurt\") ==> \"u\"\nget_closest_vowel(\"FULL\") ==> \"U\"\nget_closest_vowel(\"quick\") ==> \"\"\nget_closest_vowel(\"ab\") ==> \"\"",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function get_closest_vowel and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/118",
+    "bug_type": "excess logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "3ed5d1fda04c3287cdea1fba67b5926e6e37d079a1dadf7ae7d0f653da822d5c",
+    "canonical_solution_included": false
+  }
+}

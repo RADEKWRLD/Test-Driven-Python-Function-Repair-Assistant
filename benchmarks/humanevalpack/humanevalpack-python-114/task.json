@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-114",
+  "title": "HumanEvalPack repair: minSubArraySum",
+  "goal": "Write a Python function `minSubArraySum(nums)` to solve the following problem:\nGiven an array of integers nums, find the minimum sum of any non-empty sub-array\nof nums.\nExample\nminSubArraySum([2, 3, 4, 1, 2, 4]) == 1\nminSubArraySum([-1, -2, -3]) == -6",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function minSubArraySum and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/114",
+    "bug_type": "function misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "5ff0f8cc786957ce018490ced0f3b5437b198e9f39dd4c72e72636be33f3d475",
+    "canonical_solution_included": false
+  }
+}

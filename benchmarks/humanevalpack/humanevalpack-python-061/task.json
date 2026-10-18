@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-061",
+  "title": "HumanEvalPack repair: correct_bracketing",
+  "goal": "Write a Python function `correct_bracketing(brackets: str)` to solve the following problem:\nbrackets is a string of \"(\" and \")\".\nreturn True if every opening bracket has a corresponding closing bracket.\n>>> correct_bracketing(\"(\")\nFalse\n>>> correct_bracketing(\"()\")\nTrue\n>>> correct_bracketing(\"(()())\")\nTrue\n>>> correct_bracketing(\")(()\")\nFalse",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function correct_bracketing and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/61",
+    "bug_type": "operator misuse",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "798a0d366136f4cf5891741dd7e0135e5ba8e296be57b4baf87797c7f2cfbc31",
+    "canonical_solution_included": false
+  }
+}

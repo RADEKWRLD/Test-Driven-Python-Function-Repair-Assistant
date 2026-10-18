@@ -1,0 +1,378 @@
+{
+  "schema_version": 1,
+  "dataset": "bigcode/humanevalpack",
+  "config": "python",
+  "split": "test",
+  "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+  "selection": {
+    "method": "public-failure-complexity-stratified",
+    "seed": 20261018,
+    "limit": 50,
+    "structurally_eligible": 111,
+    "public_failure_eligible": 96,
+    "criteria": {
+      "minimum_public_assertions": 2,
+      "minimum_hidden_assertions": 5,
+      "hidden_assertions_must_exceed_public": true,
+      "buggy_public_pytest_exit_code": 1,
+      "public_timeout_seconds": 5
+    }
+  },
+  "source_total": 164,
+  "eligible_total": 157,
+  "excluded_empty_example_test": 6,
+  "excluded_invalid_record": 1,
+  "tasks": [
+    {
+      "task_id": "humanevalpack-python-127",
+      "source_task_id": "Python/127",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 178
+    },
+    {
+      "task_id": "humanevalpack-python-118",
+      "source_task_id": "Python/118",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 171
+    },
+    {
+      "task_id": "humanevalpack-python-129",
+      "source_task_id": "Python/129",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 303
+    },
+    {
+      "task_id": "humanevalpack-python-114",
+      "source_task_id": "Python/114",
+      "bug_type": "function misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 137
+    },
+    {
+      "task_id": "humanevalpack-python-124",
+      "source_task_id": "Python/124",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 302
+    },
+    {
+      "task_id": "humanevalpack-python-095",
+      "source_task_id": "Python/95",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 229
+    },
+    {
+      "task_id": "humanevalpack-python-071",
+      "source_task_id": "Python/71",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 145
+    },
+    {
+      "task_id": "humanevalpack-python-144",
+      "source_task_id": "Python/144",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 151
+    },
+    {
+      "task_id": "humanevalpack-python-132",
+      "source_task_id": "Python/132",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 188
+    },
+    {
+      "task_id": "humanevalpack-python-134",
+      "source_task_id": "Python/134",
+      "bug_type": "function misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 84
+    },
+    {
+      "task_id": "humanevalpack-python-059",
+      "source_task_id": "Python/59",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 146
+    },
+    {
+      "task_id": "humanevalpack-python-020",
+      "source_task_id": "Python/20",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 189
+    },
+    {
+      "task_id": "humanevalpack-python-143",
+      "source_task_id": "Python/143",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 137
+    },
+    {
+      "task_id": "humanevalpack-python-136",
+      "source_task_id": "Python/136",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 147
+    },
+    {
+      "task_id": "humanevalpack-python-039",
+      "source_task_id": "Python/39",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 183
+    },
+    {
+      "task_id": "humanevalpack-python-066",
+      "source_task_id": "Python/66",
+      "bug_type": "function misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 66
+    },
+    {
+      "task_id": "humanevalpack-python-109",
+      "source_task_id": "Python/109",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 133
+    },
+    {
+      "task_id": "humanevalpack-python-094",
+      "source_task_id": "Python/94",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 176
+    },
+    {
+      "task_id": "humanevalpack-python-142",
+      "source_task_id": "Python/142",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 135
+    },
+    {
+      "task_id": "humanevalpack-python-108",
+      "source_task_id": "Python/108",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 143
+    },
+    {
+      "task_id": "humanevalpack-python-111",
+      "source_task_id": "Python/111",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 158
+    },
+    {
+      "task_id": "humanevalpack-python-115",
+      "source_task_id": "Python/115",
+      "bug_type": "function misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 47
+    },
+    {
+      "task_id": "humanevalpack-python-110",
+      "source_task_id": "Python/110",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 118
+    },
+    {
+      "task_id": "humanevalpack-python-080",
+      "source_task_id": "Python/80",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 148
+    },
+    {
+      "task_id": "humanevalpack-python-161",
+      "source_task_id": "Python/161",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 130
+    },
+    {
+      "task_id": "humanevalpack-python-137",
+      "source_task_id": "Python/137",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 137
+    },
+    {
+      "task_id": "humanevalpack-python-107",
+      "source_task_id": "Python/107",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 150
+    },
+    {
+      "task_id": "humanevalpack-python-162",
+      "source_task_id": "Python/162",
+      "bug_type": "function misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 32
+    },
+    {
+      "task_id": "humanevalpack-python-068",
+      "source_task_id": "Python/68",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 113
+    },
+    {
+      "task_id": "humanevalpack-python-036",
+      "source_task_id": "Python/36",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 137
+    },
+    {
+      "task_id": "humanevalpack-python-126",
+      "source_task_id": "Python/126",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 116
+    },
+    {
+      "task_id": "humanevalpack-python-146",
+      "source_task_id": "Python/146",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 126
+    },
+    {
+      "task_id": "humanevalpack-python-148",
+      "source_task_id": "Python/148",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 146
+    },
+    {
+      "task_id": "humanevalpack-python-076",
+      "source_task_id": "Python/76",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "infinite loop",
+      "difficulty_proxy_score": 108
+    },
+    {
+      "task_id": "humanevalpack-python-117",
+      "source_task_id": "Python/117",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 122
+    },
+    {
+      "task_id": "humanevalpack-python-000",
+      "source_task_id": "Python/0",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 114
+    },
+    {
+      "task_id": "humanevalpack-python-145",
+      "source_task_id": "Python/145",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 113
+    },
+    {
+      "task_id": "humanevalpack-python-069",
+      "source_task_id": "Python/69",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 141
+    },
+    {
+      "task_id": "humanevalpack-python-096",
+      "source_task_id": "Python/96",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 107
+    },
+    {
+      "task_id": "humanevalpack-python-072",
+      "source_task_id": "Python/72",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 115
+    },
+    {
+      "task_id": "humanevalpack-python-105",
+      "source_task_id": "Python/105",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 88
+    },
+    {
+      "task_id": "humanevalpack-python-131",
+      "source_task_id": "Python/131",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 104
+    },
+    {
+      "task_id": "humanevalpack-python-025",
+      "source_task_id": "Python/25",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 137
+    },
+    {
+      "task_id": "humanevalpack-python-087",
+      "source_task_id": "Python/87",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 105
+    },
+    {
+      "task_id": "humanevalpack-python-056",
+      "source_task_id": "Python/56",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 101
+    },
+    {
+      "task_id": "humanevalpack-python-093",
+      "source_task_id": "Python/93",
+      "bug_type": "missing logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 86
+    },
+    {
+      "task_id": "humanevalpack-python-128",
+      "source_task_id": "Python/128",
+      "bug_type": "excess logic",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 104
+    },
+    {
+      "task_id": "humanevalpack-python-040",
+      "source_task_id": "Python/40",
+      "bug_type": "value misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 125
+    },
+    {
+      "task_id": "humanevalpack-python-074",
+      "source_task_id": "Python/74",
+      "bug_type": "variable misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 98
+    },
+    {
+      "task_id": "humanevalpack-python-061",
+      "source_task_id": "Python/61",
+      "bug_type": "operator misuse",
+      "failure_symptoms": "incorrect output",
+      "difficulty_proxy_score": 101
+    }
+  ],
+  "canonical_solutions_stored": false
+}

@@ -12,6 +12,7 @@ dependencies = ["certifi>=2025.1.31,<2027", "python-dotenv>=1.2,<2"]
 
 [project.optional-dependencies]
 dev = ["mypy>=1.14,<2", "pytest>=8.3,<9", "ruff>=0.9,<1"]
+dataset = ["datasets>=3.2,<5"]
 
 [project.scripts]
 repair-agent = "repair_assistant.cli:main"

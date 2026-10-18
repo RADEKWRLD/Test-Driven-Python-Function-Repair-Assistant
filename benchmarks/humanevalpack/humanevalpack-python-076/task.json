@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-076",
+  "title": "HumanEvalPack repair: is_simple_power",
+  "goal": "Write a Python function `is_simple_power(x, n)` to solve the following problem:\nYour task is to write a function that returns true if a number x is a simple\npower of n and false in other cases.\nx is a simple power of n if n**int=x\nFor example:\nis_simple_power(1, 4) => true\nis_simple_power(2, 2) => true\nis_simple_power(8, 2) => true\nis_simple_power(3, 2) => false\nis_simple_power(3, 1) => false\nis_simple_power(5, 3) => false",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function is_simple_power and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/76",
+    "bug_type": "variable misuse",
+    "failure_symptoms": "infinite loop",
+    "initial_solution_sha256": "7c60feac02aefe8a47e72400ca1f9bc59ebf6b1ef105ce351b5e61f4255f9717",
+    "canonical_solution_included": false
+  }
+}

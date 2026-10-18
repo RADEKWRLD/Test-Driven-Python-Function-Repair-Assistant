@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-131",
+  "title": "HumanEvalPack repair: digits",
+  "goal": "Write a Python function `digits(n)` to solve the following problem:\nGiven a positive integer n, return the product of the odd digits.\nReturn 0 if all digits are even.\nFor example:\ndigits(1)  == 1\ndigits(4)  == 0\ndigits(235) == 15",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function digits and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/131",
+    "bug_type": "excess logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "c690e03bb782a5d2218a4bd3a6d55d4fe90144709a4c75fe4f2f2aa5cba0234f",
+    "canonical_solution_included": false
+  }
+}

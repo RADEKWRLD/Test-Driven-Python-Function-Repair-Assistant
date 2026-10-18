@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "humanevalpack-python-145",
+  "title": "HumanEvalPack repair: order_by_points",
+  "goal": "Write a Python function `order_by_points(nums)` to solve the following problem:\nWrite a function which sorts the given list of integers\nin ascending order according to the sum of their digits.\nNote: if there are several items with similar sum of their digits,\norder them based on their index in original list.\nFor example:\n>>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n>>> order_by_points([]) == []",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function order_by_points and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "bigcode/humanevalpack",
+    "config": "python",
+    "split": "test",
+    "revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "source_task_id": "Python/145",
+    "bug_type": "excess logic",
+    "failure_symptoms": "incorrect output",
+    "initial_solution_sha256": "41bd57f91cba5d44211f2ecb55b37ae564893dca2052832719d7748f10bf71e6",
+    "canonical_solution_included": false
+  }
+}
