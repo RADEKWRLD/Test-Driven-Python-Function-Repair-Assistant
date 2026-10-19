@@ -29,7 +29,7 @@ from repair_assistant.humanevalpack import (
     import_records,
     select_useful_records,
 )
-from repair_assistant.model import DeepSeekAdapter
+from repair_assistant.model import DeepSeekAdapter, MlxLocalAdapter, ModelAdapter
 from repair_assistant.reporting import generate_experiment_report
 from repair_assistant.run import RunService
 from repair_assistant.task import TaskSpec
@@ -122,6 +122,16 @@ def _positive_int(value: str) -> int:
     return parsed
 
 
+def _environment_positive_int(name: str, default: int) -> int:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return default
+    try:
+        return _positive_int(value)
+    except (argparse.ArgumentTypeError, ValueError) as exc:
+        raise ValueError(f"{name} must be a positive integer") from exc
+
+
 def _load_environment() -> None:
     discovered = find_dotenv(usecwd=True)
     if discovered:
@@ -159,17 +169,12 @@ def _doctor() -> int:
 
 
 def _run(args: argparse.Namespace) -> int:
-    api_key = os.getenv("DEEPSEEK_API_KEY", "")
-    if not api_key:
-        print("DEEPSEEK_API_KEY is required for a live run.", file=sys.stderr)
+    try:
+        model = _model_adapter(args.model)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
         return 2
     task = TaskSpec.load(args.task_dir)
-    model = DeepSeekAdapter(
-        api_key=api_key,
-        model=args.model,
-        base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
-        ca_bundle=os.getenv("REPAIR_ASSISTANT_CA_BUNDLE"),
-    )
     result = RunService(data_dir=args.data_dir, image=args.image).execute(
         task=task,
         model=model,
@@ -186,9 +191,10 @@ def _run(args: argparse.Namespace) -> int:
 
 
 def _benchmark(args: argparse.Namespace) -> int:
-    api_key = os.getenv("DEEPSEEK_API_KEY", "")
-    if not api_key:
-        print("DEEPSEEK_API_KEY is required for a live benchmark.", file=sys.stderr)
+    try:
+        _model_adapter(args.model)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr)
         return 2
     task_paths = sorted(path.parent for path in args.tasks_dir.resolve().glob("*/task.json"))
     if not task_paths:
@@ -206,12 +212,7 @@ def _benchmark(args: argparse.Namespace) -> int:
     execution_order: list[dict[str, object]] = []
     for repetition, strategy_value, task_path in schedule:
         task = TaskSpec.load(task_path)
-        model = DeepSeekAdapter(
-            api_key=api_key,
-            model=args.model,
-            base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
-            ca_bundle=os.getenv("REPAIR_ASSISTANT_CA_BUNDLE"),
-        )
+        model = _model_adapter(args.model)
         result = service.execute(
             task=task,
             model=model,
@@ -255,6 +256,33 @@ def _benchmark(args: argparse.Namespace) -> int:
     print(f"Report: {report_path}")
     print(f"Visual report: {visual_report}")
     return 0
+
+
+def _model_adapter(model: str) -> ModelAdapter:
+    provider = os.getenv("REPAIR_ASSISTANT_PROVIDER", "deepseek").strip().lower()
+    base_url = os.getenv("REPAIR_ASSISTANT_BASE_URL", "").strip()
+    if provider == "mlx-local":
+        return MlxLocalAdapter(
+            model=model,
+            base_url=base_url or "http://127.0.0.1:8080/v1",
+            timeout_seconds=_environment_positive_int(
+                "REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS", 600
+            ),
+            max_tokens=_environment_positive_int("REPAIR_ASSISTANT_MAX_TOKENS", 2048),
+        )
+    if provider != "deepseek":
+        raise ValueError("REPAIR_ASSISTANT_PROVIDER must be deepseek or mlx-local")
+    api_key = os.getenv("DEEPSEEK_API_KEY", "")
+    if not api_key:
+        raise ValueError("DEEPSEEK_API_KEY is required for a DeepSeek live run.")
+    return DeepSeekAdapter(
+        api_key=api_key,
+        model=model,
+        base_url=base_url or os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+        timeout_seconds=_environment_positive_int("REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS", 120),
+        max_tokens=_environment_positive_int("REPAIR_ASSISTANT_MAX_TOKENS", 8192),
+        ca_bundle=os.getenv("REPAIR_ASSISTANT_CA_BUNDLE"),
+    )
 
 
 def _benchmark_schedule(

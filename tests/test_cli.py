@@ -3,7 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from repair_assistant.cli import _benchmark_schedule, _parser
+from repair_assistant.cli import _benchmark_schedule, _model_adapter, _parser
+from repair_assistant.model import MlxLocalAdapter
 
 
 def test_benchmark_schedule_repeats_every_pair_and_is_seeded() -> None:
@@ -49,3 +50,15 @@ def test_humanevalpack_import_defaults_to_fifty_seeded_tasks() -> None:
     assert args.limit == 50
     assert args.seed == 20261018
     assert args.selection == "useful"
+
+
+def test_mlx_model_limits_are_configurable(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("REPAIR_ASSISTANT_PROVIDER", "mlx-local")
+    monkeypatch.setenv("REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS", "321")
+    monkeypatch.setenv("REPAIR_ASSISTANT_MAX_TOKENS", "1024")
+
+    adapter = _model_adapter("default_model")
+
+    assert isinstance(adapter, MlxLocalAdapter)
+    assert adapter.timeout_seconds == 321
+    assert adapter.max_tokens == 1024

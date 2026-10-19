@@ -3,9 +3,11 @@ VENV ?= .venv
 IMAGE ?= function-repair/sandbox-python:dev
 TASKS_DIR ?= benchmarks/tasks
 MAX_ATTEMPTS ?= 5
-REPETITIONS ?= 1
+REPETITIONS ?= 3
 SEED ?= 20261016
-MODEL ?= deepseek-chat
+# Leave empty to let repair-agent read REPAIR_ASSISTANT_MODEL from .env.
+# Callers can still override it explicitly with `make experiment MODEL=...`.
+MODEL ?=
 DATA_DIR ?= var
 
 .PHONY: bootstrap dataset-bootstrap format lint typecheck test check sandbox-build sandbox-test experiment
@@ -44,7 +46,6 @@ experiment: check sandbox-test
 	$(VENV)/bin/repair-agent benchmark $(TASKS_DIR) \
 		--max-attempts $(MAX_ATTEMPTS) \
 		--repetitions $(REPETITIONS) \
-		--seed $(SEED) \
-		--model $(MODEL) \
+		--seed $(SEED) $(if $(strip $(MODEL)),--model $(MODEL)) \
 		--image $(IMAGE) \
 		--data-dir $(DATA_DIR)

@@ -37,13 +37,27 @@ chmod 600 .env
   --strategy test-feedback
 ```
 
+也可以连接本机 MLX-LM 的 OpenAI 兼容服务。模型服务启动后，在 `.env` 中使用：
+
+```text
+REPAIR_ASSISTANT_PROVIDER=mlx-local
+REPAIR_ASSISTANT_MODEL=default_model
+REPAIR_ASSISTANT_BASE_URL=http://127.0.0.1:8080/v1
+REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS=600
+REPAIR_ASSISTANT_MAX_TOKENS=2048
+```
+
+本地 Adapter 不依赖小模型正确生成工具调用：模型只返回完整 Python 源码，Adapter
+将其转换为现有控制器唯一接受的 `submit_solution(content)`。模型仍不能执行 shell，
+也仍然只能修改 `solution.py`。
+
 运行全部三组对照实验：
 
 ```bash
 make experiment
 ```
 
-该命令会先完成本地及 Docker 验收，再以最多 5 次提交、固定 seed 和 1 次重复运行实验。可按需覆盖参数，例如：
+该命令会先完成本地及 Docker 验收，再以最多 5 次提交、固定 seed 和 1 次重复运行实验。模型名默认读取 `.env` 中的 `REPAIR_ASSISTANT_MODEL`，因此上述 MLX 配置会使用 `default_model`；也可按需显式覆盖，例如：
 
 ```bash
 make experiment REPETITIONS=1 SEED=42 MODEL=deepseek-chat

@@ -153,9 +153,12 @@ make experiment
 .venv/bin/repair-agent benchmark benchmarks/tasks \
   --max-attempts 5 \
   --repetitions 1 \
-  --seed 20261016 \
-  --model deepseek-chat
+  --seed 20261016
 ```
+
+模型名由 `.env` 中的 `REPAIR_ASSISTANT_MODEL` 决定；未配置时 CLI 才回退为
+`deepseek-chat`。连接本机 MLX-LM 时应设置为 `default_model`。Make 命令中的
+`MODEL=...` 仍可用于临时覆盖该配置。
 
 需要低成本冒烟或更换实验配置时，可覆盖 Make 变量：
 
