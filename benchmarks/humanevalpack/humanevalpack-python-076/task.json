@@ -31,5 +31,19 @@
     "failure_symptoms": "infinite loop",
     "initial_solution_sha256": "7c60feac02aefe8a47e72400ca1f9bc59ebf6b1ef105ce351b5e61f4255f9717",
     "canonical_solution_included": false
-  }
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "673095f7d85e2786f33b45bd84ed4cf5a629afd7052364db08454f8cd3e510ec",
+      "sha256": "5dd3304672376a056d183a9ccc9a961c030cf3540b79c84f6cd34e878b07722e"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "6a03afa27f549ab2824a822b390dccd100e9aafd04b5bdaa5d4e879872fb7389",
+      "sha256": "14895da1f35946820bd1969abb24a54c19057e323a2c89d4dd2794def4f32044"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
 }

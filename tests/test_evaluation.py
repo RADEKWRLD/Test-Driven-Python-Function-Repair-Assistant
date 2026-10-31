@@ -48,4 +48,4 @@ def test_aggregate_reports_hidden_improvement_regression_and_cost() -> None:
     assert metrics["total_tokens"] == 250
     assert metrics["average_model_calls"] == 2.5
     assert metrics["average_total_tokens"] == 125
-    assert metrics["tokens_per_success"] == 250
+    assert metrics["function_regression_rate"] == 0.5

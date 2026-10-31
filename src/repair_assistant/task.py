@@ -29,6 +29,7 @@ class TaskSpec:
     hidden_tests_dir: Path
     hidden_command: str
     editable_paths: tuple[str, ...] = ("solution.py",)
+    test_version: str = "pytest-functions-v1"
 
     @classmethod
     def load(cls, task_dir: Path) -> TaskSpec:
@@ -63,6 +64,7 @@ class TaskSpec:
             hidden_tests_dir=hidden_dir,
             hidden_command=str(hidden["command"]),
             editable_paths=editable_paths,
+            test_version=str(data.get("test_version", "pytest-functions-v1")),
         )
 
     def prompt(self) -> str:

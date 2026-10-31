@@ -31,5 +31,19 @@
     "failure_symptoms": "incorrect output",
     "initial_solution_sha256": "29ae21da44d94f238cb5173a5bb24d19f3bdcfd2ddbd50609f02ab145682a2cd",
     "canonical_solution_included": false
-  }
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "ff6ae27f3c62cb28087a3934afde3aa34776188d584812cabc0121e0e818b128",
+      "sha256": "1649e65ed67bd71a665e0f6b167c0e44b38590b7e3f665a3c2cbf49c6ee496d0"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "a0cdd72af4e18f7e48eb8ed5d06e2bd224a58df490c8c5cb263f1a5015ebb123",
+      "sha256": "553c266c9e13bad8f7f2a4dafb4fb10e05d1c6965f9060c5ccd8feffe79d6d1d"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
 }

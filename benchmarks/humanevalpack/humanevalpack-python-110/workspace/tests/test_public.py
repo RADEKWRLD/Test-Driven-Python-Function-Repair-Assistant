@@ -1,9 +1,13 @@
-from solution import *  # noqa: F403
+from solution import *
 
+def test_public_examples_case_001():
 
-def test_public_examples():
     def check(exchange):
-        # Check some simple cases
-        assert exchange([1, 2, 3, 4], [1, 2, 3, 4]) == "YES"
-        assert exchange([1, 2, 3, 4], [1, 5, 3, 4]) == "NO"
+        assert exchange([1, 2, 3, 4], [1, 2, 3, 4]) == 'YES'
+    check(exchange)
+
+def test_public_examples_case_002():
+
+    def check(exchange):
+        assert exchange([1, 2, 3, 4], [1, 5, 3, 4]) == 'NO'
     check(exchange)

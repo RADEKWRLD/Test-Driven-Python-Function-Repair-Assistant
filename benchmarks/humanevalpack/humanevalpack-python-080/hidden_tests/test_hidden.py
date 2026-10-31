@@ -1,17 +1,49 @@
-from solution import *  # noqa: F403
+from solution import *
 
+def test_hidden_suite_case_001():
 
-def test_hidden_suite():
     def check(is_happy):
+        assert is_happy('a') == False, 'a'
+    check(is_happy)
 
-        # Check some simple cases
-        assert is_happy("a") == False , "a"
-        assert is_happy("aa") == False , "aa"
-        assert is_happy("abcd") == True , "abcd"
-        assert is_happy("aabb") == False , "aabb"
-        assert is_happy("adb") == True , "adb"
-        assert is_happy("xyy") == False , "xyy"
-        assert is_happy("iopaxpoi") == True , "iopaxpoi"
-        assert is_happy("iopaxioi") == False , "iopaxioi"
+def test_hidden_suite_case_002():
 
+    def check(is_happy):
+        assert is_happy('aa') == False, 'aa'
+    check(is_happy)
+
+def test_hidden_suite_case_003():
+
+    def check(is_happy):
+        assert is_happy('abcd') == True, 'abcd'
+    check(is_happy)
+
+def test_hidden_suite_case_004():
+
+    def check(is_happy):
+        assert is_happy('aabb') == False, 'aabb'
+    check(is_happy)
+
+def test_hidden_suite_case_005():
+
+    def check(is_happy):
+        assert is_happy('adb') == True, 'adb'
+    check(is_happy)
+
+def test_hidden_suite_case_006():
+
+    def check(is_happy):
+        assert is_happy('xyy') == False, 'xyy'
+    check(is_happy)
+
+def test_hidden_suite_case_007():
+
+    def check(is_happy):
+        assert is_happy('iopaxpoi') == True, 'iopaxpoi'
+    check(is_happy)
+
+def test_hidden_suite_case_008():
+
+    def check(is_happy):
+        assert is_happy('iopaxioi') == False, 'iopaxioi'
     check(is_happy)

@@ -1,4 +1,4 @@
-"""Deterministic aggregation of raw per-run experiment summaries."""
+"""Task pass rates, test-function regressions and measured request costs."""
 
 from __future__ import annotations
 
@@ -7,55 +7,101 @@ from collections.abc import Iterable
 from typing import Any
 
 
+def _rate(rows: list[dict[str, Any]], key: str) -> float | None:
+    return sum(bool(row.get(key)) for row in rows) / len(rows) if rows else None
+
+
+def _mean(rows: list[dict[str, Any]], key: str, *, cost: bool = False) -> float | None:
+    values = [row.get("cost", {}).get(key) if cost else row.get(key) for row in rows]
+    if not values or any(not isinstance(value, (int, float)) for value in values):
+        return None
+    return sum(float(value) for value in values if isinstance(value, (int, float))) / len(values)
+
+
+def _cost_sum(rows: list[dict[str, Any]], key: str) -> float | int | None:
+    values = [row.get("cost", {}).get(key) for row in rows]
+    if not values or any(not isinstance(value, (int, float)) for value in values):
+        return None
+    return sum(value for value in values if isinstance(value, (int, float)))
+
+
 def aggregate_summaries(summaries: Iterable[dict[str, Any]]) -> dict[str, Any]:
+    rows = list(summaries)
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for summary in summaries:
-        grouped[str(summary["strategy"])].append(summary)
-
-    strategies: dict[str, dict[str, Any]] = {}
-    for strategy, rows in sorted(grouped.items()):
-        count = len(rows)
-        final_public_pass_rate = _rate(rows, "final_public_passed")
-        final_hidden_pass_rate = _rate(rows, "final_hidden_passed")
-        successful_runs = sum(row.get("outcome") == "passed" for row in rows)
-        model_calls = sum(_cost(row, "model_calls") for row in rows)
-        total_tokens = sum(_cost(row, "total_tokens") for row in rows)
-        model_latency_ms = sum(_cost(row, "model_latency_ms") for row in rows)
-        strategies[strategy] = {
-            "runs": count,
-            "first_public_pass_rate": _rate(rows, "first_public_passed"),
-            "final_public_pass_rate": final_public_pass_rate,
-            "first_hidden_pass_rate": _rate(rows, "first_hidden_passed"),
-            "final_hidden_pass_rate": final_hidden_pass_rate,
-            "public_hidden_gap": final_public_pass_rate - final_hidden_pass_rate,
-            "hidden_improvement_rate": _rate(rows, "hidden_improvement"),
-            "timeout_rate": _rate(rows, "timed_out"),
-            "hidden_regression_rate": _rate(rows, "hidden_regression"),
-            "protected_test_violation_rate": _rate(rows, "protected_test_violation"),
-            "workspace_policy_violation_rate": _rate(rows, "workspace_policy_violation"),
-            "successful_runs": successful_runs,
-            "model_calls": model_calls,
-            "prompt_tokens": sum(_cost(row, "prompt_tokens") for row in rows),
-            "completion_tokens": sum(_cost(row, "completion_tokens") for row in rows),
-            "total_tokens": total_tokens,
-            "model_latency_ms": model_latency_ms,
-            "average_model_calls": model_calls / count,
-            "average_total_tokens": total_tokens / count,
-            "average_model_latency_ms": model_latency_ms / count,
-            "tokens_per_success": (total_tokens / successful_runs if successful_runs else None),
+    for row in rows:
+        grouped[str(row["strategy"])].append(row)
+    metrics = {}
+    for strategy, all_rows in sorted(grouped.items()):
+        valid = [row for row in all_rows if row.get("outcome") in {"passed", "failed"}]
+        regressions = []
+        for row in valid:
+            changes = row.get("case_changes", {})
+            regressions.append(
+                bool(row.get("hidden_regression"))
+                or any(item.get("regressed", 0) > 0 for item in changes.values())
+            )
+        item = {
+            "runs": len(valid),
+            "attempted_runs": len(all_rows),
+            "infrastructure_errors": len(all_rows) - len(valid),
+            "successful_runs": sum(row.get("outcome") == "passed" for row in valid),
+            **{
+                f"{stage}_pass_rate": _rate(valid, f"{stage}_passed")
+                for stage in ("first_public", "final_public", "first_hidden", "final_hidden")
+            },
+            "hidden_improvement_rate": _rate(valid, "hidden_improvement"),
+            "hidden_regression_rate": _rate(valid, "hidden_regression"),
+            "function_regression_rate": sum(regressions) / len(valid) if valid else None,
+            "timeout_rate": _rate(valid, "timed_out"),
+            "protected_test_violation_rate": _rate(valid, "protected_test_violation"),
+            "workspace_policy_violation_rate": _rate(valid, "workspace_policy_violation"),
+            "average_duration_ms": _mean(valid, "duration_ms"),
+            "average_test_runtime_ms": _mean(valid, "test_runtime_ms"),
+            "average_model_calls": _mean(valid, "model_calls", cost=True),
+            "average_total_tokens": _mean(valid, "total_tokens", cost=True),
+            "average_model_latency_ms": _mean(valid, "model_latency_ms", cost=True),
+            **{
+                key: _cost_sum(all_rows, key)
+                for key in (
+                    "model_calls",
+                    "prompt_tokens",
+                    "completion_tokens",
+                    "total_tokens",
+                    "model_latency_ms",
+                    "currency_cost",
+                )
+            },
         }
+        public, hidden = item["final_public_pass_rate"], item["final_hidden_pass_rate"]
+        item["public_hidden_gap"] = (
+            public - hidden if public is not None and hidden is not None else None
+        )
+        currencies = {row.get("cost", {}).get("currency") for row in all_rows}
+        item["currency"] = next(iter(currencies)) if len(currencies) == 1 else None
+        if item["currency"] is None:
+            item["currency_cost"] = None
+        metrics[strategy] = item
+    paired: dict[tuple[str, int], dict[str, bool]] = defaultdict(dict)
+    for row in rows:
+        if row.get("outcome") in {"passed", "failed"}:
+            paired[(str(row.get("task_id", "")), int(row.get("repetition", 1)))][
+                row["strategy"]
+            ] = bool(row.get("final_hidden_passed"))
+    differences = [
+        int(arms["test-feedback"]) - int(arms["retry-without-feedback"])
+        for arms in paired.values()
+        if {"test-feedback", "retry-without-feedback"} <= arms.keys()
+    ]
     return {
-        "schema_version": 1,
-        "runs": sum(len(rows) for rows in grouped.values()),
-        "strategies": strategies,
+        "schema_version": 2,
+        "runs": len(rows),
+        "strategies": metrics,
+        "valid_runs": sum(item["runs"] for item in metrics.values()),
+        "infrastructure_errors": sum(item["infrastructure_errors"] for item in metrics.values()),
+        "feedback_comparison": {
+            "paired_runs": len(differences),
+            "hidden_pass_rate_difference": sum(differences) / len(differences)
+            if differences
+            else None,
+        },
     }
-
-
-def _rate(rows: list[dict[str, Any]], key: str) -> float:
-    return sum(bool(row.get(key)) for row in rows) / len(rows)
-
-
-def _cost(row: dict[str, Any], key: str) -> int:
-    cost = row.get("cost", {})
-    value = cost.get(key, 0) if isinstance(cost, dict) else 0
-    return value if isinstance(value, int) and not isinstance(value, bool) else 0

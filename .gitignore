@@ -3,7 +3,10 @@
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.tools/
+.mypy_cache_v3*/
 __pycache__/
 *.pyc
 var/*
 !var/.gitignore
+results/

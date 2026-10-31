@@ -1,10 +1,19 @@
-from solution import *  # noqa: F403
+from solution import *
 
+def test_public_examples_case_001():
 
-def test_public_examples():
     def check(digits):
-        # Check some simple cases
         assert digits(1) == 1
+    check(digits)
+
+def test_public_examples_case_002():
+
+    def check(digits):
         assert digits(4) == 0
-        assert digits(235) ==15
+    check(digits)
+
+def test_public_examples_case_003():
+
+    def check(digits):
+        assert digits(235) == 15
     check(digits)
