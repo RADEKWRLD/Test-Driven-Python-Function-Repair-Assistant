@@ -25,6 +25,13 @@ def _cost_sum(rows: list[dict[str, Any]], key: str) -> float | int | None:
     return sum(value for value in values if isinstance(value, (int, float)))
 
 
+def _nested_cost_sum(rows: list[dict[str, Any]], container: str, key: str) -> float | int | None:
+    values = [row.get(container, {}).get(key) for row in rows]
+    if not values or any(not isinstance(value, (int, float)) for value in values):
+        return None
+    return sum(value for value in values if isinstance(value, (int, float)))
+
+
 def _public_pass_through(row: dict[str, Any], attempt: int) -> bool:
     values = row.get("public_pass_by_attempt")
     if isinstance(values, list):
@@ -88,7 +95,26 @@ def aggregate_summaries(summaries: Iterable[dict[str, Any]]) -> dict[str, Any]:
                     "currency_cost",
                 )
             },
+            **{
+                f"incremental_{key}": _nested_cost_sum(all_rows, "incremental_cost", key)
+                for key in (
+                    "model_calls",
+                    "prompt_tokens",
+                    "completion_tokens",
+                    "total_tokens",
+                    "model_latency_ms",
+                    "currency_cost",
+                )
+            },
         }
+        shared_failures = [
+            row
+            for row in valid
+            if row.get("shared_first_run_id") and row.get("first_public_passed") is False
+        ]
+        item["shared_first_failures"] = len(shared_failures)
+        item["conditional_public_repair_rate"] = _rate(shared_failures, "final_public_passed")
+        item["conditional_hidden_pass_rate"] = _rate(shared_failures, "final_hidden_passed")
         public, hidden = item["final_public_pass_rate"], item["final_hidden_pass_rate"]
         item["public_hidden_gap"] = (
             public - hidden if public is not None and hidden is not None else None
@@ -116,6 +142,34 @@ def aggregate_summaries(summaries: Iterable[dict[str, Any]]) -> dict[str, Any]:
         for arms in paired.values()
         if {"test-feedback", "retry-without-feedback"} <= arms.keys()
     ]
+    eligible_pairs: dict[tuple[str, int], dict[str, dict[str, Any]]] = defaultdict(dict)
+    for row in rows:
+        if row.get("outcome") in {"passed", "failed"} and row.get("first_public_passed") is False:
+            eligible_pairs[(str(row.get("task_id", "")), int(row.get("repetition", 1)))][
+                str(row["strategy"])
+            ] = row
+    conditional_pairs = [
+        arms
+        for arms in eligible_pairs.values()
+        if {"test-feedback", "retry-without-feedback"} <= arms.keys()
+    ]
+    physical_rows = []
+    for row in rows:
+        physical = (
+            row.get("cost") if row.get("strategy") == "single-shot" else row.get("incremental_cost")
+        )
+        physical_rows.append({"cost": physical if isinstance(physical, dict) else {}})
+    physical_cost = {
+        key: _cost_sum(physical_rows, key)
+        for key in (
+            "model_calls",
+            "prompt_tokens",
+            "completion_tokens",
+            "total_tokens",
+            "model_latency_ms",
+            "currency_cost",
+        )
+    }
     return {
         "schema_version": 2,
         "runs": len(rows),
@@ -127,5 +181,27 @@ def aggregate_summaries(summaries: Iterable[dict[str, Any]]) -> dict[str, Any]:
             "hidden_pass_rate_difference": sum(differences) / len(differences)
             if differences
             else None,
+            "shared_failure_pairs": len(conditional_pairs),
+            "conditional_hidden_pass_rate_difference": (
+                sum(
+                    int(arms["test-feedback"].get("final_hidden_passed") is True)
+                    - int(arms["retry-without-feedback"].get("final_hidden_passed") is True)
+                    for arms in conditional_pairs
+                )
+                / len(conditional_pairs)
+                if conditional_pairs
+                else None
+            ),
+            "test_feedback_only_successes": sum(
+                arms["test-feedback"].get("final_hidden_passed") is True
+                and arms["retry-without-feedback"].get("final_hidden_passed") is False
+                for arms in conditional_pairs
+            ),
+            "retry_only_successes": sum(
+                arms["retry-without-feedback"].get("final_hidden_passed") is True
+                and arms["test-feedback"].get("final_hidden_passed") is False
+                for arms in conditional_pairs
+            ),
         },
+        "physical_cost": physical_cost,
     }

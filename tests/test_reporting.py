@@ -48,7 +48,7 @@ def test_course_report_has_four_figures_csv_and_manual_analysis(tmp_path: Path) 
     assert "bootstrap" not in text
     assert not (output.parent / "report.html").exists()
     assert not (output.parent / "case-studies.md").exists()
-    assert len(list((output.parent / "figures").glob("*.svg"))) == 5
+    assert len(list((output.parent / "figures").glob("*.svg"))) == 6
     for image in (output.parent / "figures").glob("*.svg"):
         assert ET.parse(image).getroot().tag.endswith("svg")
     with (output.parent / "test-results.csv").open(encoding="utf-8") as stream:

@@ -47,7 +47,10 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--pricing-file", type=Path)
     benchmark = commands.add_parser("benchmark", help="Run all tasks under each strategy.")
     benchmark.add_argument(
-        "tasks_dir", type=Path, default=Path("benchmarks/feedbackeval-humaneval"), nargs="?"
+        "tasks_dir",
+        type=Path,
+        default=Path("benchmarks/feedbackeval-humaneval-full"),
+        nargs="?",
     )
     benchmark.add_argument(
         "--strategy",
@@ -188,12 +191,12 @@ def _benchmark(args: argparse.Namespace) -> int:
         return 2
     strategy_values = args.strategies or [item.value for item in RepairStrategy]
     if args.max_attempts != MAX_ATTEMPTS:
-        raise ValueError("formal v3 benchmark requires --max-attempts 3 (arms 1/3/3)")
+        raise ValueError("formal v4 benchmark requires --max-attempts 3 (shared arm 1, forks 3/3)")
     if len(set(strategy_values)) != len(strategy_values):
         raise ValueError("benchmark strategies must not be repeated")
     if set(strategy_values) != {item.value for item in RepairStrategy}:
         raise ValueError(
-            "formal v3 benchmark requires all three strategies; use run for single-arm debugging"
+            "formal v4 benchmark requires all three strategies; use run for single-arm debugging"
         )
     schedule = _benchmark_schedule(
         task_paths,

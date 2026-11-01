@@ -1,0 +1,1342 @@
+{
+  "schema_version": 1,
+  "dataset": "FeedbackEval HumanEval full + HumanEval+ hidden",
+  "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+  "evalplus_version": "v0.1.10",
+  "count": 164,
+  "selection": {
+    "method": "complete-HumanEval",
+    "outcome_blind": true
+  },
+  "candidate_overrides": {
+    "57": 2,
+    "105": 0
+  },
+  "oracle_invalid_inputs_removed": 7,
+  "test_policy": {
+    "public": "FeedbackEval frozen HumanEval base tests",
+    "hidden": "HumanEval+ v0.1.10 base and extra inputs with EvalPlus-equivalent comparison, mounted only for final scoring",
+    "correct_code_copied": false,
+    "precomputed_feedback_copied": false,
+    "curation": "remove only inputs rejected by the official reference implementation under the official EvalPlus oracle"
+  },
+  "source_sha256": {
+    "feedbackeval": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "candidate_pool": "97b50b5f6d717a4454ef6cf30841d7e7c9c258f10efe04fa54495eef17b63b46",
+    "evalplus_jsonl_gz": "272720b90ac375502c8ed23cd791c2a93dfb22a911641a494da74a426c09f101"
+  },
+  "tasks": [
+    {
+      "task_id": "feedbackeval-humaneval-000",
+      "source_task_id": "HumanEval/0",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "085c8938b66677c21de5b76982ac96d1b445d571135dc581b912f1d1237cbd29"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-001",
+      "source_task_id": "HumanEval/1",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "42a47fca5eda53b53cac5bf5c3a9e7e396b26cc7abed6fda21b74479a21e3133"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-002",
+      "source_task_id": "HumanEval/2",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "02bba72018e1e01c10543ec68f528465c9ead472bc4fe63c5d83a7eb104f4033"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-003",
+      "source_task_id": "HumanEval/3",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "839e2cb6289011b124a79834182200561b32a906787fb2c03f0b54f3ac2fabc8"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-004",
+      "source_task_id": "HumanEval/4",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "f4ca900cc632a5c10af1d02cd9ff76510e43226bb7e73a214c0a8d12f7a29e05"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-005",
+      "source_task_id": "HumanEval/5",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0efdaca4b0e4a1ab9e1d3f364261d04ca9167aa7479c7b92fa56e977740fd91e"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-006",
+      "source_task_id": "HumanEval/6",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "21a6b21a0858a8507ea4af9f50772b4b6d7ef726ef92ea4aab96c0a66b5fe6a6"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-007",
+      "source_task_id": "HumanEval/7",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "2191494ed307f0ff2046d14d4d7e827f9fb532d5acbed8e532524b07575dc9c9"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-008",
+      "source_task_id": "HumanEval/8",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "d2ff7dd23821dd5372be9e7192de27981f5ff3b7a5feb4e6d3ea2e5b54cde8dd"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-009",
+      "source_task_id": "HumanEval/9",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "5695dc7a4e4687650b7caef108702cb19fa91bc9c21ee72012cb744a690f405b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-010",
+      "source_task_id": "HumanEval/10",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "6cd3e8245a7ef1785201dfda2352896a653d91fb8b96b2a9276eb7b389a5bf44"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-011",
+      "source_task_id": "HumanEval/11",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "059f81a41840f6c4894716a258275f793db2f460e3d6df457b143c3e036687c3"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-012",
+      "source_task_id": "HumanEval/12",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "7d612d9585b9bac24dd267b7a4876810af2640e36f26311303952da1d63f054b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-013",
+      "source_task_id": "HumanEval/13",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "09593e9e130c8cba1f814654c68eb4b6402c9d0c54271c77f61999a57e890a34"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-014",
+      "source_task_id": "HumanEval/14",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "95adebc7d97a665048a4715a213e6bca3b08e9e664e4f8ccc28cd49d4e63932a"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-015",
+      "source_task_id": "HumanEval/15",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "99ce5501e4317ae152660b9196002230b815af33cf95b7c4c7d18bb67cafad76"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-016",
+      "source_task_id": "HumanEval/16",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "12df57394115488bbce1054764fa52c6328996fd44c5709d935fc4e018dd109b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-017",
+      "source_task_id": "HumanEval/17",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "28f13fe830cd4cd66e6a0f7a637112325f419ee4dd8b987053557c9b06a0852b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-018",
+      "source_task_id": "HumanEval/18",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "7f7f4cfac46d5fb7b775e3656ddfa7cc02bcf980d83480c4e37f6da2ca628ec4"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-019",
+      "source_task_id": "HumanEval/19",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "8dd4179e3f27769088a0e4b6cfdb0670109f203dc9b2c0d718411b369215428f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-020",
+      "source_task_id": "HumanEval/20",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "2ed462e27bfbd48dec8432d2acace5f8a3478b77730c7a59b2d9e67998f3448f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-021",
+      "source_task_id": "HumanEval/21",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "98f6318250958c26b64fe52c8f2d9284662cefbac4817f44b8c4b03b06e60063"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-022",
+      "source_task_id": "HumanEval/22",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "a70e77ecb5502690ec4c3d5041191b6833ae5f8cf8bd39c36b58aee354922fe4"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-023",
+      "source_task_id": "HumanEval/23",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "77542cf13dc6be5f74fbe9aef657db22d69e59e773040e6f62493b3376ec5d3e"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-024",
+      "source_task_id": "HumanEval/24",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "3eac77d02f92d8de6a4353400e9f873e4361eac00cac6816edbf1a2bfaedca16"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-025",
+      "source_task_id": "HumanEval/25",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "8f5b8b211e9bb612241e53946d4ec6daa643f1bcc67a132dc22a37fbe3c57a0f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-026",
+      "source_task_id": "HumanEval/26",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "8f55e96bcd262e9feab9011c076050bfb0663aa0e000c4995d4e762b9fcd126f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-027",
+      "source_task_id": "HumanEval/27",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ec5251aa45c4e8e4546203b3005784fe4df9d0ce990cccfc3a8d2bc7d6c33866"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-028",
+      "source_task_id": "HumanEval/28",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "15d4e973f3b6799366e449adcf73e22fd7d0cea525fac3edb0e66fd0a0b31041"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-029",
+      "source_task_id": "HumanEval/29",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "c12a5a897198e8fa65168a2e585c6eb56ee3b190c67255e3e9242d2b11068b6f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-030",
+      "source_task_id": "HumanEval/30",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "de80f4516c5ef1957ca4f9406bde810563e8755f03e3e500436b644ad8568e41"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-031",
+      "source_task_id": "HumanEval/31",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "56b4ad1dcc51d5b5dde13c1e1c1b04f238ca7bfb9c87998f4f02398ff4c36b3d"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-032",
+      "source_task_id": "HumanEval/32",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "be8aa37afcf4e5672b86eb3845e3d742a5bb00a9ddef95dd638bc6368908a0d0"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-033",
+      "source_task_id": "HumanEval/33",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "e8899299a94a0e6afe6fba7b3ce13bdd7bb0ac7130f4ab92cebe7412f1c23b0d"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-034",
+      "source_task_id": "HumanEval/34",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ebd0cda498e418c8c0d1c0a754eed487429c58ba8133a416a631f41b976513d7"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-035",
+      "source_task_id": "HumanEval/35",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1cc95da6d25bd59567ce03843246bffe8e2cfea5854e012ee2e5d12ea0271d72"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-036",
+      "source_task_id": "HumanEval/36",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "5f09edeed08de760c75f1b68641c299ac87a338548ae434a5d39be1c399b20ea"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-037",
+      "source_task_id": "HumanEval/37",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "164a225ce96e2c8a68dff05a279f51914077cf09cfa8a4aa28777cfe45e4d0d4"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-038",
+      "source_task_id": "HumanEval/38",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "d274853ed8b738c9ce7c169fb46f6451f30e8dda605d36f960cbbf827a710b9c"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-039",
+      "source_task_id": "HumanEval/39",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0a79f554aa24b49b7bfa050bf0001fd8434c179d3cc3d59378dc6ebee5639c4a"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-040",
+      "source_task_id": "HumanEval/40",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0ff838555dcf077592005df0cda64dae32df12afec44fa4e3bc8841018cb7042"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-041",
+      "source_task_id": "HumanEval/41",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "615bcb8d8532a351dd6bac165fd7f2b7d421b47712a6b85e9048591cec043caa"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-042",
+      "source_task_id": "HumanEval/42",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ed9491f9ecea601318b5dbce5e6b6bfee538eb3c95e9d86ed74c6c38ebd98c7d"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-043",
+      "source_task_id": "HumanEval/43",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "4839ff7692f4509f718997c83b74aa2374834d02b97624b443db71fba21c143d"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-044",
+      "source_task_id": "HumanEval/44",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "75f035ff0bcfe85e397eb629af19e63634ea57b6a3656b0a1a2afc135ad94b3b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-045",
+      "source_task_id": "HumanEval/45",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "a0d80822efb1dd78405732a88df1f50d27e8a5e3bc55c0549e6beac672642797"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-046",
+      "source_task_id": "HumanEval/46",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "27a6385704cff9e6719a833f5a9be39cd6062241499b725e04e2ad4070359a0e"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-047",
+      "source_task_id": "HumanEval/47",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "e71971c98ef2054521654f8c7da97ca11b7cfa5e3bdcfa9f16a8be7b99b09dcb"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-048",
+      "source_task_id": "HumanEval/48",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1e187fb046b91a8733376a18b51b9c0046e42d1bb5246eb4b5d585e118b77c52"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-049",
+      "source_task_id": "HumanEval/49",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "67f3222cc37d2013c5af7eae570cc585f8aac16e174455b9d114fb741cf5311b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-050",
+      "source_task_id": "HumanEval/50",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "3b82608662fb393de43bf02b00a02c76026ecf3a8043302f91028b8c43c169dc"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-051",
+      "source_task_id": "HumanEval/51",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "b21804177261b25afff56b155ae344d27c4858fddf6d592eca4483be3d4f8686"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-052",
+      "source_task_id": "HumanEval/52",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "40331510736e919b3f9368c90bd7b5ea9d25ffd35655c187e122aaecaa7abeac"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-053",
+      "source_task_id": "HumanEval/53",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "777da2696b04616b60056dd038c70c69b43ec3b5262cd73ce9052f2702d21e8c"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-054",
+      "source_task_id": "HumanEval/54",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "afa505eb57519f3da83112f986a898e1e9d537e0812c8a7bfc000a9677e75b02"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-055",
+      "source_task_id": "HumanEval/55",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "5d6d81633b254307ee247c6651d6ce0b81c23509e789e4265ae0d6f09fb6df38"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-056",
+      "source_task_id": "HumanEval/56",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ca10d2c0b1bbf4c9a91e7de2086d00ef09006e752a7d211e941b99f9627ac8c8"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-057",
+      "source_task_id": "HumanEval/57",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback.jsonl",
+      "candidate_index": 2,
+      "candidate_sha256": "1e274511e1054079b6797acf3763c11811a43580247f59c5364c3bf1b8a668bb"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-058",
+      "source_task_id": "HumanEval/58",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "fc4b44fd9c19d0b60347caae434905cdf2bd946f7767fd3c528712ea0f87b88b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-059",
+      "source_task_id": "HumanEval/59",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "b4b499fd85cede7a4363a19d8881f7379856df4a37847645bc95dd5726a2dc25"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-060",
+      "source_task_id": "HumanEval/60",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ce1392a40b8475e560f22f57325295efa233982340da4b78704ba13e7cd2dcf3"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-061",
+      "source_task_id": "HumanEval/61",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "9e87840d53f7b5d958d29c9edf0a48aeb0f5a09f5b736f844c348580699351b9"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-062",
+      "source_task_id": "HumanEval/62",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "8558209dfb19961025fd8e206d57fca2d89bf170906137d497127905c89e6a11"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-063",
+      "source_task_id": "HumanEval/63",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "123e73b4a3233f1be6b937bc91fa1389b9132872fefe0c7ca5db8e0bfa822500"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-064",
+      "source_task_id": "HumanEval/64",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "6f27b08ca026ad14609d6c8e60bc37c65ee602e95c600fe593fc2e46622d6d4f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-065",
+      "source_task_id": "HumanEval/65",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "06185adf4fe59c6635bfe39a63072c9f0285991ff3bb79c1b751770bb030295e"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-066",
+      "source_task_id": "HumanEval/66",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "371a71d2e71e3f38078c6b414e0870f22b3d67bb597e7a78929f0a26dc6e0937"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-067",
+      "source_task_id": "HumanEval/67",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "c1e7e7eaf8498845a00a6742dc5c598cc57c4bb9c5e57c057a1187217ca4206d"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-068",
+      "source_task_id": "HumanEval/68",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "e58808c28a825cb2bf910e7cd1a0a9c3029d83aa291c40e3188ac57d617bf797"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-069",
+      "source_task_id": "HumanEval/69",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ddf3fca5b948358fa362d3e42f1fbf6b718f5228f52d675c72d9faf39b7b455e"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-070",
+      "source_task_id": "HumanEval/70",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "4256e06738b5347c3f7055ce8dfe829075c2cef4153a4368ed2362fbe558016b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-071",
+      "source_task_id": "HumanEval/71",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "18f0f6a9c76341b199ef23403744496c36590015218f8f9678f8a730010e4332"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-072",
+      "source_task_id": "HumanEval/72",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "cfa33bdcab4cbad4964f14e86a9852ea4826b8a4eda1a8dfe06b4fc33811ec11"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-073",
+      "source_task_id": "HumanEval/73",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1bb25f5c284c2ed4cf856595ca2201938c385548cc1370585d304719a94c247f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-074",
+      "source_task_id": "HumanEval/74",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "38a7d1f266c4175ea069f69e0eedc3d8ed2b1163ebf2b1518bbdeb67da06c0ad"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-075",
+      "source_task_id": "HumanEval/75",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "9e597f9f5fb052235d45af91b612c42f3d1415d5a618cb1f1c7006e9b83927c9"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-076",
+      "source_task_id": "HumanEval/76",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "91228612564e55b99d5dbe773d34a3fa19db815ebafad619da988bcef886eb7c"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-077",
+      "source_task_id": "HumanEval/77",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ecdf5285b0effc99be4eaaa591c5208b5aa6b62c3af191781c4003ee1c30101a"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-078",
+      "source_task_id": "HumanEval/78",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "3ff357bb23877290b0fc588a82f93d85486abcd29368f047ecd0183a07c449d0"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-079",
+      "source_task_id": "HumanEval/79",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "f35e122f2e4d05fefd4f5e2ef155fa8700823599560fba1ba97fae6a60fbc8f9"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-080",
+      "source_task_id": "HumanEval/80",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "a11d05b67f6578ec142d305d7d983acdde2d3cc0a0b1b4827c011977011854f2"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-081",
+      "source_task_id": "HumanEval/81",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0705de707ec05a7793af0713d364888882bb676c333885414da1639df08464aa"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-082",
+      "source_task_id": "HumanEval/82",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ac048f7ad3db4c6351fb961ef1aa0c8eb61a001b65347401a9e0c385a0e8e0da"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-083",
+      "source_task_id": "HumanEval/83",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "c2805ef77f1803c6c76b13b1f995abaf20109c438a0ba7377074a36d8a323ea2"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-084",
+      "source_task_id": "HumanEval/84",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1ff3f86d5716f4ef8ea4470485c4e9fd0260e32f2919650fe64976c1375de62a"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-085",
+      "source_task_id": "HumanEval/85",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "39d6487c8d9abc11e1aad99604dac17999da9a4190949d27c8e700d843476ed0"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-086",
+      "source_task_id": "HumanEval/86",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "45a1055bcf220067daee852be87472f098130577cd46ee998d3d19cb3f43ad98"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-087",
+      "source_task_id": "HumanEval/87",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1101f7d290d37667d92c7d03257bb4718bdc12db252422d841e62632e317b78b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-088",
+      "source_task_id": "HumanEval/88",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "9fc0d0ebb0c861044ad6e15a648d797be06fa9af19f750398c091e050884c186"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-089",
+      "source_task_id": "HumanEval/89",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "c79ff9171a52e23afd0f5db478f420ddb9ac54d8ff75fd6127599f3863b9af09"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-090",
+      "source_task_id": "HumanEval/90",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "a9018525625a1aa640ef58c2054e7a1abf84d03c76acb984355bc81761395189"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-091",
+      "source_task_id": "HumanEval/91",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "a65d524c591a7f610ad02c0246300c8a08658aa7568787d3639989dfd2244aad"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-092",
+      "source_task_id": "HumanEval/92",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "cf5db2a03b2b960e4ae1fc69528959245e35bf4fbc02c29580255c971d6c1856"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-093",
+      "source_task_id": "HumanEval/93",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "56909030732ea84291ab517b9e7123925415feac124fbe245359d3803cf91fd3"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-094",
+      "source_task_id": "HumanEval/94",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "2917cc77ff38fb09b3e0842cb947bd8c86efe2dbaae962ab27f9cf57c2164357"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-095",
+      "source_task_id": "HumanEval/95",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "6d628498141d3fa23772ee7ef11f440d2cfec0bd1e4e62e23e6d888260de2d51"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-096",
+      "source_task_id": "HumanEval/96",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "169d8f7ee20d83e281f711786d501b7dec099f53aa70411b0e81e2b25e0f6221"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-097",
+      "source_task_id": "HumanEval/97",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "186e4e0d66e5666f2dbae76f22d203e51722edcf1a2df53c50df26b74fbc3a11"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-098",
+      "source_task_id": "HumanEval/98",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "43e89db46d198402e9b1bb0c1af5ed8fd58b392e27a0a97c633af7f790fd81b3"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-099",
+      "source_task_id": "HumanEval/99",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "092ac081edecd4d4fcb44fe75aa624dfdf61e847137bb4602e82caaf8453a474"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-100",
+      "source_task_id": "HumanEval/100",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "720616bc0d7f77209f4c3e7039a2d0d88471a28a69e518d7c7ff2d15ec8ae527"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-101",
+      "source_task_id": "HumanEval/101",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "194ea4fb6fab4a737479d9e269f469715ed875620b4d95e2d654c9aa9ccde85b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-102",
+      "source_task_id": "HumanEval/102",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "7e18847abbe60420b3abac16fc3e17fd7c319086a0a3197deb527b149e07ff23"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-103",
+      "source_task_id": "HumanEval/103",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "7a3696a383e00c161e8996a130b387adc43869f9cb3c1b0aa49a30bba8124b02"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-104",
+      "source_task_id": "HumanEval/104",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "c260f65275060fa713dfc7bc7bb74165b0d0540f6b5bf71f8686dc2ab99e59d3"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-105",
+      "source_task_id": "HumanEval/105",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0dc5dbdf5ce502632a6b3e363484eaf9ed87e6bed51527e20a91391520ea8a37"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-106",
+      "source_task_id": "HumanEval/106",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "5174bc276838125d9b47615fc8601ae2ff8a1bd9fb9363110fc852a684df1971"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-107",
+      "source_task_id": "HumanEval/107",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "9380ed364757c22f3b157f36d81eca2fa050f0b189a811e33b01e6449e9597de"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-108",
+      "source_task_id": "HumanEval/108",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "fdd62ec5b827ce4ddef0ed72e86f54632604add52bc25f00713c87e8d58e48ba"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-109",
+      "source_task_id": "HumanEval/109",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1b5d45dfdadf20f6e2fde80f021a8bb410e6699d06f69e0c34004978d2b9c70f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-110",
+      "source_task_id": "HumanEval/110",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "5e19e85181ba21bc41bfa2480b7eccdac84d5cbcf1b694edfc3b71d990c4b714"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-111",
+      "source_task_id": "HumanEval/111",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0ab90c298b3c66c865d28d894fb9ec748a7dc44235b7015b62e2b0e694dae8e8"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-112",
+      "source_task_id": "HumanEval/112",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0e6211106475d30d9177f2e8c6cea66c9f8b74467907bb8df6b0d22924a30c68"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-113",
+      "source_task_id": "HumanEval/113",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "92db72f2388723e3df149415bb9f1d39c7658abf24759938d13bf10b7325236c"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-114",
+      "source_task_id": "HumanEval/114",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "09404dd6425199359ff3ad06a9f7a20a4b38098747129db069fbda2667805d50"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-115",
+      "source_task_id": "HumanEval/115",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "96c244e116b23c0b635871b30c3c860c2777dd3d865ec7f00942dfca106e9241"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-116",
+      "source_task_id": "HumanEval/116",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "87c6989afc0c51601f1adca33cff801d9747e9eba732155285946c7189aef450"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-117",
+      "source_task_id": "HumanEval/117",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "15f80a72d859cc663077ae36092797ba63c4f4f5c9705852b8363ea04d726947"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-118",
+      "source_task_id": "HumanEval/118",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "29b35f3013bfec4d53bc9831cf8cd7084eb975a1f7d7915ddbfd28a0e6fcf108"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-119",
+      "source_task_id": "HumanEval/119",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "4c77e11a86518d2f50d344cb4dcdae70769aeff115b67c3bf6da7c8c66cb6771"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-120",
+      "source_task_id": "HumanEval/120",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "6eadafc410bf85e022d48fe5629f26fc466efc93c63e6bae7a6e4f37e5e0d5f1"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-121",
+      "source_task_id": "HumanEval/121",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "40b7f74b028c13d1a857dfeea2291fab2d37e30b293b09006637ef3dfcc7d43f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-122",
+      "source_task_id": "HumanEval/122",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "5fed2b7603c6594d27af42083a4d4bf72cec0e9a6e45671ee2e45a9fe7d5fa66"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-123",
+      "source_task_id": "HumanEval/123",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "df98f024d71f2ae6699a92ff3bf77d61ff05412a0c0fca1dd9a9fe7493c3ed42"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-124",
+      "source_task_id": "HumanEval/124",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "c33b7dea22d41cf470147838d50ae5263a1d8e636b8d13f8aeccdc933b270c46"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-125",
+      "source_task_id": "HumanEval/125",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "513ac8eb28a4ea4d6ca54f88330e68f7a6800edc47fac18ca0ea490a897e8e03"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-126",
+      "source_task_id": "HumanEval/126",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "80fac8e8a6c1e19954dda133b4a0b420c645883cac3789a77efcbf663afc3941"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-127",
+      "source_task_id": "HumanEval/127",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "662dafbffb091f99b755a29a4edb2d488f52131f1dc44a773c7155b55f303095"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-128",
+      "source_task_id": "HumanEval/128",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "51019462fde493ccc82221673abf6fee636b9c8523976c2da1b4e68a57d12aa0"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-129",
+      "source_task_id": "HumanEval/129",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "4716a0aad59b6bcafd5bcba631b5afb385b390003f8efdef4ced0598d76461b4"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-130",
+      "source_task_id": "HumanEval/130",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "e85baf167e97299624aad427a24e9cc2afd51d9e4d071623c464e72c4b888ab2"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-131",
+      "source_task_id": "HumanEval/131",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "7c6efe868d51b39ac5d58af6889615c4b69fefefe2bdf4174c1d747849c481ca"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-132",
+      "source_task_id": "HumanEval/132",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "148814abe68743f4cfa6b3470965dc78477813c2f592dce5ea615aa042cf68e1"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-133",
+      "source_task_id": "HumanEval/133",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "be512865833767185f2d16123db0a0a1633ed30521fe3ad57b50f5d2da872b68"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-134",
+      "source_task_id": "HumanEval/134",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "25f442afb2cf02927504199901ef3a0276fab0776aa5e00b6d0db079ba16445f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-135",
+      "source_task_id": "HumanEval/135",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "fe50a76ca45d92187ddfade1b5b063cf8554156243b4bc9be928c2c94e0a7d1a"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-136",
+      "source_task_id": "HumanEval/136",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "9f51a6898bea61a7c07b95c1f688eb3a313b25b64591055d6537881d64e3d2b1"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-137",
+      "source_task_id": "HumanEval/137",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "57b3863a0f4c3f34d44394a21de1132746396cc706876973cc3c55e94970f200"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-138",
+      "source_task_id": "HumanEval/138",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "44f8af8410ac1016cdc409813f6ff5b8fa305d9576e57a9bb2c2dae0a12ccafc"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-139",
+      "source_task_id": "HumanEval/139",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "7e52710951fdda7c2f6fb108a419dddd7846fcfaf15012e3bb8d6e1606547f7e"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-140",
+      "source_task_id": "HumanEval/140",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0b2750b327624fd7749cf206d79dd359e7baedd9b7b8eb1585f8f32b69e6ec12"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-141",
+      "source_task_id": "HumanEval/141",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "8ec6ad3ebc0d88536d7569058fc5e95900f93a33d4f4fec76d90ff3bd5a4d3a2"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-142",
+      "source_task_id": "HumanEval/142",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "569b4b064ae2dbdc8f135caad6ea26824933e04eb12b6b64f731fce7f0705189"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-143",
+      "source_task_id": "HumanEval/143",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ad37019d69bdab983761aa482025a2156fa577272108a3be8aa923fa55bb3709"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-144",
+      "source_task_id": "HumanEval/144",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "b11961b97fcce1ad81299d7ddd1b691b79816a8604c5774a7f1f5db6289155a4"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-145",
+      "source_task_id": "HumanEval/145",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "a5e45e199f318de2e9da32ba5a575b9d00d2ae0be2221d51d682e7cd56b3b60b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-146",
+      "source_task_id": "HumanEval/146",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "53cfd91791b642f851bb25c1ed97266072d86dc252a0f8172d2eaca4e490025f"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-147",
+      "source_task_id": "HumanEval/147",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "e90a512800187651b39d2276e171f9a7f51a97ed246ab2e8be80c4c1bec43a08"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-148",
+      "source_task_id": "HumanEval/148",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "823919851555cdfe0c6b1f547d943c75acf3a3e41f8f912bfe20d589e8133007"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-149",
+      "source_task_id": "HumanEval/149",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1dfc2e25df0744e5c546ed4a06e0e9bbce7443f62afd82bb1101b88619c95391"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-150",
+      "source_task_id": "HumanEval/150",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "b5cc79f28a57f7b3d4e94515a1394b5d0414b8056ecb8b1366276bbad67bad80"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-151",
+      "source_task_id": "HumanEval/151",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "5c634802e82ad24e9aefc28c9e1bcf244bb9bd598a7ecc56c96e6fa2a0f26f16"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-152",
+      "source_task_id": "HumanEval/152",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "2f884a52517f3ba8ca86d3169ea97c119d5087c8d7cbd3b490040231044efbe5"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-153",
+      "source_task_id": "HumanEval/153",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "95f2cfef0fbc9e43faa7e307925f30fc0eb22f6dc64b7bbf59f573e5e816abf4"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-154",
+      "source_task_id": "HumanEval/154",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "83b433a84d0f7cfa43142742b4d577c5d66881c2e8609f1a74a787f6f0568b3b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-155",
+      "source_task_id": "HumanEval/155",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "4611f7ecf2ca143c275993ecf44ac999a6f932042f943b1eb398831a96d4bc5a"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-156",
+      "source_task_id": "HumanEval/156",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "54b9ab3f346d339f07ec3359953d784c0baf65c3bf51cafba0571f8421f5989b"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-157",
+      "source_task_id": "HumanEval/157",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "8b3b0c7e6c8924d88672d259e021a273a94b3cd45e567969b08c50ac56246de2"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-158",
+      "source_task_id": "HumanEval/158",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "d100ca59c6ab05e796f4e7f56909216f42b1d62a836d0411b76de381ce108055"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-159",
+      "source_task_id": "HumanEval/159",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "63fcbc386f8a346ea3921dbdf09a3a353655f5f01331b62d60330a7b43281939"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-160",
+      "source_task_id": "HumanEval/160",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "3feda2707f274a440980fb7cf8b8070a82ff581fbff52ac05f5231b9dadc0469"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-161",
+      "source_task_id": "HumanEval/161",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "4809d977013f046df6ed97d97fd68b9e1e1fa9c0a68c6a08b20b87cd51035408"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-162",
+      "source_task_id": "HumanEval/162",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "29db67862ece4a17b989760fac07a08bd6d5cf7f4cf4c446728a4559055a81da"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-163",
+      "source_task_id": "HumanEval/163",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "c7260ceac7bd634c0eb076d6a07eb02c93dced527d1d0a87f9f02735e204a6e9"
+    }
+  ]
+}

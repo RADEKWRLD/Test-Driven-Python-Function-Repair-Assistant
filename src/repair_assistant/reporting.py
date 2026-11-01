@@ -103,6 +103,11 @@ def _feedbackeval_history(output_dir: Path, row: Mapping[str, Any]) -> dict[str,
         for event in events
         if event.get("type") == "attempt_completed"
     }
+    for event in events:
+        if event.get("type") != "shared_first_inherited":
+            continue
+        payload = event["payload"]
+        costs.setdefault(int(payload["attempt"]), payload.get("attributed_cost", {}))
     passes = row.get("public_pass_by_attempt", [])
     rounds: list[dict[str, Any]] = []
     original = run_dir / "original_code/solution.py"
@@ -175,6 +180,7 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
         "task_id",
         "strategy",
         "repetition",
+        "shared_first_run_id",
         "outcome",
         "status",
         "attempts",
@@ -198,10 +204,32 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
         "model_latency_ms",
         "currency_cost",
         "currency",
+        "incremental_model_calls",
+        "incremental_prompt_tokens",
+        "incremental_completion_tokens",
+        "incremental_total_tokens",
         "error_type",
         "error_message",
     ]
-    _csv(output_dir / "raw-runs.csv", raw_fields, [{**row, **row.get("cost", {})} for row in rows])
+    raw_rows = []
+    for row in rows:
+        incremental = row.get("incremental_cost", {})
+        raw_rows.append(
+            {
+                **row,
+                **row.get("cost", {}),
+                **{
+                    f"incremental_{key}": incremental.get(key)
+                    for key in (
+                        "model_calls",
+                        "prompt_tokens",
+                        "completion_tokens",
+                        "total_tokens",
+                    )
+                },
+            }
+        )
+    _csv(output_dir / "raw-runs.csv", raw_fields, raw_rows)
     histories = [_feedbackeval_history(output_dir, row) for row in rows]
     (output_dir / "feedbackeval-repair-histories.jsonl").write_text(
         "".join(json.dumps(item, ensure_ascii=False) + "\n" for item in histories),
@@ -281,6 +309,14 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
             ],
         ),
         (
+            "conditional-repair.svg",
+            "共享首轮失败后的条件修复率",
+            [
+                ("最终公开修复率", "conditional_public_repair_rate", True, 1),
+                ("最终隐藏通过率", "conditional_hidden_pass_rate", True, 1),
+            ],
+        ),
+        (
             "cost.svg",
             "实际调用、用量与耗时",
             [
@@ -300,7 +336,8 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
         f"已记录 {len(rows)} / {planned} 个 run；有效运行 {data['valid_runs']}，"
         f"基础设施异常 {data['infrastructure_errors']}。",
         "",
-        "A 组一次提交，B/C 组最多三次总提交。隐藏测试仅在修复停止后评分。",
+        "A 组生成唯一的共享首轮提交；首轮失败后，B/C 从完全相同的代码快照分叉，"
+        "并各自最多追加两次。隐藏测试仅在修复停止后评分。",
         "主指标为最终整题隐藏测试通过率；正常修复失败和代码超时保留在分母中，基础设施异常单列。",
         "",
         "## 效果与可靠性",
@@ -329,9 +366,34 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
             "",
             f"C−B 同题配对差：{_format(comparison['hidden_pass_rate_difference'], percent=True)}，"
             f"共 {comparison['paired_runs']} 对。此处仅报告描述性差异。",
+            f"共享首轮公开失败样本共 {comparison['shared_failure_pairs']} 对；"
+            f"其中条件隐藏通过率 C−B 为 "
+            f"{_format(comparison['conditional_hidden_pass_rate_difference'], percent=True)}，"
+            f"C 独赢 {comparison['test_feedback_only_successes']} 对，"
+            f"B 独赢 {comparison['retry_only_successes']} 对。",
             "",
+            "## 共享首轮失败后的修复效果",
+            "",
+            "| 策略 | 首轮失败数 | 条件公开修复率 | 条件隐藏通过率 |",
+            "| --- | ---: | ---: | ---: |",
         ]
     )
+    for strategy in ("retry-without-feedback", "test-feedback"):
+        if strategy not in metrics:
+            continue
+        item = metrics[strategy]
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    LABELS[strategy],
+                    str(item.get("shared_first_failures", 0)),
+                    _format(item.get("conditional_public_repair_rate"), percent=True),
+                    _format(item.get("conditional_hidden_pass_rate"), percent=True),
+                ]
+            )
+            + " |"
+        )
     lines.extend(
         [
             "",
@@ -365,6 +427,10 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
         [
             "",
             "金额按提供的日期、模型和单价计算；缺少价格或用量时为 N/A，不代表零费用。",
+            "表中按策略归因时，B/C 都包含共享首轮成本，以表示各策略独立运行的等价成本。",
+            "共享首轮在物理上只调用一次，因此实验实际调用总数为 "
+            f"{_format(data.get('physical_cost', {}).get('model_calls'))}，实际总 token 为 "
+            f"{_format(data.get('physical_cost', {}).get('total_tokens'))}。",
             "成本包含已记录的基础设施失败请求。不同图表指标分别使用自己的刻度。",
             "",
             "## 错误分析（人工填写）",

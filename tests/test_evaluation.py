@@ -70,3 +70,51 @@ def test_tokens_per_success_is_missing_when_no_run_succeeds() -> None:
     )
 
     assert report["strategies"]["single-shot"]["tokens_per_successful_run"] is None
+
+
+def test_shared_first_conditional_effect_and_physical_cost_are_reported() -> None:
+    common = {
+        "task_id": "task",
+        "repetition": 1,
+        "outcome": "passed",
+        "first_public_passed": False,
+        "first_hidden_passed": False,
+        "final_public_passed": True,
+        "public_pass_by_attempt": [False, True],
+        "shared_first_run_id": "a-run",
+    }
+    report = aggregate_summaries(
+        [
+            {
+                **common,
+                "strategy": "single-shot",
+                "outcome": "failed",
+                "final_public_passed": False,
+                "final_hidden_passed": False,
+                "cost": {"model_calls": 1, "total_tokens": 10},
+            },
+            {
+                **common,
+                "strategy": "retry-without-feedback",
+                "final_hidden_passed": False,
+                "cost": {"model_calls": 2, "total_tokens": 20},
+                "incremental_cost": {"model_calls": 1, "total_tokens": 10},
+            },
+            {
+                **common,
+                "strategy": "test-feedback",
+                "final_hidden_passed": True,
+                "cost": {"model_calls": 2, "total_tokens": 22},
+                "incremental_cost": {"model_calls": 1, "total_tokens": 12},
+            },
+        ]
+    )
+
+    comparison = report["feedback_comparison"]
+    assert comparison["shared_failure_pairs"] == 1
+    assert comparison["conditional_hidden_pass_rate_difference"] == 1
+    assert comparison["test_feedback_only_successes"] == 1
+    assert comparison["retry_only_successes"] == 0
+    assert report["strategies"]["test-feedback"]["conditional_hidden_pass_rate"] == 1
+    assert report["physical_cost"]["model_calls"] == 3
+    assert report["physical_cost"]["total_tokens"] == 32

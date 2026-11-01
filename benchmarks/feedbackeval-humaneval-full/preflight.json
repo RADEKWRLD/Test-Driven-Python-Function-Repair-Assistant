@@ -1,0 +1,991 @@
+{
+  "tasks": 164,
+  "initial_public_failures": 164,
+  "timeouts": 0,
+  "results": [
+    {
+      "task_id": "feedbackeval-humaneval-000",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-001",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-002",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-003",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-004",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-005",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-006",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-007",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-008",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-009",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-010",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-011",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-012",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-013",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-014",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-015",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 2
+    },
+    {
+      "task_id": "feedbackeval-humaneval-016",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-017",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-018",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-019",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-020",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-021",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-022",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-023",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-024",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-025",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-026",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-027",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-028",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-029",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-030",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-031",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-032",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-033",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-034",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-035",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-036",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-037",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-038",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-039",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-040",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-041",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-042",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-043",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-044",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-045",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-046",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-047",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-048",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-049",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-050",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-051",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-052",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-053",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-054",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-055",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-056",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-057",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-058",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-059",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-060",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-061",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-062",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-063",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-064",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-065",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-066",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-067",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-068",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-069",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-070",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-071",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-072",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-073",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-074",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-075",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-076",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-077",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-078",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-079",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-080",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-081",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-082",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-083",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-084",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-085",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-086",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-087",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-088",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-089",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-090",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-091",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-092",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-093",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-094",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-095",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-096",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-097",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-098",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-099",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-100",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-101",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-102",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-103",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-104",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-105",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-106",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-107",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-108",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 2
+    },
+    {
+      "task_id": "feedbackeval-humaneval-109",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-110",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-111",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-112",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-113",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-114",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-115",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-116",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-117",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-118",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-119",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-120",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-121",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-122",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-123",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 137
+    },
+    {
+      "task_id": "feedbackeval-humaneval-124",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-125",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-126",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-127",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-128",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-129",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-130",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-131",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-132",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-133",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-134",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-135",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-136",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-137",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-138",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-139",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-140",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-141",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-142",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-143",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-144",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-145",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-146",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-147",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-148",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-149",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-150",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-151",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-152",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-153",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-154",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-155",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-156",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-157",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-158",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-159",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-160",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-161",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-162",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    },
+    {
+      "task_id": "feedbackeval-humaneval-163",
+      "initial_public_passed": false,
+      "timed_out": false,
+      "exit_code": 1
+    }
+  ]
+}

@@ -31,10 +31,10 @@ def test_cli_rejects_more_than_three_attempts() -> None:
         _parser().parse_args(["run", "task", "--max-attempts", "4"])
 
 
-def test_v3_defaults_and_resume_options() -> None:
+def test_v4_defaults_and_resume_options() -> None:
     args = _parser().parse_args(["benchmark", "--resume", "experiment"])
     assert args.max_attempts == 3
-    assert args.tasks_dir == Path("benchmarks/feedbackeval-humaneval")
+    assert args.tasks_dir == Path("benchmarks/feedbackeval-humaneval-full")
     assert args.resume == Path("experiment")
     assert args.repetitions == 1
 

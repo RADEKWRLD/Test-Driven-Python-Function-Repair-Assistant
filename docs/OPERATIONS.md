@@ -1,6 +1,6 @@
 # 操作手册（精简版）
 
-当前范围和指标以 [实验协议](EXPERIMENT_PROTOCOL.md) 为准；保留 50 道 FeedbackEval-HumanEval 正式题、DeepSeek 和三组 1/3/3。
+当前范围和指标以 [实验协议](EXPERIMENT_PROTOCOL.md) 为准；正式题库为完整164道 FeedbackEval-HumanEval，采用共享首轮分叉和三组1/3/3预算。
 
 ## 本机启动
 
@@ -42,13 +42,13 @@ REPAIR_ASSISTANT_MODEL=deepseek-flash
 # 三道演示题，9 个 run
 make experiment TASKS_DIR=benchmarks/tasks
 
-# 50 道正式题，三组一轮，150 个 run、最多 350 次调用
+# 164 道正式题，保存492条策略结果；最坏820次物理调用
 make experiment
 ```
 
-每道题的 B/C 组最多首次一次加修两次，公开通过即停止。重复实验为可选项，需要时显式设置 `REPETITIONS=3`，不是默认要求。
+每道题先由A生成一次共享首轮；公开失败后B/C继承同一快照并各自最多追加两次，公开通过即停止。重复实验需显式设置 `REPETITIONS=3`。
 
-现有题库已冻结，不再提供在线导入、自动筛选或断言拆分命令；无需下载 Hugging Face 数据或安装 datasets。
+现有164题已经冻结，正式运行无需联网下载数据。可复现导入脚本保留在 `tools/import_feedbackeval_humaneval_full.py`，不会在实验时执行。题库目录中的 `preflight.json` 应为 164 个初始公开失败、0 超时；`hidden-reference-preflight.json` 应为 164 个参考隐藏通过、0 超时。manifest 记录 HumanEval+ v0.1.10 来源哈希及 7 个 oracle 无效/跨版本不稳定输入的剔除数量。
 
 ## 结果与人工分析
 
@@ -56,7 +56,7 @@ make experiment
 
 events 是普通 JSONL，不做防篡改验证；公开测试文件保护仍保持原来的哈希校验和只读限制。历史 var/ 记录保留原位置。
 
-终端先输出 make check、make sandbox-test 和 doctor 检查。正式阶段先打印 Experiment 目录，每完成一个任务只打印组名（A组/group A、B组/group B、C组/group C）、重复轮次、策略、题目编号和 passed/failed/error。同题不同策略之间一空行，不同题之间两空行，组别切换加两行分割线；不改变原有随机调度顺序。
+题目×重复单元按seed随机化。每个单元必须先生成共享A；B/C分支先后按随机调度决定。终端逐条打印组、重复、题目和结果。
 
 整批正常结束后、Report 地址之前，统一按 A/B/C 组输出每组最多两个代码案例，按实际记录顺序选择：A 组第一个一次失败与第一个一次成功；B/C 组第一个首次失败但追加修复后成功，以及第一个首次失败且追加修复后仍失败。首次失败以首次公开或隐藏至少一项未通过判断；最终成功需公开和隐藏均通过。只有一次提交的 B/C 任务、基础设施异常不入选；没有符合条件的类别注明未出现。继续执行时从全批次记录选取，中断不输出最终案例。
 
@@ -79,10 +79,11 @@ report.md
 figures/hidden-pass-rates.svg
 figures/public-hidden-gap.svg
 figures/reliability.svg
+figures/conditional-repair.svg
 figures/cost.svg
 ```
 
-打开 report.md，先比较首次/最终隐藏通过率及 C−B 同题配对差，再看公开通过率、回归、超时与实际成本。报告中保留人工错误分析区，选 3～4 个真实案例填写。原始用量与 CSV 是复核依据，不从图表反推数据。
+打开 report.md，先看共享首轮失败数、B/C条件隐藏通过率、C独赢与B独赢，再看总体隐藏通过率、公隐差距、回归、超时和物理实际成本。
 
 ```bash
 .venv/bin/repair-agent events 20261031_001_001 --data-dir results/experiments/20261031_001

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-032",
+  "title": "FeedbackEval HumanEval repair: find_zero",
+  "goal": "Repair find_zero so it satisfies its documented behavior and the public examples while preserving its signature.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function find_zero and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "test_version": "feedbackeval-base-evalplus-v0.1.10-hidden-v2",
+  "provenance": {
+    "repair_dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_task_id": "HumanEval/32",
+    "candidate_source": "llm-based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "be8aa37afcf4e5672b86eb3845e3d742a5bb00a9ddef95dd638bc6368908a0d0",
+    "public_tests": "FeedbackEval frozen HumanEval base tests",
+    "hidden_tests": "EvalPlus HumanEval+ v0.1.10 base+extra inputs and oracle",
+    "evalplus_version": "v0.1.10",
+    "oracle_invalid_inputs_removed": 7,
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  }
+}

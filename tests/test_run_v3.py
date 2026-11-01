@@ -10,7 +10,7 @@ from repair_assistant.task import TaskSpec
 from repair_assistant.types import CommandResult
 
 
-def test_v3_evaluates_baseline_first_final_without_executing_candidates(
+def test_v4_evaluates_baseline_first_final_without_executing_candidates(
     tmp_path: Path,
     monkeypatch: Any,
 ) -> None:
@@ -92,7 +92,7 @@ def test_v3_evaluates_baseline_first_final_without_executing_candidates(
     assert (result.run_dir / "original_code/solution.py").is_file()
     assert (result.run_dir / "repair_attempts/01/solution.py").is_file()
     assert (result.run_dir / "repair_attempts/02/solution.py").is_file()
-    assert summary["protocol"]["version"] == 3
+    assert summary["protocol"]["version"] == 4
     assert summary["public_pass_by_attempt"] == [False, True]
     assert summary["first_success_attempt"] == 2
     assert summary["case_changes"]["baseline_to_final"]["fixed"] == 1

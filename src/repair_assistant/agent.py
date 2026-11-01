@@ -48,8 +48,8 @@ class RepairStrategy(StrEnum):
 
 
 MAX_ATTEMPTS = 3
-PROTOCOL_VERSION = 3
-PROTOCOL_NAME = "shared-public-test-stopping-v3"
+PROTOCOL_VERSION = 4
+PROTOCOL_NAME = "shared-first-fork-v4"
 MAX_SOLUTION_BYTES = 64 * 1024
 
 
@@ -87,6 +87,17 @@ class AgentResult:
         return self.attempts[-1]
 
 
+@dataclass(frozen=True, slots=True)
+class SharedFirstAttempt:
+    """A single first submission reused verbatim by both repair branches."""
+
+    origin_run_id: str
+    status: str
+    final_message: str | None
+    cost: AttemptCost
+    public_verification: VerificationResult
+
+
 class TestDrivenRepairAgent:
     """Collect bounded submissions while exposing diagnostics only to the feedback arm."""
 
@@ -104,11 +115,14 @@ class TestDrivenRepairAgent:
         strategy: RepairStrategy,
         max_attempts: int = MAX_ATTEMPTS,
         verifier: PublicVerifier | None = None,
+        shared_first: SharedFirstAttempt | None = None,
     ) -> None:
         if not 1 <= max_attempts <= MAX_ATTEMPTS:
             raise ValueError(f"max_attempts must be from 1 to {MAX_ATTEMPTS}")
         if strategy is not RepairStrategy.SINGLE_SHOT and sandbox is None:
             raise ValueError("multi-attempt strategies require a public-test sandbox")
+        if shared_first is not None and strategy is RepairStrategy.SINGLE_SHOT:
+            raise ValueError("single-shot creates the shared first attempt; it cannot inherit one")
         self.model = model
         self.sandbox = sandbox
         self.event_log = event_log
@@ -118,6 +132,7 @@ class TestDrivenRepairAgent:
         self.strategy = strategy
         self.max_attempts = 1 if strategy is RepairStrategy.SINGLE_SHOT else max_attempts
         self.verifier = verifier or PublicVerifier()
+        self.shared_first = shared_first
 
     def run(self, task: TaskSpec) -> AgentResult:
         if task.editable_paths != ("solution.py",):
@@ -127,7 +142,44 @@ class TestDrivenRepairAgent:
         previous_feedback: str | None = None
         self.event_log.append("user_message", "user", {"content": task.prompt()})
 
-        for number in range(1, self.max_attempts + 1):
+        first_number = 1
+        if self.shared_first is not None:
+            shared = self.shared_first
+            snapshot = self._snapshot(1)
+            attempts.append(
+                AttemptResult(
+                    1,
+                    shared.status,
+                    1,
+                    shared.final_message,
+                    shared.public_verification,
+                    shared.cost,
+                    snapshot,
+                )
+            )
+            self.event_log.append(
+                "shared_first_inherited",
+                "controller",
+                {
+                    "attempt": 1,
+                    "origin_run_id": shared.origin_run_id,
+                    "public_verification": shared.public_verification.to_dict(),
+                    "attributed_cost": shared.cost.to_dict(),
+                    "physical_model_call_in_this_branch": False,
+                },
+            )
+            if shared.public_verification.passed:
+                return AgentResult("public_tests_passed", self.strategy, tuple(attempts))
+            if self.strategy is RepairStrategy.TEST_FEEDBACK:
+                previous_feedback = _feedback(shared.public_verification, 1)
+                self.event_log.append(
+                    "feedback_added",
+                    "controller",
+                    {"attempt": 1, "content": previous_feedback},
+                )
+            first_number = 2
+
+        for number in range(first_number, self.max_attempts + 1):
             messages: list[Message] = [
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {

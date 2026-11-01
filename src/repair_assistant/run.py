@@ -15,6 +15,7 @@ from repair_assistant.agent import (
     PROTOCOL_VERSION,
     AgentResult,
     RepairStrategy,
+    SharedFirstAttempt,
     TestDrivenRepairAgent,
 )
 from repair_assistant.cases import compare_cases
@@ -40,6 +41,15 @@ class RunResult:
     first_hidden: VerificationResult
     final_hidden: VerificationResult
     baseline_hidden: VerificationResult
+
+
+@dataclass(frozen=True, slots=True)
+class SharedFirstSeed:
+    """Evidence and code inherited from the single physical first submission."""
+
+    attempt: SharedFirstAttempt
+    solution_path: Path
+    cost: dict[str, object]
 
 
 class RunExecutionError(RuntimeError):
@@ -68,6 +78,7 @@ class RunService:
         strategy: RepairStrategy = RepairStrategy.TEST_FEEDBACK,
         max_attempts: int = MAX_ATTEMPTS,
         run_id: str | None = None,
+        shared_first: SharedFirstSeed | None = None,
     ) -> RunResult:
         if not 1 <= max_attempts <= MAX_ATTEMPTS:
             raise ValueError(f"max_attempts must be from 1 to {MAX_ATTEMPTS}")
@@ -82,6 +93,7 @@ class RunService:
                 max_attempts=max_attempts,
                 run_id=run_id,
                 started=started,
+                shared_first=shared_first,
             )
         except (Exception, KeyboardInterrupt) as exc:
             status = (
@@ -133,12 +145,21 @@ class RunService:
         max_attempts: int,
         run_id: str,
         started: float,
+        shared_first: SharedFirstSeed | None,
     ) -> RunResult:
         run_dir = grouped_run_directory(self.data_dir, strategy.value, run_id)
         workspace = run_dir / "workspace"
         workspace_baseline = prepare_workspace(task, workspace)
         baseline_snapshot = run_dir / "original_code"
         shutil.copytree(workspace, baseline_snapshot, symlinks=True)
+        if shared_first is not None:
+            if strategy is RepairStrategy.SINGLE_SHOT:
+                raise ValueError("single-shot cannot inherit a shared first submission")
+            if not shared_first.solution_path.is_file():
+                raise ValueError("shared first solution snapshot is missing")
+            (workspace / "solution.py").write_text(
+                shared_first.solution_path.read_text(encoding="utf-8"), encoding="utf-8"
+            )
         log = EventLog(run_dir / "events.jsonl", run_id=run_id, task_id=task.task_id)
         log.append(
             "run_started",
@@ -157,6 +178,9 @@ class RunService:
                 "model_calls_per_attempt": 1,
                 "repair_pytest_enabled": strategy is not RepairStrategy.SINGLE_SHOT,
                 "detailed_test_feedback_enabled": strategy is RepairStrategy.TEST_FEEDBACK,
+                "shared_first_run_id": (
+                    shared_first.attempt.origin_run_id if shared_first is not None else None
+                ),
             },
         )
         repair_sandbox = None
@@ -189,6 +213,7 @@ class RunService:
                 attempts_dir=run_dir / "repair_attempts",
                 strategy=strategy,
                 max_attempts=max_attempts,
+                shared_first=shared_first.attempt if shared_first is not None else None,
             ).run(task)
         except Exception as exc:
             log.append(
@@ -274,7 +299,15 @@ class RunService:
         summary["test_version"] = task.test_version
         summary["duration_ms"] = round((time.monotonic() - started) * 1000)
         events = list(log.read())
-        summary["cost"] = _event_cost(events, model, self.pricing)
+        incremental_cost = _event_cost(events, model, self.pricing)
+        if shared_first is None:
+            summary["cost"] = incremental_cost
+            summary["incremental_cost"] = incremental_cost
+        else:
+            summary["shared_first_run_id"] = shared_first.attempt.origin_run_id
+            summary["shared_first_cost"] = shared_first.cost
+            summary["incremental_cost"] = incremental_cost
+            summary["cost"] = _combine_costs(shared_first.cost, incremental_cost)
         summary["test_runtime_ms"] = sum(
             event["payload"]["command_result"]["duration_ms"]
             for event in events
@@ -439,7 +472,9 @@ def _event_cost(
     calls = sum(e["type"] == "model_request" for e in events)
     failed = [e["payload"] for e in events if e["type"] == "model_call_failed"]
     totals = (
-        usage_totals(usages)
+        {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+        if calls == 0
+        else usage_totals(usages)
         if len(responses) == calls
         else dict.fromkeys(("prompt_tokens", "completion_tokens", "total_tokens"), None)
     )
@@ -456,3 +491,35 @@ def _event_cost(
         "pricing": pricing.to_dict() if pricing else None,
         "currency": pricing.currency if pricing else None,
     }
+
+
+def _combine_costs(shared: dict[str, object], incremental: dict[str, object]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key in (
+        "model_calls",
+        "prompt_tokens",
+        "completion_tokens",
+        "total_tokens",
+        "model_latency_ms",
+        "currency_cost",
+    ):
+        left = shared.get(key)
+        right = incremental.get(key)
+        result[key] = (
+            left + right
+            if isinstance(left, (int, float))
+            and not isinstance(left, bool)
+            and isinstance(right, (int, float))
+            and not isinstance(right, bool)
+            else None
+        )
+    shared_usage = shared.get("raw_usage")
+    incremental_usage = incremental.get("raw_usage")
+    result["raw_usage"] = [
+        *(shared_usage if isinstance(shared_usage, list) else []),
+        *(incremental_usage if isinstance(incremental_usage, list) else []),
+    ]
+    result["pricing"] = incremental.get("pricing") or shared.get("pricing")
+    currencies = {value for value in (shared.get("currency"), incremental.get("currency")) if value}
+    result["currency"] = next(iter(currencies)) if len(currencies) == 1 else None
+    return result

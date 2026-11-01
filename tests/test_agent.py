@@ -4,11 +4,17 @@ from pathlib import Path
 
 import pytest
 
-from repair_assistant.agent import MAX_ATTEMPTS, RepairStrategy, TestDrivenRepairAgent
+from repair_assistant.agent import (
+    MAX_ATTEMPTS,
+    AttemptCost,
+    RepairStrategy,
+    SharedFirstAttempt,
+    TestDrivenRepairAgent,
+)
 from repair_assistant.event_log import EventLog
 from repair_assistant.model import Message, ModelResponse, ToolCall, ToolDefinition
 from repair_assistant.task import TaskSpec, capture_workspace_baseline
-from repair_assistant.types import CommandResult
+from repair_assistant.types import CommandResult, VerificationResult
 
 
 class FakeSandbox:
@@ -82,6 +88,7 @@ def _build(
     strategy: RepairStrategy,
     *,
     max_attempts: int = 2,
+    shared_first: SharedFirstAttempt | None = None,
 ) -> tuple[TestDrivenRepairAgent, TaskSpec, EventLog]:
     workspace = tmp_path / "workspace"
     tests = workspace / "tests"
@@ -111,6 +118,7 @@ def _build(
         attempts_dir=tmp_path / "attempts",
         strategy=strategy,
         max_attempts=max_attempts,
+        shared_first=shared_first,
     )
     return agent, task, log
 
@@ -133,6 +141,39 @@ def test_feedback_arm_runs_pytest_and_exposes_failure_next_attempt(tmp_path: Pat
     assert "1 failed" in json.dumps(model.requests[1])
     assert result.attempts[1].cost.total_tokens == 7
     assert sum(event["type"] == "feedback_added" for event in log.read()) == 1
+
+
+def test_feedback_branch_inherits_shared_attempt_and_only_calls_model_for_retry(
+    tmp_path: Path,
+) -> None:
+    model = RecordingModel([_submission("def f(): return 1\n", tokens=7)])
+    sandbox = FakeSandbox([_result(0, "2 passed")])
+    first_public = VerificationResult(False, _result(1, "shared first failed"))
+    shared = SharedFirstAttempt(
+        origin_run_id="group-a-run",
+        status="solution_submitted",
+        final_message=None,
+        cost=AttemptCost(1, 10, 5, 15, 20),
+        public_verification=first_public,
+    )
+    agent, task, log = _build(
+        tmp_path,
+        model,
+        sandbox,
+        RepairStrategy.TEST_FEEDBACK,
+        max_attempts=3,
+        shared_first=shared,
+    )
+
+    result = agent.run(task)
+
+    assert result.status == "public_tests_passed"
+    assert len(result.attempts) == 2
+    assert len(model.requests) == 1
+    assert sandbox.commands == ["pytest-public"]
+    assert "shared first failed" in json.dumps(model.requests[0])
+    assert result.attempts[0].cost.total_tokens == 15
+    assert any(event["type"] == "shared_first_inherited" for event in log.read())
 
 
 def test_retry_arm_uses_pytest_to_stop_but_never_receives_diagnostics(tmp_path: Path) -> None:

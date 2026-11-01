@@ -1,7 +1,7 @@
 PYTHON ?= python3.12
 VENV ?= .venv
 IMAGE ?= function-repair/sandbox-python:dev
-TASKS_DIR ?= benchmarks/feedbackeval-humaneval
+TASKS_DIR ?= benchmarks/feedbackeval-humaneval-full
 MAX_ATTEMPTS ?= 3
 REPETITIONS ?= 1
 SEED ?= 20261016
@@ -11,6 +11,7 @@ MODEL ?=
 DATA_DIR ?= results
 PRICING_FILE ?=
 RESUME ?=
+DOCKER_PROXY ?=
 
 .PHONY: bootstrap format lint typecheck test check sandbox-build sandbox-test experiment
 
@@ -19,12 +20,12 @@ bootstrap:
 	$(VENV)/bin/pip install -e '.[dev]'
 
 format:
-	$(VENV)/bin/ruff format src tests
-	$(VENV)/bin/ruff check --fix src tests
+	$(VENV)/bin/ruff format src tests tools
+	$(VENV)/bin/ruff check --fix src tests tools
 
 lint:
-	$(VENV)/bin/ruff format --check src tests
-	$(VENV)/bin/ruff check src tests
+	$(VENV)/bin/ruff format --check src tests tools
+	$(VENV)/bin/ruff check src tests tools
 
 typecheck:
 	$(VENV)/bin/mypy src tests
@@ -35,7 +36,7 @@ test:
 check: lint typecheck test
 
 sandbox-build:
-	docker build -f docker/sandbox-python.Dockerfile -t $(IMAGE) .
+	docker build $(if $(strip $(DOCKER_PROXY)),--build-arg HTTP_PROXY=$(DOCKER_PROXY) --build-arg HTTPS_PROXY=$(DOCKER_PROXY)) -f docker/sandbox-python.Dockerfile -t $(IMAGE) .
 
 sandbox-test:
 	$(VENV)/bin/pytest -m sandbox
