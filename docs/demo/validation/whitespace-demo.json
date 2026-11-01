@@ -1,0 +1,48 @@
+{
+  "task_id": "public-pass-hidden-fail",
+  "purpose": "课设要求的公开通过、隐藏失败演示。使用题库中已有的演示代码，不是模型生成提交，不计入 20261101_001 的正式指标。",
+  "checked_at": "2026-11-01T22:23:18.248682+08:00",
+  "execution": {
+    "executor": "repair_assistant.sandbox.DockerSandbox",
+    "image": "function-repair/sandbox-python:dev",
+    "network": "none",
+    "workspace_readonly": true,
+    "hidden_tests_readonly": true,
+    "cpus": 1.0,
+    "memory": "512m",
+    "pids_limit": 128,
+    "command_timeout_seconds": 30,
+    "public_container_has_hidden_mount": false,
+    "model_calls": 0
+  },
+  "sources_sha256": {
+    "benchmarks/tasks/public-pass-hidden-fail/workspace/solution.py": "fccc83838b19d18574e524275dc8346a238b5adc3761a6690c4647937493b08b",
+    "benchmarks/tasks/public-pass-hidden-fail/workspace/tests/test_public.py": "776e67e702044af3cd8df501f38d31204a718a7e9224f711d79a9721c41240d6",
+    "benchmarks/tasks/public-pass-hidden-fail/hidden_tests/test_hidden.py": "55a316d3bd92f152b06c8c2bdf4aa69cc010130766f33c722393f4c638a510da"
+  },
+  "public": {
+    "command": "python -m pytest -q tests",
+    "exit_code": 0,
+    "timed_out": false,
+    "passed_test_functions": 5,
+    "failed_test_functions": 0,
+    "stdout": ".....                                                                    [100%]\n5 passed in 0.01s\n",
+    "stderr": ""
+  },
+  "hidden": {
+    "command": "python -m pytest -q /hidden_tests",
+    "exit_code": 1,
+    "timed_out": false,
+    "passed_test_functions": 0,
+    "failed_test_functions": 5,
+    "stdout_excerpt": "FFFFF                                                                    [100%]\n>       assert normalize_whitespace(\"a   b\") == \"a b\"\nE       AssertionError: assert 'a   b' == 'a b'\n5 failed in 0.03s\n",
+    "failed_cases": [
+      "test_repeated_spaces_collapse",
+      "test_tab_is_whitespace",
+      "test_newline_is_whitespace",
+      "test_mixed_whitespace_run",
+      "test_unicode_whitespace"
+    ],
+    "stderr": ""
+  }
+}

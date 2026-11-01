@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1649db">
+  <meta name="description" content="课题07课程设计报告：研究目标、修复程序、隔离配置、公开与隐藏测试、三组对照、实验指标、补丁轨迹与要求完成情况。">
+  <title>测试驱动的 Python 函数修复助手｜课题 07 课程设计报告</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: oklch(98% .006 255); --ink: oklch(22% .035 260);
+      --muted: oklch(46% .035 260); --line: oklch(86% .022 260);
+      --blue: oklch(49% .23 265); --blue-soft: oklch(94% .028 265);
+      --green: oklch(40% .11 155); --green-soft: oklch(95% .025 155);
+      --red: oklch(45% .17 25); --red-soft: oklch(96% .015 25);
+      --amber: oklch(43% .10 75); --amber-soft: oklch(96% .028 85);
+      --display: "DIN Condensed", "Avenir Next Condensed", "Bahnschrift Condensed", "Hiragino Sans GB", sans-serif;
+      --body: "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px;
+      --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px;
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { margin: 0; min-height: 100%; }
+    body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.65; }
+    button, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; opacity: .36; }
+    button:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+    a { color: var(--blue); text-underline-offset: 4px; }
+    a:hover { text-decoration-thickness: 2px; }
+    button { color: inherit; }
+    ::selection { color: var(--paper); background: var(--blue); }
+    .topbar { position: fixed; inset: 0 0 auto; height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 36px; border-bottom: 1px solid var(--line); background: var(--paper); z-index: 10; }
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 13px; letter-spacing: .035em; }
+    .brand-mark { display: grid; place-items: center; width: 30px; height: 30px; background: var(--blue); color: var(--paper); font-family: var(--display); font-size: 23px; line-height: 1; }
+    .brand small { color: var(--muted); }
+    .toolbar { display: flex; align-items: center; gap: 6px; }
+    .tool { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 36px; padding: 4px 11px; border: 1px solid transparent; border-radius: 3px; background: transparent; font-size: 12px; }
+    .tool:hover, .tool[aria-pressed="true"] { border-color: var(--line); background: var(--blue-soft); }
+    .tool svg { width: 16px; height: 16px; }
+    .rail { position: fixed; inset: 64px auto 64px 0; width: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border-right: 1px solid var(--line); z-index: 8; }
+    .rail button { width: 29px; height: 24px; min-height: 0; padding: 0; line-height: 1; border: none; background: transparent; font-family: var(--display); font-size: 14px; color: var(--muted); }
+    .rail button:hover { color: var(--blue); background: var(--blue-soft); }
+    .rail button[aria-current="step"] { color: var(--paper); background: var(--blue); }
+    main { margin: 64px 0 64px 65px; }
+    .slide { min-height: calc(100dvh - 128px); padding: clamp(24px, 3.4vw, 52px) clamp(28px, 5.4vw, 88px); display: flex; flex-direction: column; gap: 24px; max-width: 1800px; margin: auto; }
+    .slide.active { animation: enter .35s cubic-bezier(.16, 1, .3, 1) both; }
+    @keyframes enter { from { opacity: 0; } to { opacity: 1; } }
+    .eyebrow { margin: 0; display: flex; align-items: center; gap: 12px; color: var(--blue); font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: .12em; }
+    .eyebrow::before { content: ""; width: 24px; height: 2px; background: currentColor; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2 { font-weight: 700; letter-spacing: -.055em; line-height: 1.22; text-wrap: balance; }
+    h1 { font-size: clamp(40px, 4.8vw, 76px); }
+    h2 { font-size: clamp(29px, 3.35vw, 52px); }
+    h3 { font-size: 19px; line-height: 1.45; font-weight: 600; }
+    .lede { color: var(--muted); font-size: clamp(15px, 1.35vw, 20px); max-width: 64ch; }
+    .accent { color: var(--blue); }
+    .muted { color: var(--muted); }
+    .tiny { font-size: 12px; }
+    .mono, code, pre { font-family: var(--mono); }
+    code { font-size: .88em; }
+    p code, td code, li code { background: var(--blue-soft); padding: 2px 5px; border-radius: 2px; }
+    .chapter-head { display: flex; flex-direction: column; gap: 12px; }
+    .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+    .two-col > * { min-width: 0; }
+    .split-wide { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); }
+    .stack { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+    .section-label { color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .05em; }
+    .source { margin-top: auto; padding-top: 12px; color: var(--muted); font-size: 11px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+    .source a { color: inherit; }
+    .caption { color: var(--muted); font-size: 12px; }
+    .rule-note { padding: 16px 0; border-top: 1px solid var(--line); display: flex; gap: 16px; align-items: baseline; }
+    .rule-note strong { color: var(--blue); white-space: nowrap; font-size: 13px; }
+    .rule-note span { font-size: 14px; }
+    .tag { display: inline-flex; align-items: center; padding: 3px 8px; background: var(--blue-soft); color: var(--blue); font-size: 11px; line-height: 1.6; font-weight: 600; }
+    .tag.pass { background: var(--green-soft); color: var(--green); }
+    .tag.fail { background: var(--red-soft); color: var(--red); }
+    .tag.warn { background: var(--amber-soft); color: var(--amber); }
+    .hero { padding-top: clamp(28px, 5vh, 68px); }
+    .hero-layout { display: grid; grid-template-columns: 1.05fr 1fr; gap: 52px; align-items: center; flex: 1; }
+    .hero-copy { display: flex; flex-direction: column; gap: 26px; }
+    .hero-copy h1 span { display: block; }
+    .hero-question { font-size: 17px; max-width: 32em; }
+    .hero-meta { display: flex; gap: 24px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+    .blueprint { position: relative; padding: 28px; background: var(--blue); color: var(--paper); min-height: 370px; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; }
+    .blueprint .draft-label { display: flex; justify-content: space-between; font-size: 11px; opacity: .8; letter-spacing: .1em; }
+    .bp-box { border: 1px solid oklch(83% .07 265); padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .bp-box strong { font-size: 15px; }
+    .bp-box span { font-size: 11px; opacity: .8; }
+    .bp-join { text-align: center; font-size: 12px; letter-spacing: .14em; opacity: .8; }
+    .bp-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .bp-bottom .bp-box { align-items: start; flex-direction: column; gap: 4px; }
+    .bp-small { font-size: 11px; opacity: .85; }
+    .arch { display: grid; grid-template-columns: 210px 1fr 240px; grid-template-rows: auto auto; gap: 20px 30px; align-items: center; }
+    .arch-input { padding: 22px 0; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line); }
+    .arch-input ul { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+    .arch-center { padding: 23px; background: var(--blue); color: var(--paper); position: relative; }
+    .arch-center::before { content: "→"; position: absolute; left: -26px; top: 40%; color: var(--blue); font-size: 22px; }
+    .arch-center p { color: oklch(90% .05 265); font-size: 13px; margin-top: 8px; }
+    .module-list { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 20px; padding-top: 15px; border-top: 1px solid oklch(70% .12 265); font-size: 12px; }
+    .arch-side { display: flex; flex-direction: column; gap: 14px; }
+    .arch-end { position: relative; border: 1px solid var(--line); padding: 17px; }
+    .arch-end::before { content: "→"; position: absolute; left: -26px; top: 20%; color: var(--blue); font-size: 22px; }
+    .arch-end small { display: block; margin-top: 5px; font-size: 11px; color: var(--muted); }
+    .arch-hidden { grid-column: 2 / 4; display: flex; justify-content: space-between; align-items: center; gap: 20px; background: var(--blue-soft); padding: 18px 22px; }
+    .arch-hidden code { font-size: 11px; color: var(--blue); }
+    .arch-output { border-top: 1px solid var(--line); padding-top: 15px; grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px 36px; }
+    .step { padding-top: 14px; border-top: 1px solid var(--line); }
+    .step-no { color: var(--blue); font-family: var(--display); font-size: 38px; line-height: 1; margin-bottom: 12px; }
+    .step p { color: var(--muted); font-size: 13px; margin-top: 8px; }
+    .step code { display: block; color: var(--blue); font-size: 11px; margin-top: 12px; }
+    .security-panel { background: var(--ink); color: var(--paper); padding: 26px 30px; }
+    .security-panel h3 { font-size: 14px; color: oklch(81% .04 265); margin-bottom: 16px; }
+    pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.9; }
+    .security-panel pre { font-size: 13px; color: oklch(91% .025 265); }
+    .checklist { display: flex; flex-direction: column; gap: 0; }
+    .check { border-bottom: 1px solid var(--line); padding: 14px 0; display: grid; grid-template-columns: 28px 1fr; gap: 14px; }
+    .check i { color: var(--blue); font-style: normal; font-size: 19px; }
+    .check strong { font-size: 15px; }
+    .check p { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .dataset-flow { display: grid; grid-template-columns: 1fr 48px 1fr; gap: 20px; align-items: center; }
+    .dataset-title { font-family: var(--display); font-size: 64px; color: var(--blue); line-height: 1; }
+    .dataset-col { border-top: 2px solid var(--ink); padding-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .dataset-col p { font-size: 14px; color: var(--muted); }
+    .dataset-arrow { color: var(--blue); font-size: 30px; text-align: center; }
+    .dataset-foot { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 13px; }
+    .dataset-foot strong { display: block; margin-bottom: 6px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+    th, td { padding: 15px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { font-size: 11px; color: var(--muted); font-weight: 600; border-top: 1px solid var(--line); }
+    td:first-child, th:first-child { padding-left: 0; }
+    td:last-child, th:last-child { padding-right: 0; }
+    .arm-name { display: flex; align-items: center; gap: 10px; }
+    .arm-letter { display: grid; place-items: center; width: 28px; height: 28px; background: var(--blue-soft); color: var(--blue); font-family: var(--display); font-size: 22px; flex-shrink: 0; }
+    .arm-name code { background: transparent; padding: 0; font-size: 12px; }
+    .row-highlight { background: var(--blue-soft); }
+    .fork-layout { display: grid; grid-template-columns: 1fr 1.7fr; gap: 48px; align-items: center; }
+    .fork-root { padding: 22px; background: var(--blue); color: var(--paper); }
+    .fork-root p { font-size: 13px; margin-top: 10px; }
+    .fork-branches { display: flex; flex-direction: column; gap: 18px; position: relative; }
+    .fork-branch { border: 1px solid var(--line); padding: 16px 20px; position: relative; }
+    .fork-branch::before { content: "→"; position: absolute; left: -35px; top: 35%; color: var(--blue); font-size: 24px; }
+    .fork-branch h3 { font-size: 16px; }
+    .fork-branch p { font-size: 12px; color: var(--muted); margin-top: 5px; }
+    .fork-branch.feedback { border-color: var(--blue); background: var(--blue-soft); }
+    .equation { display: flex; gap: 20px; align-items: baseline; padding: 17px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); font-size: 15px; }
+    .equation b { font-family: var(--display); font-size: 32px; color: var(--blue); }
+    .results-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 48px; }
+    .bar-chart { display: flex; flex-direction: column; gap: 26px; padding: 20px 0 8px; }
+    .bar-row { display: grid; grid-template-columns: 110px 1fr 72px; gap: 16px; align-items: center; }
+    .bar-label { font-size: 13px; }
+    .bar-label b { font-family: var(--display); font-size: 22px; margin-right: 6px; }
+    .bar-track { height: 34px; background: var(--blue-soft); overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; background: oklch(71% .04 265); transform-origin: left; animation: bar-in .7s cubic-bezier(.16, 1, .3, 1) both; }
+    .bar-fill.b { background: oklch(62% .11 265); }
+    .bar-fill.c { background: var(--blue); }
+    @keyframes bar-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .bar-value { font-family: var(--display); font-size: 29px; line-height: 1; text-align: right; }
+    .chart-axis { display: flex; justify-content: space-between; margin: 0 88px 0 126px; font-size: 10px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 5px; }
+    .chart-legend { display: flex; gap: 20px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+    .legend-item { display: inline-flex; align-items: center; gap: 7px; }
+    .legend-item i { display: inline-block; width: 10px; height: 10px; background: var(--blue); }
+    .result-callout { border-top: 2px solid var(--blue); padding-top: 15px; display: flex; flex-direction: column; gap: 15px; }
+    .result-callout .gain { font-family: var(--display); font-size: 76px; line-height: 1; color: var(--blue); }
+    .result-callout .gain span { font-size: 25px; }
+    .result-callout p { font-size: 14px; }
+    .result-callout .caption { font-size: 12px; }
+    .mini-table td, .mini-table th { padding-top: 9px; padding-bottom: 9px; font-size: 12px; }
+    .tile-rows { display: flex; flex-direction: column; gap: 24px; }
+    .tile-row { display: grid; grid-template-columns: 72px minmax(0, 1fr) 82px; gap: 18px; align-items: center; }
+    .tiles { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 7px; }
+    .tile { aspect-ratio: 1; min-width: 0; min-height: 24px; display: grid; place-items: center; font-size: 13px; background: var(--blue-soft); color: var(--muted); border: 1px solid var(--line); }
+    .tile.success { background: var(--blue); border-color: var(--blue); color: var(--paper); }
+    .tile-percent { font-family: var(--display); font-size: 36px; color: var(--blue); text-align: right; }
+    .pair-summary { display: flex; gap: 28px; padding-top: 24px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+    .pair-summary span { font-size: 12px; color: var(--muted); }
+    .pair-summary b { display: block; color: var(--ink); font-family: var(--display); font-size: 36px; line-height: 1.2; }
+    .small-callout { background: var(--blue-soft); padding: 20px 24px; font-size: 14px; }
+    .case-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: center; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tab { padding: 8px 14px; border: 1px solid var(--line); background: transparent; font-size: 13px; border-radius: 2px; }
+    .tab[aria-selected="true"] { color: var(--paper); background: var(--blue); border-color: var(--blue); }
+    .case-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+    .code-window { background: var(--ink); color: oklch(91% .02 265); min-width: 0; }
+    .code-title { padding: 9px 18px; display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid oklch(38% .035 260); font-size: 11px; color: oklch(78% .035 260); }
+    .code-window pre { padding: 20px; font-size: 12px; min-height: 154px; }
+    .diff { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .diff.minus { color: oklch(82% .08 25); background: oklch(31% .05 25); }
+    .diff.plus { color: oklch(85% .08 155); background: oklch(30% .04 155); }
+    .feedback-box { padding: 16px 20px; background: var(--blue-soft); }
+    .feedback-box pre { margin-top: 7px; font-size: 12px; }
+    .case-insight { font-size: 14px; }
+    .case-state { display: flex; gap: 8px; flex-wrap: wrap; }
+    .replay { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .primary { border: 1px solid var(--blue); color: var(--paper); background: var(--blue); padding: 8px 16px; font-size: 12px; border-radius: 2px; }
+    .secondary { border: 1px solid var(--line); color: var(--ink); background: transparent; padding: 8px 14px; font-size: 12px; border-radius: 2px; }
+    .primary:hover { background: oklch(42% .21 265); }
+    .secondary:hover { background: var(--blue-soft); }
+    .case-evidence { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; }
+    .case-stage { color: var(--muted); font-size: 12px; }
+    .timeline { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .timeline div { background: var(--paper); padding: 13px 16px; font-size: 12px; }
+    .timeline div.current { background: var(--blue-soft); }
+    .timeline strong { display: block; margin-bottom: 3px; }
+    .warning { border: 1px solid oklch(79% .07 80); background: var(--amber-soft); padding: 18px 22px; font-size: 13px; color: var(--amber); }
+    .warning strong { display: block; font-size: 15px; margin-bottom: 5px; }
+    .oracle-values { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .oracle-value { border-top: 1px solid var(--line); padding-top: 18px; }
+    .oracle-value code { display: block; font-size: 37px; color: var(--blue); line-height: 1.4; margin-bottom: 6px; }
+    .oracle-value span { font-size: 12px; color: var(--muted); }
+    .cost-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; align-items: start; }
+    .ledger { border-top: 2px solid var(--ink); padding-top: 20px; display: flex; flex-direction: column; gap: 18px; }
+    .ledger-row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+    .ledger-row span { font-size: 12px; }
+    .ledger-row b { font-family: var(--display); font-size: 30px; line-height: 1.2; }
+    .file-tree { background: var(--ink); color: oklch(89% .03 265); padding: 24px 28px; font-size: 12px; }
+    .file-tree pre { font-size: 12px; line-height: 1.85; }
+    .deliverable-list { display: flex; flex-direction: column; gap: 15px; }
+    .deliverable { padding-bottom: 14px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 32px 1fr; gap: 12px; }
+    .deliverable b { font-family: var(--display); color: var(--blue); font-size: 24px; }
+    .deliverable strong { display: block; font-size: 14px; }
+    .deliverable p { font-size: 12px; color: var(--muted); }
+    .command-box { position: relative; border: 1px solid var(--line); background: var(--blue-soft); }
+    .command-box pre { padding: 18px 90px 18px 20px; font-size: 12px; line-height: 1.8; }
+    .copy { position: absolute; top: 12px; right: 12px; border: 1px solid var(--line); background: var(--paper); padding: 4px 10px; font-size: 11px; }
+    .takeaways { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 23px; counter-reset: takeaway; }
+    .takeaways li { display: grid; grid-template-columns: 40px 1fr; gap: 16px; }
+    .takeaways li::before { counter-increment: takeaway; content: "0" counter(takeaway); color: var(--blue); font-family: var(--display); font-size: 30px; line-height: 1.35; }
+    .takeaways strong { font-size: 19px; }
+    .takeaways p { font-size: 13px; color: var(--muted); margin-top: 5px; }
+    .closing-line { border-top: 2px solid var(--blue); padding-top: 20px; color: var(--blue); font-size: clamp(20px, 2.25vw, 34px); font-weight: 600; }
+    .intro-arms { display: flex; flex-direction: column; gap: 18px; }
+    .intro-arm { display: grid; grid-template-columns: 34px minmax(0, 1fr) 72px; gap: 18px; align-items: center; padding: 23px 0; border-top: 1px solid var(--line); }
+    .intro-arm h3 { font-size: 23px; }
+    .intro-arm p { color: var(--muted); font-size: 14px; margin-top: 5px; }
+    .intro-arm > strong { font-family: var(--display); font-size: 28px; text-align: right; white-space: nowrap; }
+    .intro-arm.selected { color: var(--blue); border-color: var(--blue); }
+    .plain-arch { display: flex; flex-direction: column; gap: 22px; }
+    .architecture-input { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 26px; padding: 15px 20px; background: var(--blue-soft); font-size: 14px; }
+    .actors { display: grid; grid-template-columns: minmax(0, 1fr) 180px minmax(0, 1fr); align-items: center; }
+    .actor { border: 1px solid var(--line); padding: 25px; }
+    .actor h3 { font-size: 25px; margin-top: 8px; }
+    .actor p { font-size: 15px; margin: 14px 0 18px; }
+    .actor code { font-size: 11px; color: var(--muted); }
+    .actor.controller { background: var(--blue); color: var(--paper); border-color: var(--blue); }
+    .actor.controller .section-label, .actor.controller code { color: oklch(88% .05 265); }
+    .actor-arrow { display: flex; flex-direction: column; align-items: center; gap: 18px; font-size: 13px; color: var(--blue); }
+    .execution-path { display: flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid var(--line); padding: 20px 25px; }
+    .execution-path strong { font-size: 18px; }
+    .execution-path p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+    .execution-path > span { color: var(--blue); font-size: 13px; text-align: center; }
+    .test-side { border-top: 2px solid var(--blue); padding-top: 18px; display: flex; flex-direction: column; align-items: start; gap: 17px; }
+    .test-side pre { background: var(--blue-soft); padding: 15px 18px; width: 100%; font-size: 16px; }
+    .test-side p { font-size: 15px; }
+    .test-side .caption { font-size: 12px; }
+    .plain-list { padding: 0 0 0 1.5em; margin: 0; display: flex; flex-direction: column; gap: 13px; font-size: 14px; }
+    .sequence-wrap { width: 100%; min-width: 0; overflow-x: auto; }
+    .sequence-svg { display: block; width: 100%; min-width: 700px; max-height: 480px; font-family: var(--body); color: var(--ink); }
+    .seq-head rect { fill: var(--blue-soft); stroke: var(--line); }
+    .seq-head text { fill: var(--ink); text-anchor: middle; font-size: 15px; font-weight: 600; }
+    .seq-life path { fill: none; stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 5 5; }
+    .seq-message path { fill: none; stroke: currentColor; stroke-width: 1.5; marker-end: url(#seq-arrow); }
+    .seq-message text { fill: currentColor; font-size: 14px; text-anchor: middle; }
+    .seq-message.blue { color: var(--blue); }
+    .seq-loop { fill: var(--blue-soft); stroke: var(--line); stroke-dasharray: 5 4; }
+    .seq-loop-label { fill: var(--blue); font-size: 12px; }
+    .run-steps { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 30px 45px; }
+    .run-step { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 16px; border-top: 1px solid var(--line); padding-top: 16px; }
+    .run-step > b { color: var(--blue); font-family: var(--display); font-size: 40px; line-height: 1; }
+    .run-step p { color: var(--muted); font-size: 13px; margin: 8px 0 12px; }
+    .run-step code { display: block; margin-top: 5px; font-size: 12px; overflow-wrap: anywhere; color: var(--blue); }
+    .example-rule { display: flex; align-items: baseline; gap: 20px; padding: 15px 20px; background: var(--blue-soft); font-size: 15px; }
+    .example-rule > strong { color: var(--blue); white-space: nowrap; }
+    .array-comparison { display: flex; flex-direction: column; gap: 14px; padding: 16px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .array-comparison > div { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .array-comparison span { color: var(--muted); font-size: 13px; }
+    .array-comparison strong { font-family: var(--mono); font-size: clamp(18px, 2vw, 29px); }
+    .wrong { color: var(--red); }
+    .case-explanations { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+    .case-explanations > div { border-top: 1px solid var(--line); padding-top: 12px; }
+    .case-explanations strong { font-size: 14px; color: var(--blue); }
+    .case-explanations p { font-size: 12px; margin-top: 7px; line-height: 1.85; }
+    #cases .code-window pre { min-height: 125px; }
+    #cases .case-insight { font-size: 12px; }
+    .metric-definitions td:first-child { width: 24%; font-weight: 600; }
+    .metric-definitions td:nth-child(2) { width: 48%; }
+    .requirement-table td:first-child { width: 29%; }
+    .requirement-table td:nth-child(2) { width: 52%; }
+    .requirement-table td, .metric-definitions td { font-size: 13px; }
+    #generalization-demo .test-side { gap: 10px; }
+    #generalization-demo .code-window pre { min-height: 100px; }
+    .bottom { position: fixed; inset: auto 0 0; height: 64px; background: var(--paper); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 36px 0 94px; z-index: 10; }
+    .progress-track { position: absolute; height: 3px; left: 0; bottom: 0; right: 0; background: var(--blue-soft); }
+    .progress-fill { height: 100%; width: 4.348%; background: var(--blue); transition: width .2s ease; }
+    .page-info { display: flex; gap: 18px; align-items: baseline; font-size: 12px; color: var(--muted); min-width: 0; }
+    .page-info b { color: var(--blue); font-family: var(--display); font-size: 23px; letter-spacing: .04em; white-space: nowrap; }
+    .page-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .nav-controls button { display: grid; place-items: center; width: 36px; height: 34px; border: 1px solid var(--line); background: transparent; font-size: 19px; }
+    .nav-controls button:hover:not(:disabled) { color: var(--paper); background: var(--blue); border-color: var(--blue); }
+    .key-hint { font-size: 11px; color: var(--muted); margin-right: 12px; }
+    .overlay { position: fixed; inset: 0; z-index: 30; background: oklch(20% .03 260 / .5); padding: 70px 8vw; display: flex; align-items: start; justify-content: center; overflow-y: auto; }
+    .overview-panel { max-width: 1000px; width: 100%; background: var(--paper); padding: 32px; box-shadow: 0 20px 80px oklch(15% .02 260 / .25); }
+    .panel-head { display: flex; justify-content: space-between; gap: 20px; align-items: center; margin-bottom: 22px; }
+    .panel-head h2 { font-size: 26px; }
+    .overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .overview-item { text-align: left; min-height: 90px; border: 1px solid var(--line); background: transparent; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .overview-item:hover, .overview-item[aria-current="page"] { background: var(--blue-soft); border-color: var(--blue); }
+    .overview-item b { color: var(--blue); font-family: var(--display); font-size: 23px; }
+    .overview-item span { font-size: 13px; }
+    .notes-panel { position: fixed; z-index: 20; right: 22px; bottom: 80px; width: min(430px, calc(100vw - 44px)); max-height: 55dvh; overflow: auto; background: var(--ink); color: var(--paper); padding: 24px; box-shadow: 0 12px 40px oklch(15% .02 260 / .22); }
+    .notes-panel h2 { font-size: 16px; color: oklch(81% .04 265); letter-spacing: 0; margin-bottom: 12px; }
+    .notes-panel p { font-size: 14px; line-height: 1.9; }
+    .toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); z-index: 40; padding: 9px 18px; background: var(--ink); color: var(--paper); font-size: 13px; max-width: calc(100vw - 32px); }
+    .skip { position: fixed; left: 10px; top: -60px; z-index: 60; background: var(--blue); color: var(--paper); padding: 8px 16px; }
+    .skip:focus { top: 10px; }
+    .no-js { padding: 15px 30px; margin: 65px 0 0 65px; background: var(--amber-soft); color: var(--amber); }
+    body.notes-open .tool[data-action="notes"] { background: var(--blue-soft); border-color: var(--line); }
+    @media (min-width: 1550px) { body { font-size: 18px; } .slide { gap: 30px; } .lede { font-size: 21px; } table { font-size: 16px; } .steps { gap: 38px 48px; } .step p { font-size: 15px; } .source { font-size: 12px; } }
+    @media (max-width: 1100px) {
+      .topbar { padding: 0 24px; } .slide { padding: 28px 32px; gap: 20px; }
+      .hero-layout { gap: 28px; } .hero-meta { gap: 12px; flex-wrap: wrap; }
+      .arch { grid-template-columns: 165px 1fr 195px; gap: 20px 24px; }
+      .arch-center { padding: 18px; } .arch-input ul { font-size: 12px; }
+      .results-layout, .cost-layout { gap: 28px; } .result-callout .gain { font-size: 64px; }
+      .bar-row { grid-template-columns: 90px 1fr 64px; gap: 12px; } .chart-axis { margin-left: 102px; margin-right: 76px; }
+      .fork-layout { gap: 38px; } .tiles { gap: 4px; }
+      .actors { grid-template-columns: minmax(0, 1fr) 150px minmax(0, 1fr); }
+      .actor { padding: 20px; } .actor-arrow { font-size: 11px; }
+    }
+    @media (min-width: 761px) and (max-height: 850px) {
+      .slide { padding: 22px 42px; gap: 16px; }
+      h1 { font-size: clamp(40px, 4.3vw, 62px); } h2 { font-size: clamp(30px, 3vw, 43px); }
+      .chapter-head { gap: 8px; } .lede { font-size: 16px; }
+      .stack { gap: 13px; } .hero { padding-top: 28px; }
+      .intro-arm { padding: 17px 0; } .intro-arm h3 { font-size: 21px; }
+      .rail { gap: 4px; } .rail button { height: 24px; }
+      .actor { padding: 18px; } .actor p { font-size: 13px; margin: 10px 0 12px; }
+      .plain-arch { gap: 16px; } .execution-path { padding: 14px 20px; }
+      .test-side { gap: 13px; } .test-side p { font-size: 14px; }
+      .plain-list { gap: 9px; font-size: 13px; }
+      .file-tree { padding: 18px 22px; } .file-tree pre { font-size: 11px; line-height: 1.7; }
+      .sequence-svg { max-height: 400px; }
+      .run-steps { gap: 20px 36px; } .run-step p { font-size: 12px; }
+      .bar-chart { gap: 18px; padding-top: 12px; } .bar-track { height: 28px; }
+      .mini-table td, .mini-table th { padding-top: 7px; padding-bottom: 7px; }
+      #cases .stack { gap: 12px; } #cases .code-window pre { min-height: 100px; padding: 14px 18px; }
+      #cases .timeline div { padding: 8px 13px; } .case-explanations p { font-size: 11px; }
+      .source { font-size: 10px; padding-top: 6px; }
+      .requirement-table td, .metric-definitions td { font-size: 12px; padding-top: 9px; padding-bottom: 9px; }
+      #generalization-demo .code-window pre { min-height: 72px; }
+      #generalization-demo .example-rule { padding-top: 11px; padding-bottom: 11px; }
+    }
+    @media (max-width: 760px) {
+      .topbar { height: 58px; padding: 0 16px; } .brand { font-size: 11px; gap: 8px; min-width: 0; } .brand small { display: none; }
+      .brand > span:nth-child(2) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .brand-mark, .toolbar { flex-shrink: 0; }
+      .tool { padding: 5px 7px; min-height: 34px; } .tool .tool-text { display: none; }
+      .rail { display: none; } main { margin: 58px 0 64px; }
+      .slide { min-height: calc(100dvh - 122px); padding: 28px 22px; gap: 24px; }
+      h1 { font-size: 46px; } h2 { font-size: 32px; } .lede { font-size: 15px; }
+      .hero-layout, .two-col, .fork-layout, .results-layout, .case-layout, .cost-layout { grid-template-columns: 1fr; gap: 28px; }
+      .hero-copy { gap: 20px; } .blueprint { min-height: 340px; padding: 23px; }
+      .arch { grid-template-columns: 1fr; gap: 20px; } .arch-hidden, .arch-output { grid-column: 1; }
+      .arch-center::before, .arch-end::before { display: none; }
+      .arch-side { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .arch-hidden { align-items: start; flex-direction: column; gap: 8px; }
+      .arch-input ul { display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px 18px; }
+      .steps { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .dataset-flow { grid-template-columns: 1fr; gap: 20px; } .dataset-arrow { display: none; }
+      .dataset-foot { grid-template-columns: 1fr; } .dataset-title { font-size: 52px; }
+      .fork-branch::before { display: none; } .equation { flex-wrap: wrap; gap: 5px 14px; }
+      .results-layout .result-callout { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
+      .result-callout .caption { grid-column: 1 / -1; }
+      .tile-row { grid-template-columns: 42px minmax(0, 1fr) 65px; gap: 9px; } .tile { font-size: 10px; height: 20px; min-height: 0; aspect-ratio: auto; } .tile-percent { font-size: 30px; }
+      .pair-summary { gap: 24px; } .pair-summary b { font-size: 30px; }
+      .timeline { grid-template-columns: 1fr; } .timeline div { padding: 10px 15px; }
+      .case-top { align-items: start; } .tab { padding: 7px 10px; font-size: 12px; }
+      .code-window pre { font-size: 11px; padding: 16px; } .code-title { padding: 9px 15px; }
+      .table-wrap table { min-width: 570px; } .mini-table { min-width: 0 !important; }
+      .bottom { padding: 0 18px; } .page-info { gap: 12px; } .key-hint { display: none; }
+      .overview-grid { grid-template-columns: 1fr 1fr; } .overlay { padding: 24px 14px; } .overview-panel { padding: 22px; }
+      .source { padding-top: 8px; } .takeaways strong { font-size: 17px; } .no-js { margin-left: 0; }
+      .intro-arm { padding: 18px 0; grid-template-columns: 28px minmax(0, 1fr) 60px; gap: 12px; }
+      .intro-arm h3 { font-size: 21px; } .intro-arm p { font-size: 12px; } .intro-arm > strong { font-size: 24px; }
+      .actors { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+      .actor-arrow { align-items: start; gap: 6px; font-size: 12px; }
+      .actor { padding: 20px; } .actor code { overflow-wrap: anywhere; }
+      .execution-path { flex-direction: column; align-items: start; padding: 18px 20px; gap: 16px; }
+      .execution-path > span { text-align: left; }
+      .test-side p { font-size: 14px; } .test-side pre { font-size: 13px; }
+      .sequence-svg { min-width: 700px; max-height: none; }
+      .run-steps { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+      .example-rule { flex-direction: column; gap: 8px; font-size: 14px; }
+      .case-explanations { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+      .case-explanations p { font-size: 13px; } .array-comparison strong { font-size: 19px; }
+      .hero-layout > *, .cost-layout > *, .results-layout > *, .case-layout > *, .fork-layout > * { min-width: 0; }
+      .hero h1 { font-size: clamp(34px, 10vw, 46px); }
+      .rule-note { flex-wrap: wrap; gap: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+    @media print {
+      @page { size: A4 landscape; margin: 12mm; }
+      html, body { background: var(--paper); font-size: 10pt; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .topbar, .rail, .bottom, .overlay, .notes-panel, .toast, .skip, .copy, .replay, .case-top .tabs { display: none !important; }
+      main { margin: 0; } .slide, .slide[hidden] { display: flex !important; min-height: 174mm; height: auto; padding: 8mm; break-after: page; gap: 16px; animation: none; }
+      .slide:last-child { break-after: auto; } h1 { font-size: 40pt; } h2 { font-size: 25pt; }
+      .hero-layout { grid-template-columns: 1fr 1fr; gap: 25px; } .blueprint { min-height: 280px; }
+      .source { font-size: 8pt; } .slide a { color: inherit; text-decoration: none; }
+      .case-layout { grid-template-columns: 1.2fr 1fr; } .code-window pre { font-size: 9pt; }
+      .source, .code-window, .warning, .step { break-inside: avoid; }
+      .slide, .slide[hidden] { padding: 6mm; gap: 14px; }
+      .stack { gap: 12px; } .chapter-head { gap: 8px; }
+      .lede { font-size: 12pt; } .code-window pre, #cases .code-window pre { min-height: 80px; padding: 12px 15px; }
+      .intro-arm { padding: 12px 0; } .intro-arm h3 { font-size: 18px; }
+      .actor { padding: 18px; } .actor p { margin: 8px 0 12px; }
+      .sequence-svg { max-height: 300px; min-width: 0; }
+      .file-tree { padding: 16px 20px; } .file-tree pre { font-size: 9pt; line-height: 1.65; }
+      .test-side { gap: 12px; } .test-side p { font-size: 11pt; }
+      .test-side pre { font-size: 11pt; line-height: 1.7; padding: 12px 15px; }
+      .case-explanations p { font-size: 9pt; } .timeline div { padding: 8px 12px; }
+      th, td { padding-top: 10px; padding-bottom: 10px; }
+      .requirement-table td, .metric-definitions td { font-size: 9pt; padding-top: 8px; padding-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#deck">跳到演示正文</a>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">07</span><span>测试驱动的函数修复</span><small>课程设计报告</small></div>
+    <div class="toolbar" aria-label="演示工具">
+      <button class="tool" data-action="overview" aria-label="打开章节目录（O）" aria-haspopup="dialog"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2" y="2" width="6" height="6"/><rect x="12" y="2" width="6" height="6"/><rect x="2" y="12" width="6" height="6"/><rect x="12" y="12" width="6" height="6"/></svg><span class="tool-text">目录</span></button>
+      <button class="tool" data-action="notes" aria-label="显示本页讲稿（N）" aria-pressed="false"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 2h12v16H4zM7 6h6M7 10h6M7 14h4"/></svg><span class="tool-text">讲稿</span></button>
+      <button class="tool" data-action="print" aria-label="打印或导出 PDF"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5 7V2h10v5M5 14H2V7h16v7h-3M5 11h10v7H5z"/></svg><span class="tool-text">打印</span></button>
+      <button class="tool" data-action="fullscreen" aria-label="进入全屏（F）"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 2H2v5M13 2h5v5M2 13v5h5M18 13v5h-5"/></svg><span class="tool-text">全屏</span></button>
+    </div>
+  </header>
+  <nav class="rail" aria-label="章节快捷导航" id="rail"></nav>
+  <noscript><p class="no-js">当前浏览器未启用 JavaScript，以下按顺序展示全部内容；翻页和轨迹回放需要 JavaScript。</p></noscript>
+  <main id="deck" tabindex="-1">
+    <section class="slide hero" id="architecture-intro" data-title="课题 07 · 测试驱动的 Python 函数修复助手" data-notes="本报告对应课题 07，方向是智能体与可靠性，主要内容是代码生成与执行反馈。研究的问题是测试反馈能否帮助模型修复函数错误。我们实现了受控的修复与测试程序，用一次修复、无诊断重试和测试反馈三组做对照。报告按课题目标、系统实现、实验结果、案例分析和要求完成情况展开。所有正式效果数字来自 20261101_001。">
+      <p class="eyebrow">课题 07 / 智能体与可靠性 / 课程设计报告</p>
+      <div class="hero-layout">
+        <div class="hero-copy"><h1>测试驱动的<br>Python 函数<br><span class="accent">修复助手</span></h1><p class="hero-question">研究问题：测试反馈能否帮助模型真正修复错误，<br>而不只是生成看似合理的补丁？</p><div class="hero-meta"><span>代码生成与执行反馈</span><span>实验记录 20261101_001</span></div></div>
+        <div class="intro-arms">
+          <div class="intro-arm"><span class="arm-letter">A</span><div><h3>一次修复</h3><p>提交一次，作为基本对照。</p></div><strong>1 次</strong></div>
+          <div class="intro-arm"><span class="arm-letter">B</span><div><h3>无诊断重试</h3><p>允许追加修改，不提供具体报错。</p></div><strong>≤ 3 次</strong></div>
+          <div class="intro-arm selected"><span class="arm-letter">C</span><div><h3>测试反馈修复</h3><p>同样允许追加修改，并提供真实报错。</p></div><strong>≤ 3 次</strong></div>
+          <p class="caption">以隐藏测试检查修复效果。重点比较 C 与 B，区分具体反馈和额外尝试的作用。</p>
+        </div>
+      </div>
+      <div class="source"><span>报告顺序：课题目标 → 方案与实现 → 对照实验 → 结果与案例 → 要求完成情况</span><a href="../../docs/EXPERIMENT_PROTOCOL.md" target="_blank" rel="noopener">实验协议</a></div>
+    </section>
+
+    <section class="slide" id="purpose" data-title="课题目标与任务范围" data-notes="课题不是要求证明某种模型足够强，而是研究在相同题目和尝试预算下，实际测试反馈能否增加修复成功。我们只处理短小纯函数，每题准备需求、错误实现、公开测试和隐藏测试。公开测试用于修复过程，隐藏测试留给最后判断。程序需要保留每轮代码和日志，并记录超时、回归和调用成本。模型权重不训练，反馈通过后续请求影响生成。">
+      <header class="chapter-head"><p class="eyebrow">01 / 课题目标与任务范围</p><h2>评价的是修复效果，<br>不是补丁看起来是否合理。</h2></header>
+      <div class="two-col">
+        <div class="stack"><h3>要回答的三个问题</h3><ol class="plain-list"><li><strong>有效性：</strong>与只允许重试相比，给出具体报错能否多修好一些题？</li><li><strong>可靠性：</strong>修改是否造成超时，或破坏原来已经正确的部分？</li><li><strong>成本：</strong>新增成功需要多少次模型调用和多少 token？</li></ol><div class="small-callout"><strong>最终依据：隐藏测试</strong><p style="margin-top:8px">公开样例过了，只说明可见检查满足；隐藏测试继续检查同一需求下的其他输入。</p></div></div>
+        <div class="stack"><h3>本课题的处理范围</h3><div class="checklist"><div class="check"><i>1</i><div><strong>短小 Python 纯函数</strong><p>列表、字符串、数值和边界条件；不扩展为多文件项目修复。</p></div></div><div class="check"><i>2</i><div><strong>每题四项材料</strong><p>需求、错误函数、公开测试、独立保存的隐藏测试。</p></div></div><div class="check"><i>3</i><div><strong>完整保留修复过程</strong><p>每次提交的代码、模型输入输出、公开报错和最终评分。</p></div></div><div class="check"><i>4</i><div><strong>隔离执行和有限修改</strong><p>模型只交代码，程序在受限 Docker 中测试；B/C 最多各追加两次。</p></div></div></div></div>
+      </div>
+      <div class="source"><span>对应课题书：要解决的问题、任务范围、基础实现要求与对照实验。</span><a href="../../README.md" target="_blank" rel="noopener">项目说明</a></div>
+    </section>
+
+    <section class="slide" id="baselines" data-title="对照实验：A/B/C 三组" data-notes="三个组不是三个不同模型，用的都是同一个 DeepSeek 模型。三组开始时都能看到需求、错误代码和公开测试源码。A 到第一次提交就结束。B 和 C 如果失败，最多各自再交两次，而且都在公开测试通过后停止。B 收到的是重新考虑当前代码的要求，C 还会看到失败断言和实际输出。这里的无反馈准确说是无具体报错，因为要求再试本身也隐含了前次没过。">
+      <header class="chapter-head"><p class="eyebrow">02 / 对照实验：A/B/C 三组</p><h2>三组控制相同条件，<br>分别考察重试和测试反馈的作用。</h2></header>
+      <div class="table-wrap"><table><thead><tr><th>组别</th><th>最多交几次</th><th>测试没过后，模型会收到什么</th><th>什么时候结束</th></tr></thead><tbody>
+        <tr><td><div class="arm-name"><span class="arm-letter">A</span><span>只改一次<br><code>single-shot</code></span></div></td><td>1 次</td><td>不再让模型修改</td><td>交完这一次就评分</td></tr>
+        <tr><td><div class="arm-name"><span class="arm-letter">B</span><span>没过就再试<br><code>retry-without-feedback</code></span></div></td><td>3 次</td><td>“请重新考虑当前代码，提交一份完整替换。”<br><span class="muted tiny">不提供失败输入、实际输出或错误类型</span></td><td>公开测试过了，或已经交了 3 次</td></tr>
+        <tr class="row-highlight"><td><div class="arm-name"><span class="arm-letter">C</span><span>看报错再改<br><code>test-feedback</code></span></div></td><td>3 次</td><td>和 B 一样允许修改，另附 pytest 报错<br><span class="muted tiny">包括失败断言、实际输出和 stdout/stderr</span></td><td>和 B 相同</td></tr>
+      </tbody></table></div>
+      <div class="two-col"><div class="rule-note"><strong>看 B − A</strong><span>额外尝试带来的变化。</span></div><div class="rule-note"><strong>看 C − B</strong><span>具体测试反馈带来的变化。</span></div></div>
+      <p class="caption">三组都能提前读公开测试。B 也知道自己需要重试，只是不知道这次运行具体错在哪里。</p>
+      <div class="source"><a href="../../src/repair_assistant/agent.py" target="_blank" rel="noopener">三组的实际控制代码</a><span>当前代码硬限制：A/B/C 最多 1/3/3 次，每次提交只调用一次模型。</span></div>
+    </section>
+
+    <section class="slide" id="public-hidden" data-title="测试管理：公开反馈与隐藏评分" data-notes="测试不是训练集，也不是让模型学习输出格式。每个测试都在检查同一个函数需求。公开测试的源码，包括输入和期望输出，三组都看得到；实际运行失败时，只有 C 还会收到具体报错。隐藏测试检查同一规则的更多输入，修复时不提供给模型。我们把首次和最终代码都留着，在停止修复后评分。公开通过不代表所有情况都对，所以还需要隐藏测试。隐藏测试也不能引入需求里没说过的新规则。">
+      <header class="chapter-head"><p class="eyebrow">03 / 测试管理：公开反馈与隐藏评分</p><h2>公开测试用于修复过程，<br>隐藏测试用于最终判定。</h2><p class="lede">它们测的是同一个函数、同一份要求，区别在于模型能否看到，以及什么时候使用。</p></header>
+      <div class="two-col test-pair">
+        <div class="test-side"><span class="tag">公开测试 · 修复时可见</span><h3>例如：最小、最大交替取数</h3><pre>输入：[1, 2, 3, 4]
+要求输出：[1, 4, 2, 3]</pre><p>三组都看得到这条测试。<br>如果运行结果是 <code>[4, 1, 3, 2]</code>，<br>C 还会收到“第 0 项不相等”的报错。</p><p class="caption">B/C 用公开结果决定是否继续；公开通过就停止。</p></div>
+        <div class="test-side"><span class="tag">隐藏测试 · 修复时不可见</span><h3>换更多输入，仍检查同一规则</h3><p>空列表、负数、重复元素、不同长度……<br>看看代码是不是只碰巧过了可见样例。</p><p>修复结束后，给保存的代码评分。<br><strong>隐藏结果不会告诉模型，也不会触发重试。</strong></p><p class="caption">当前 HumanEval+ 含基础和扩展输入，和公开测试允许部分重叠。</p></div>
+      </div>
+      <div class="rule-note"><strong>为什么要分开？</strong><span>只拿模型已经看过的样例来评分，难以判断它有没有修好通用规则。</span></div>
+      <p class="caption">这里没有训练模型参数。测试检查函数行为；提交接口规定输出格式。</p>
+      <div class="source"><a href="../../benchmarks/feedbackeval-humaneval-full/feedbackeval-humaneval-070/workspace/tests/test_public.py" target="_blank" rel="noopener">070 的真实公开测试</a><a href="../../src/repair_assistant/verifier.py" target="_blank" rel="noopener">两种测试的调用方式</a></div>
+    </section>
+
+    <section class="slide" id="architecture" data-title="系统设计：程序、模型与执行器" data-notes="先区分三个参与者。第一是我们本机的 Python 程序，它负责读题、调用 API、写文件和决定是否继续。第二是云端 DeepSeek，它收到文字，返回新代码。第三是本机 Docker 测试容器，它执行代码并返回 pytest 结果。模型不会自己进入我们的电脑或运行 shell。隐藏评分仍在隔离容器里做，只是换成修复结束后的评分容器，并挂载隐藏测试。">
+      <header class="chapter-head"><p class="eyebrow">04 / 系统设计：程序、模型与执行器</p><h2>修复程序负责控制流程，<br>模型生成代码，执行器运行测试。</h2></header>
+      <div class="plain-arch">
+        <div class="architecture-input"><strong>题目文件</strong><span>需求 + 错误函数 + 公开测试</span><span class="muted">由本机程序读取</span></div>
+        <div class="actors">
+          <div class="actor controller"><span class="section-label">本机 / 我们的 Python 程序</span><h3>控制程序</h3><p>读题、发请求、保存代码<br>判断停止、写日志和统计结果</p><code>benchmark.py → run.py → agent.py</code></div>
+          <div class="actor-arrow"><strong>① 发题目与代码 →</strong><span>← ② 返回新代码</span></div>
+          <div class="actor"><span class="section-label">云端 / DeepSeek API</span><h3>模型</h3><p>读需求、代码和公开测试<br>返回完整的 solution.py</p><code>model.py</code></div>
+        </div>
+        <div class="execution-path"><div><strong>③ 本机程序把提交交给 Docker</strong><p>Docker 运行 pytest → 把结果交回本机程序</p></div><span>公开通过 / 次数用完<br>↓<br>再用隐藏测试评分</span></div>
+      </div>
+      <p class="caption">C 组失败后，本机程序把具体报错放进下一次模型请求。B 组只要求再试。隐藏结果始终留在评分和报告中。</p>
+      <div class="source"><a href="../../src/repair_assistant/run.py" target="_blank" rel="noopener">程序怎么组织一次运行</a><a href="../../src/repair_assistant/model.py" target="_blank" rel="noopener">模型接口</a><a href="../../src/repair_assistant/sandbox.py" target="_blank" rel="noopener">Docker 执行器</a></div>
+    </section>
+
+    <section class="slide" id="workspace" data-title="实现细节：工作目录与文件权限" data-notes="workspace 只是每次独立运行的一份题目副本，不是整个项目、更不是个人主目录。TaskSpec 从 task.json 读取 workspace 和隐藏目录，检查隐藏目录必须在工作区之外。程序复制本题 workspace，记录所有文件，允许替换的文件只有 solution.py。测试容器把这一小块目录只读挂载为 /workspace。模型没有拿到目录访问权限，收到的是本机程序从指定文件读取的文字。">
+      <header class="chapter-head"><p class="eyebrow">05 / 实现细节：工作目录与文件权限</p><h2>每题使用独立工作目录，<br>唯一可替换文件是 solution.py。</h2></header>
+      <div class="two-col">
+        <div class="file-tree"><pre>某一道题/
+├── task.json             需求、可改文件、测试命令
+├── workspace/            这部分会复制到运行目录
+│   ├── solution.py       唯一允许替换的文件
+│   └── tests/
+│       └── test_public.py  公开测试，不能修改
+└── hidden_tests/         在 workspace 外面
+    └── test_hidden.py    修复时不提供给模型
+
+运行副本：
+results/.../runs/group_c/&lt;run_id&gt;/
+├── workspace/            这一组当前的代码
+├── repair_attempts/01/   第一次提交的快照
+├── repair_attempts/02/   第二次提交的快照
+└── events.jsonl          本次运行的记录</pre></div>
+        <div class="stack">
+          <div class="check"><i>1</i><div><strong>程序先复制题目，避免改到题库</strong><p>A/B/C 都有独立运行目录。B/C 开始时再换成 A 的同一份首轮代码。</p></div></div>
+          <div class="check"><i>2</i><div><strong>程序只接受 solution.py 的全文</strong><p>模型没有选择其他文件路径的接口。测试文件还会做前后校验。</p></div></div>
+          <div class="check"><i>3</i><div><strong>Docker 只挂载这一题的目录</strong><p>容器里叫 /workspace，默认断网、只读，CPU 和内存有限制。</p></div></div>
+          <div class="check"><i>4</i><div><strong>模型不会直接“进入 workspace”</strong><p>本机程序读指定文件，把文字传给 API；模型交回代码，再由程序写进文件。</p></div></div>
+        </div>
+      </div>
+      <div class="source"><a href="../../src/repair_assistant/task.py" target="_blank" rel="noopener">目录复制、可改范围与路径校验</a><a href="../../benchmarks/feedbackeval-humaneval-full/feedbackeval-humaneval-070/task.json" target="_blank" rel="noopener">070 / task.json</a></div>
+    </section>
+
+    <section class="slide" id="model-io" data-title="实现细节：模型输入与输出" data-notes="每次调用时，系统提示先规定只能提交 solution.py，不能操作其他文件。用户消息包括需求、约束、当前代码和公开测试源码。重试时 B 只加一句重新考虑，C 还加上一轮真实报错。模型返回工具调用 submit_solution，content 字段装的是完整文件文本。这个工具并不会让模型执行代码；Python 控制程序解析内容，校验后写入文件。右侧是 070 的成功提交去掉文档字符串后的函数主体。">
+      <header class="chapter-head"><p class="eyebrow">06 / 实现细节：模型输入与输出</p><h2>模型接收需求、代码与公开测试，<br>返回完整的 solution.py。</h2></header>
+      <div class="two-col">
+        <div class="stack"><h3>输入：我们的程序拼好请求</h3><ol class="plain-list"><li><strong>规则：</strong>只能提交 solution.py，不能改测试。</li><li><strong>题目：</strong>函数要做什么，哪些行为要保留。</li><li><strong>当前代码：</strong>第一次是错误函数，之后是上一份提交。</li><li><strong>公开测试源码：</strong>包括输入和期望输出。</li><li><strong>重试信息：</strong>B 只有“请再试”；C 还附上一轮报错。</li></ol><div class="feedback-box"><pre>实际输入的一部分：
+assert candidate([1, 2, 3, 4]) == [1, 4, 2, 3]
+
+C 重试时还会收到：
+E assert [4, 1, 3, 2] == [1, 4, 2, 3]</pre></div></div>
+        <div class="stack"><h3>输出：调用 submit_solution(content)</h3><div class="code-window"><div class="code-title"><span>content 里是整个 solution.py</span><span>070 成功代码，省略文档字符串</span></div><pre>def strange_sort_list(lst):
+    res, switch = [], False
+    remaining = list(lst)
+    while remaining:
+        res.append(
+            min(remaining) if not switch
+            else max(remaining)
+        )
+        remaining.remove(res[-1])
+        switch = not switch
+    return res</pre></div><p class="caption">本机程序解析返回内容 → 写入 workspace/solution.py → 保存快照 → 安排测试。模型没有 shell，也不自己运行 pytest。</p></div>
+      </div>
+      <div class="source"><a href="../../src/repair_assistant/agent.py" target="_blank" rel="noopener">请求怎么拼、提交怎么写入</a><a href="../../results/experiments/20261101_001/runs/group_c/20261101_001_345/repair_attempts/02/solution.py" target="_blank" rel="noopener">右侧代码的完整原文件</a></div>
+    </section>
+
+    <section class="slide" id="sequence" data-title="实现流程：提交、测试、反馈与评分" data-notes="按时间从上往下读，箭头表示信息发送方向。第一步本机读题，把需求、代码和公开测试发给云端。第二步云端返回完整代码。第三步本机保存并把公开测试交给 Docker 执行。第四步容器交回 pytest 结果。公开通过就停止，否则如果还没交满三次，B 只请求重新生成，C 额外附报错，然后重复。停止修复以后，才在评分容器里挂载隐藏测试，检查首次和最终代码。A 不走重试循环。">
+      <header class="chapter-head"><p class="eyebrow">07 / 实现流程：提交、测试、反馈与评分</p><h2>修复与评分的执行顺序。</h2><p class="lede">从上往下读。模型只收发文字；保存文件、运行测试都由本机程序安排。</p></header>
+      <div class="sequence-wrap" tabindex="0" aria-label="时序图，可在小屏横向滚动">
+        <svg class="sequence-svg" viewBox="0 0 1060 476" role="img" aria-labelledby="sequence-title sequence-desc">
+          <title id="sequence-title">本机程序、云端模型、Docker 测试容器的执行顺序</title><desc id="sequence-desc">程序发题给模型，模型返回代码；程序保存并要求容器运行公开测试；容器返回结果。失败时 B 请求再试，C 附具体报错。公开通过或提交次数用完后停止修复，再运行隐藏评分，评分不返回模型。</desc>
+          <defs><marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+          <g class="seq-head"><rect x="40" y="5" width="230" height="44"/><rect x="415" y="5" width="230" height="44"/><rect x="790" y="5" width="230" height="44"/><text x="155" y="33">本机：我们的 Python 程序</text><text x="530" y="33">云端：DeepSeek 模型</text><text x="905" y="33">本机：Docker 测试容器</text></g>
+          <g class="seq-life"><path d="M155 49V466M530 49V466M905 49V466"/></g>
+          <g class="seq-message"><path d="M155 92H530"/><text x="342" y="80">① 发需求 + 当前代码 + 公开测试</text><path d="M530 144H155"/><text x="342" y="132">② 返回完整 solution.py</text><path d="M155 205H905"/><text x="530" y="193">③ 保存代码，然后运行公开 pytest</text><path d="M905 259H155"/><text x="530" y="247">④ 返回通过 / 失败，以及实际报错</text></g>
+          <rect class="seq-loop" x="88" y="287" width="638" height="76"/><text class="seq-loop-label" x="109" y="308">失败且没交满 3 次：回到第 ① 步</text>
+          <g class="seq-message blue"><path d="M155 342H530"/><text x="342" y="331">B：请再试　/　C：请再试 + 具体报错</text></g>
+          <g class="seq-message"><path d="M155 405H905"/><text x="530" y="393">⑤ 停止修复后：在评分容器运行隐藏测试</text><path d="M905 455H155"/><text x="530" y="443">⑥ 保存首次 / 最终得分，不把隐藏结果发给模型</text></g>
+        </svg>
+      </div>
+      <p class="caption">A 只交一次，不进入重试循环。B/C 都是公开测试通过就停，不会为了隐藏得分继续改。</p>
+      <div class="source"><a href="../../src/repair_assistant/run.py" target="_blank" rel="noopener">评分顺序</a><a href="../../src/repair_assistant/agent.py" target="_blank" rel="noopener">重试与停止规则</a></div>
+    </section>
+
+    <section class="slide" id="safety" data-title="可靠性约束：隔离、限次与留痕" data-notes="这页对应课题三条基础实现要求。程序只提供 submit_solution，写入目标固定为 solution.py，不接受任意路径。公开测试只读并做执行前后快照校验；修复容器不挂载隐藏测试。执行时默认断网、1 个 CPU、512 MB 内存、128 个进程限制和 120 秒测试超时。只挂载本题专用目录，不挂个人文件、API 密钥或 Docker socket。每次提交一次模型调用，最多三次，并保存每轮代码和日志。这些限制控制风险，但不意味着有限测试能保证所有行为都正确。">
+      <header class="chapter-head"><p class="eyebrow">08 / 可靠性约束：隔离、限次与留痕</p><h2>把修改范围和执行权限，<br>落实到程序约束。</h2></header>
+      <div class="two-col">
+        <div class="checklist"><div class="check"><i>1</i><div><strong>只改 solution.py</strong><p>提交工具只接收完整代码文本，写入路径固定；其他文件禁止新增、删除或修改。</p></div></div><div class="check"><i>2</i><div><strong>保护测试，隔离隐藏信息</strong><p>公开测试只读并校验文件快照；隐藏目录只供停止修复后的评分容器挂载。</p></div></div><div class="check"><i>3</i><div><strong>限制尝试次数</strong><p>A 交一次；B/C 各最多再交两次。每次提交只有一次模型调用。</p></div></div><div class="check"><i>4</i><div><strong>保存可复查记录</strong><p>代码快照、请求与响应、实际报错、评分和 token 用量均保留。</p></div></div></div>
+        <div class="security-panel"><h3>生成代码只在隔离容器中执行</h3><pre>网络：       none
+CPU：        1.0
+内存：       512 MB
+进程数：     最多 128
+测试超时：   默认 120 秒
+根文件系统： 只读
+工作目录：   只挂载本题目录，只读
+凭据：       不传入 API 密钥
+其他：       不挂载个人目录或 Docker socket</pre><p class="caption" style="margin-top:18px;color:oklch(81% .03 265)">001 已完成 492 条有效策略记录；本报告的反例演示也在同样的断网、只读容器中验证。</p></div>
+      </div>
+      <div class="source"><a href="../../src/repair_assistant/agent.py" target="_blank" rel="noopener">提交接口和次数限制</a><a href="../../src/repair_assistant/verifier.py" target="_blank" rel="noopener">测试保护</a><a href="../../src/repair_assistant/sandbox.py" target="_blank" rel="noopener">隔离配置</a></div>
+    </section>
+
+    <section class="slide" id="dataset" data-title="测试准备：30 个测试函数与正式题库" data-notes="课题要求准备约三十个独立测试函数。项目的三道流程演示题各有五个公开和五个隐藏测试，总计三十个 pytest 测试函数，不是三十道修复题。分块题覆盖空输入、尾段和切片索引端点；去重题覆盖重复元素、顺序和不修改输入；空白规范化题覆盖重复空格、制表符和换行。正式效果实验另外使用完整的一百六十四道 FeedbackEval HumanEval 任务和 HumanEval+ 隐藏扩展。两者用途不同，数量不能混算。二十道自建补充题没有计入 001。">
+      <header class="chapter-head"><p class="eyebrow">09 / 测试准备：30 个测试函数与正式题库</p><h2>先用 30 个测试函数检查流程，<br>再用 164 道题比较修复效果。</h2></header>
+      <div class="table-wrap"><table><thead><tr><th>流程演示题</th><th>公开 / 隐藏测试函数</th><th>覆盖内容</th></tr></thead><tbody><tr><td>列表分块 <code>chunk_list</code></td><td>5 / 5</td><td>空输入、单元素、整除边界、尾段遗漏、切片索引端点、非法大小</td></tr><tr><td>保序去重 <code>unique_stable</code></td><td>5 / 5</td><td>重复与非连续重复、负数、元组、输入顺序、输入不被修改</td></tr><tr><td>空白规范化 <code>normalize_whitespace</code></td><td>5 / 5</td><td>空字符串、首尾空白、连续空格、制表符、换行、Unicode 空白</td></tr></tbody></table></div>
+      <div class="dataset-foot"><div><strong>正式实验：164 道修复任务</strong><span class="muted">错误实现和公开基础测试来自冻结的 FeedbackEval-HumanEval；隐藏检查使用 HumanEval+ v0.1.10。未按 001 的模型结果筛题。</span></div><div><strong>数量与版本说明</strong><span class="muted">30 指 pytest 测试函数，不是修复题数。32 号题事先剔除 7 个参考实现也不稳定的数值输入。另有 20 道自建题，尚未计入本批结果。</span></div></div>
+      <div class="source"><a href="../../benchmarks/tasks/chunk-list/task.json" target="_blank" rel="noopener">分块题</a><a href="../../benchmarks/tasks/stable-unique/task.json" target="_blank" rel="noopener">去重题</a><a href="../../benchmarks/tasks/public-pass-hidden-fail/task.json" target="_blank" rel="noopener">规范化题</a><a href="../../docs/FEEDBACKEVAL_ADAPTATION.md" target="_blank" rel="noopener">正式题库来源与变更</a></div>
+    </section>
+
+    <section class="slide" id="shared-first" data-title="实验设置：共享首轮与相同预算" data-notes="还有一个公平性问题：模型每次调用可能返回不同代码。如果三组第一次就不一样，就很难判断后面的差异来自反馈还是开局不同。因此每题只调用一次模型生成首轮，A 使用它，B C 复制它。如果这份代码公开通过，就都停止。如果没过，B C 才各自继续。164 题三组各有一份结果是 492 条记录，但首轮不重复请求三次。本次真正物理调用为 200 次。">
+      <header class="chapter-head"><p class="eyebrow">10 / 实验设置：共享首轮与相同预算</p><h2>从相同的首轮代码出发，<br>比较后续两次修复。</h2></header>
+      <div class="fork-layout"><div class="fork-root"><h3>先生成一份首轮提交</h3><p>A 就到这里。<br>B、C 复制同一份代码继续。</p><p style="margin-top:18px">如果公开测试已经通过：<br>三组都结束，不再请求模型。</p></div><div class="fork-branches"><div class="fork-branch"><h3>B：没过 → 再交，最多两次</h3><p>只有“请重新考虑当前代码”，不附具体报错。</p></div><div class="fork-branch feedback"><h3>C：没过 → 带着报错再交，最多两次</h3><p>提供同一份失败代码的 pytest 诊断。</p></div><p class="caption">同一个起点，同样的提交上限，同样的停止规则。</p></div></div>
+      <div class="equation"><b>164 × 3 = 492</b><span>条策略结果</span><span class="muted">本次实际请求模型 200 次，因为首轮共用，公开通过就停。</span></div>
+      <p class="caption">三组固定使用 deepseek-flash、temperature=0、关闭思考模式。随机打乱题目和 B/C 先后顺序；001 只重复了 1 次。</p>
+      <div class="source"><a href="../../src/repair_assistant/benchmark.py" target="_blank" rel="noopener">共享首轮的调度代码</a><a href="../../results/experiments/20261101_001/config.json" target="_blank" rel="noopener">001 的实际配置</a></div>
+    </section>
+
+    <section class="slide" id="metrics" data-title="评价指标：效果、超时、回归与成本" data-notes="主指标是整题最终隐藏通过率，首次隐藏通过率作为基线；首次和最终代码都在停止修复后离线评分。超时和正常修复失败保留在有效运行的分母中，环境异常另列，本次环境异常为零。功能回归检查原始代码已通过的测试函数是否在最终代码中失败。统计粒度是现有 pytest 测试函数，而非每条断言。成本同时记录策略等价成本和物理真实消耗，避免重复计算共享首轮。公开与隐藏通过率差只是覆盖差异的提示，不能自动认定过拟合。">
+      <header class="chapter-head"><p class="eyebrow">11 / 评价指标：效果、超时、回归与成本</p><h2>评价指标与计算方法。</h2><p class="lede">以隐藏测试衡量修复效果，同时统计超时、功能回归和实际调用成本。</p></header>
+      <div class="table-wrap"><table class="metric-definitions"><thead><tr><th>指标</th><th>计算或判定方式</th><th>要说明的问题</th></tr></thead><tbody>
+        <tr><td>首次 / 最终隐藏通过率</td><td>相应快照通过整题隐藏测试的题数 ÷ 有效题数</td><td>第一次是否改对，最终又多修好多少</td></tr>
+        <tr><td>隐藏提升率</td><td>首次隐藏未过、最终通过的题数 ÷ 有效题数</td><td>追加修复带来的成功；退步情况另列</td></tr>
+        <tr><td>条件修复率</td><td>首轮公开失败题中，最终隐藏通过数 ÷ 首轮公开失败题数</td><td>真正获得反馈或重试的题修好了多少</td></tr>
+        <tr><td>超时率 / 功能回归率</td><td>出现测试超时的运行占比 / 原本通过的测试被改成失败的运行占比</td><td>修改是否引入新的执行或行为问题</td></tr>
+        <tr><td>公开与隐藏差距</td><td>最终公开通过率 − 最终隐藏通过率</td><td>可见测试是否遗漏了其他输入情形</td></tr>
+        <tr><td>实际调用与每成功 token</td><td>保存调用数、输入/输出 token；策略总 token ÷ 最终成功题数</td><td>为取得成功付出了多少调用成本</td></tr>
+      </tbody></table></div>
+      <p class="caption">001 每组有效分母 164，环境异常 0；条件修复分母为 12。回归按现有 pytest 测试函数统计，不追踪函数内部的每条断言。</p>
+      <div class="source"><a href="../../src/repair_assistant/evaluation.py" target="_blank" rel="noopener">指标计算</a><a href="../../src/repair_assistant/cases.py" target="_blank" rel="noopener">测试结果和回归比较</a></div>
+    </section>
+
+    <section class="slide" id="results" data-title="实验结果：首次与最终隐藏通过率" data-notes="这里的通过，是整道题最终隐藏测试通过。三组第一次都是 142 题通过，B 最后变成 145，C 最后变成 148。因此不能只说 C 比 A 多 6 题就都是反馈的作用，因为 B 光重试也多了 3 题。C 比 B 多出的 3 题，才是这次重点观察的差异。这些数字来自 001 保存的实验记录。">
+      <header class="chapter-head"><p class="eyebrow">12 / 实验结果：首次与最终隐藏通过率</p><h2>最终隐藏通过率：<br>A 86.6%，B 88.4%，C 90.2%。</h2><p class="lede">这里的“通过”指整题隐藏测试通过，不是只通过公开样例。</p></header>
+      <div class="results-layout"><div class="stack"><div class="section-label">最终隐藏通过率 · 横轴从 0% 开始</div><div class="bar-chart" role="img" aria-label="A 142/164，86.6%；B 145/164，88.4%；C 148/164，90.2%">
+        <div class="bar-row"><div class="bar-label"><b>A</b>只改一次</div><div class="bar-track"><div class="bar-fill" style="width:86.5853658537%"></div></div><div class="bar-value">86.6%</div></div>
+        <div class="bar-row"><div class="bar-label"><b>B</b>没过再试</div><div class="bar-track"><div class="bar-fill b" style="width:88.4146341463%"></div></div><div class="bar-value">88.4%</div></div>
+        <div class="bar-row"><div class="bar-label"><b>C</b>看报错改</div><div class="bar-track"><div class="bar-fill c" style="width:90.243902439%"></div></div><div class="bar-value accent">90.2%</div></div>
+      </div><div class="chart-axis"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div></div><div class="result-callout"><div class="gain">+3<span> 题</span></div><p>和 B 相比，C 多通过 3 题。<br>对应 <strong>1.83 个百分点</strong>。</p><p class="caption">B 相对共享首轮多通过 3 题。<br>C 相对共享首轮多通过 6 题。</p></div></div>
+      <div class="table-wrap"><table class="mini-table"><thead><tr><th>组别</th><th>首次隐藏</th><th>最终隐藏</th><th>最终公开</th><th>隐藏提升率</th><th>超时率</th><th>原始→最终回归率</th></tr></thead><tbody><tr><td>A 一次修复</td><td>86.6%</td><td>86.6%</td><td>92.7%</td><td>0.00%</td><td>0.0%</td><td>0.61%</td></tr><tr><td>B 无诊断重试</td><td>86.6%</td><td>88.4%</td><td>95.7%</td><td>1.83%</td><td>0.0%</td><td>0.61%</td></tr><tr><td>C 测试反馈</td><td>86.6%</td><td>90.2%</td><td>97.6%</td><td>3.66%</td><td>0.0%</td><td>0.61%</td></tr></tbody></table></div>
+      <div class="source"><span>数据来源：001 保存的实验结果。</span><a href="../../results/experiments/20261101_001/report.json" target="_blank" rel="noopener">结果原文件</a></div>
+    </section>
+
+    <section class="slide" id="conditional" data-title="结果分析：首轮失败后的修复效果" data-notes="164 题里，有 152 题第一次公开测试就通过了，按规则不再重试。真正能比较 B C 后续修改的只有 12 题。在这 12 题中，B 最终隐藏通过 3 题，C 通过 6 题。三道共同成功，三道只有 C 成功，没有只有 B 成功的题，另六道都失败。这里的 25% 到 50% 只针对这 12 题，不是全部 164 题。第一次公开通过但隐藏失败的 10 题，因为早停没有机会再修。">
+      <header class="chapter-head"><p class="eyebrow">13 / 结果分析：首轮失败后的修复效果</p><h2>首轮公开失败的 12 题中，<br>B 修好 3 题，C 修好 6 题。</h2></header>
+      <div class="two-col split-wide"><div class="stack"><p class="section-label">这 12 题中，最后有几题通过隐藏测试？每格 1 题，按通过数排列。</p><div class="tile-rows"><div class="tile-row"><strong>B</strong><div class="tiles" aria-label="B 通过 3/12"><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span></div><span class="tile-percent">25%</span></div><div class="tile-row"><strong>C</strong><div class="tiles" aria-label="C 通过 6/12"><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span></div><span class="tile-percent">50%</span></div></div><div class="pair-summary"><span><b>3</b>B/C 都修好</span><span><b>3</b>只有 C 修好</span><span><b>0</b>只有 B 修好</span><span><b>6</b>两组都没修好</span></div></div><div class="stack"><div class="small-callout"><strong>为什么差距看起来不大？</strong><p style="margin-top:8px">152 题第一次公开就通过，没有后续修改；差异只能出现在剩下的 12 题。</p></div><p class="caption">另有 10 题第一次公开通过、隐藏失败。按现在的规则，这些题也会停止，不能靠后续反馈再修。</p></div></div>
+      <div class="source"><a href="../../results/experiments/20261101_001/report.json" target="_blank" rel="noopener">逐题比较</a><span>全部题目的分母是 164；本页的分母是 12。</span></div>
+    </section>
+
+    <section class="slide" id="case-a" data-title="成功案例 070：首次修改为何失败" data-notes="先不用看复杂函数，按题意手算：输入 1、2、3、4，先取最小的 1，再取最大的 4，再取最小的 2，最后是 3。A 的首轮代码 switch 初值为 False，但是那一行写的是条件为真取 min，为假取 max。所以第一次执行就选了 max，也就是 4，后续整段顺序反过来。A 虽然加了 remaining=list(lst) 避免改动输入，但没有把方向修正。它没有重试机会，最终公开和隐藏都没过。">
+      <header class="chapter-head"><p class="eyebrow">14 / 成功案例 070：首次修改为何失败</p><h2>案例 070：首次修改仍保留了<br>交替取数的方向错误。</h2></header>
+      <div class="example-rule"><strong>题目要求</strong><span>从列表中交替取<strong>最小、最大、最小、最大</strong>……直到取完。</span></div>
+      <div class="two-col"><div class="stack"><div class="code-window"><div class="code-title"><span>A 的首次提交 · 关键行</span><span>其余行未展示</span></div><pre>res, switch = [], False
+...
+res.append(
+    min(remaining) if switch
+    else max(remaining)
+)</pre></div><ol class="plain-list"><li><code>switch = False</code>：第一次条件为假。</li><li>所以走 <code>else max(...)</code>，先取到 <strong>4</strong>。</li><li>题目要求先取最小的 <strong>1</strong>，第一步就错了。</li></ol></div><div class="stack"><p class="section-label">输入 [1, 2, 3, 4]，按顺序比较</p><div class="array-comparison"><div><span>题目要求</span><strong class="accent">[1, 4, 2, 3]</strong></div><div><span>A 实际输出</span><strong class="wrong">[4, 1, 3, 2]</strong></div></div><p>A 做对了一件事：加了 <code>remaining = list(lst)</code>，避免修改输入列表。<br>但取数方向仍然反了。</p><div class="case-state"><span class="tag fail">A 公开 FAIL</span><span class="tag fail">A 隐藏 FAIL</span><span class="tag">只交 1 次，不能继续改</span></div></div></div>
+      <div class="source"><a href="../../results/experiments/20261101_001/runs/group_a/20261101_001_343/repair_attempts/01/solution.py" target="_blank" rel="noopener">A 的真实首次代码</a><a href="../../results/experiments/20261101_001/runs/group_a/20261101_001_343/events.jsonl" target="_blank" rel="noopener">A 的日志</a></div>
+    </section>
+
+    <section class="slide" id="case-bc" data-title="成功案例 070：反馈对应哪一处修改" data-notes="B C 起点就是上页 A 的同一份代码。B 的第二和第三次提交都保留了 if switch else max 这条关键条件，所以仍然先取最大值。不能猜模型心里怎么想，我们只根据代码确认它没有改对这一处。C 收到测试报错，里面明确说期望第一项是 1，实际却是 4。C 的第二次提交加了 not：False 取反变 True，第一步取 min；开关翻转后下一步取 max，因此符合交替取数的要求。它通过了全部公开测试，也在修复结束后的隐藏评分中通过。">
+      <header class="chapter-head"><p class="eyebrow">15 / 成功案例 070：反馈对应哪一处修改</p><h2>同一份首轮代码，<br>B 未修正条件，C 根据报错修正。</h2></header>
+      <div class="two-col">
+        <div class="stack"><h3>B：只有“请再试”，没有具体报错</h3><div class="code-window"><div class="code-title"><span>第 1、2、3 次提交都保留了这一行</span></div><pre>min(remaining) if switch else max(remaining)</pre></div><p><code>switch</code> 还是从 False 开始，<br>所以三次都先取最大值，仍输出 <code>[4, 1, 3, 2]</code>。</p><div class="case-state"><span class="tag fail">公开 FAIL → FAIL → FAIL</span><span class="tag fail">最终隐藏 FAIL</span></div><p class="caption">能确认的是关键条件没改对；不能从日志推测模型内部怎么想。</p></div>
+        <div class="stack"><h3>C：看到了第一项就不相等</h3><div class="feedback-box"><pre>E assert [4, 1, 3, 2] == [1, 4, 2, 3]
+E At index 0 diff: 4 != 1</pre></div><div class="code-window"><div class="code-title"><span>第 2 次提交的修改</span></div><pre><span class="diff minus">− min(remaining) if switch else max(remaining)</span>
+<span class="diff plus">+ min(remaining) if not switch else max(remaining)</span></pre></div><p>False 加上 <code>not</code> 变 True，先取 <strong>min = 1</strong>；下一轮取 max = 4。之后继续交替，得到题目要求的顺序。</p><div class="case-state"><span class="tag pass">公开 FAIL → PASS</span><span class="tag pass">最终隐藏 PASS</span></div></div>
+      </div>
+      <div class="source"><a href="../../results/experiments/20261101_001/runs/group_b/20261101_001_344/repair_attempts/03/solution.py" target="_blank" rel="noopener">B 最后交的代码</a><a href="../../results/experiments/20261101_001/runs/group_c/20261101_001_345/events.jsonl" target="_blank" rel="noopener">C 实际收到的报错</a><a href="../../results/experiments/20261101_001/runs/group_c/20261101_001_345/repair_attempts/02/solution.py" target="_blank" rel="noopener">C 改好的代码</a></div>
+    </section>
+
+    <section class="slide" id="generalization-demo" data-title="验收演示：公开通过，隐藏失败" data-notes="这页专门对应课题要求的公开通过但隐藏失败演示。使用项目已有的空白规范化题，要求任意连续空白变成一个普通空格。现有实现按字面空格切分，再用空格拼回，因此简单单词和首尾空格的五条公开测试全过，但连续空格、制表符、换行和 Unicode 空白的五条隐藏测试全失败。这已经在断网只读 Docker 中实测，日志单独保存。它是预先准备的演示代码，不是 001 模型生成结果，也不计入 164 题通过率。">
+      <header class="chapter-head"><p class="eyebrow">16 / 验收演示：公开通过，隐藏失败</p><h2>公开通过、隐藏失败的具体案例。</h2></header>
+      <div class="example-rule"><strong>需求</strong><span>将任意连续空白变成一个普通空格，并去掉首尾空白。</span></div>
+      <div class="two-col">
+        <div class="stack"><div class="code-window"><div class="code-title"><span>normalize_whitespace · 项目已有演示代码</span></div><pre>def normalize_whitespace(text):
+    return " ".join(text.strip().split(" "))</pre></div><h3>错误原因</h3><p><code>split(" ")</code> 只按普通空格切分，还保留连续分隔产生的空项；再用空格拼回时，多余空格仍然存在，制表符和换行也没有被替换。</p><p class="caption">符合需求的修改方向是使用无参数 <code>split()</code> 按连续空白切分，再用普通空格拼接。</p></div>
+        <div class="stack"><div class="test-side"><span class="tag pass">公开：5 passed</span><pre>"hello world" → "hello world"
+" hello"      → "hello"</pre><p class="caption">这些输入未触及连续或混合空白，错误因此未暴露。</p></div><div class="test-side"><span class="tag fail">隐藏：5 failed</span><pre>输入："a   b"
+期望："a b"
+实际："a   b"</pre><p class="caption">其余失败还包括制表符、换行和 Unicode 空白。</p></div></div>
+      </div>
+      <div class="source"><span>独立演示代码，已在断网、只读 Docker 实测；不是 001 的模型提交，不计入正式胜率。</span><a href="validation/whitespace-demo.json" target="_blank" rel="noopener">本次验证记录</a><a href="../../benchmarks/tasks/public-pass-hidden-fail/task.json" target="_blank" rel="noopener">需求与测试定义</a></div>
+    </section>
+
+    <section class="slide" id="cost" data-title="成本与可靠性：调用、超时和功能回归" data-notes="输入和输出 token 可以理解成 API 处理文字的用量单位。B C 追加部分分别花了 20648 和 24995 token，最终新增隐藏成功 3 和 6 题。因此每新增成功的追加 token 约为 6883 和 4166。但如果算包含首轮的每个最终成功，总 token 则几乎相同，B 1351，C 1353。全批真实请求 200 次，不能把三组包含共享首轮的归因成本直接相加。无超时和环境异常；有一题原始到最终的功能回归，这个问题在共享首轮已经发生。">
+      <header class="chapter-head"><p class="eyebrow">17 / 成本与可靠性：调用、超时和功能回归</p><h2>记录修复成本，<br>也检查超时与功能回归。</h2><p class="lede">token 是 API 处理文字的用量单位。C 比 B 多用 4,347 token，多通过 3 题；未核实单价，金额记为 N/A。</p></header>
+      <div class="cost-layout"><div class="stack"><div class="table-wrap"><table class="mini-table"><thead><tr><th>指标</th><th>A 一次</th><th>B 重试</th><th>C 反馈</th></tr></thead><tbody><tr><td>策略等价调用数</td><td>164</td><td>183</td><td>181</td></tr><tr><td>策略等价总 token</td><td>175,238</td><td>195,886</td><td>200,233</td></tr><tr><td>首轮后追加调用</td><td>0</td><td>19</td><td>17</td></tr><tr><td>首轮后追加 token</td><td>0</td><td>20,648</td><td>24,995</td></tr><tr class="row-highlight"><td>每最终成功 token</td><td>1,234</td><td>1,351</td><td>1,353</td></tr></tbody></table></div><p class="caption">策略等价成本包含共享首轮，三组不能直接相加。物理实际调用为 164 + 19 + 17 = 200 次。</p><p class="caption">追加 token ÷ 新增隐藏成功题数：B 为 6,883，C 为 4,166。它和“每最终成功 token”的分母不同。</p><p class="caption">“功能回归”指原来正确的部分被改错。本次三组同一题的回归发生在共享首轮，不能归因于 C 的后续反馈。</p></div><div class="ledger"><div class="section-label">整批实际消耗与问题</div><div class="ledger-row"><span>模型请求，首轮只算一次</span><b>200 次</b></div><div class="ledger-row"><span>总用量</span><b>220,881 token</b></div><div class="ledger-row"><span>代码超时 / 环境异常</span><b>0 / 0</b></div><div class="ledger-row"><span>原始 → 最终，出现功能回归</span><b>1 / 164 题</b></div></div></div>
+      <div class="source"><a href="../../results/experiments/20261101_001/report.json" target="_blank" rel="noopener">成本与回归数据</a><a href="../../results/experiments/20261101_001/strategy-metrics.csv" target="_blank" rel="noopener">三组指标表</a></div>
+    </section>
+
+    <section class="slide" id="artifacts" data-title="课题成果：程序、配置、测试、轨迹与分析" data-notes="运行完成后，终端会给出这一批的结果目录。先看 report.md 了解总体结果和案例；看 config.json 确认模型与次数；看 results.jsonl 或 CSV 了解每道题的结果；想知道模型到底改了什么，去相应组和 run_id 下面看 repair_attempts。events.jsonl 保存请求响应和反馈。所有图表都来自这些记录。这份 HTML 是 001 的静态演示，不会自己更新到下一批。">
+      <header class="chapter-head"><p class="eyebrow">18 / 课题成果：程序、配置、测试、轨迹与分析</p><h2>课题成果与证据文件。</h2></header>
+      <div class="two-col"><div class="file-tree"><pre>results/experiments/20261101_001/
+├── config.json          模型、次数、随机顺序
+├── report.md            人读的报告和案例
+├── report.json          程序读取的统计结果
+├── results.jsonl        一行是一条策略结果
+├── raw-runs.csv         每题结果明细
+├── strategy-metrics.csv 三组汇总
+├── test-results.csv     哪些测试由过变不过
+├── figures/*.svg        实验图
+└── runs/group_a|b|c/&lt;run_id&gt;/
+    ├── repair_attempts/ 每次提交的完整代码
+    ├── events.jsonl     请求、回复和报错
+    └── summary.json     这一题的最终结果</pre></div><div class="deliverable-list"><div class="deliverable"><b>1</b><div><strong>修复程序与模型接口</strong><p>src/repair_assistant/：提交、反馈、调度与 DeepSeek 适配器。</p></div></div><div class="deliverable"><b>2</b><div><strong>隔离配置与测试管理</strong><p>docker/、sandbox.py、各题 task.json 及独立公开 / 隐藏测试目录。</p></div></div><div class="deliverable"><b>3</b><div><strong>补丁轨迹与错误分析</strong><p>每轮 solution.py、实际反馈日志、成功与失败案例及原因说明。</p></div></div><div class="deliverable"><b>4</b><div><strong>实验数据和可导出图表</strong><p>JSON、CSV、report.md 和六张 SVG，保存配置、逐题结果与汇总。</p></div></div></div></div>
+      <div class="source"><a href="../../src/repair_assistant/agent.py" target="_blank" rel="noopener">修复程序</a><a href="../../docker/sandbox-python.Dockerfile" target="_blank" rel="noopener">隔离配置</a><a href="../../results/experiments/20261101_001/report.md" target="_blank" rel="noopener">001 总报告</a><a href="../../results/experiments/20261101_001/raw-runs.csv" target="_blank" rel="noopener">逐题明细</a></div>
+    </section>
+
+    <section class="slide" id="requirements" data-title="要求对照：已实现内容与验收记录" data-notes="这页逐项对应课题书，而不是简单声称所有工作已经完成。程序实现了生成、隔离测试、失败反馈、有限修改和日志；文件权限与隐藏信息限制落实在代码中；三组预算为一、三、三，真实调用已记录。三道演示题共三十个测试函数，正式实验用一百六十四题；首次和最终隐藏、超时、回归都有指标。公开通过隐藏失败的演示已在 Docker 验证。效果结论只有一轮结果，不能把工程实现完成说成反馈有效性已经得到普遍证明。">
+      <header class="chapter-head"><p class="eyebrow">19 / 要求对照：已实现内容与验收记录</p><h2>课设要求与实现情况。</h2><p class="lede">列出程序实现、实际运行证据和验收记录。</p></header>
+      <div class="table-wrap"><table class="requirement-table"><thead><tr><th>课设要求</th><th>本项目实现与证据</th><th>状态</th></tr></thead><tbody>
+        <tr><td>补丁生成、隔离公开测试、反馈、有限修改</td><td>模型提交完整代码；Docker 执行 pytest；A/B/C 最多 1/3/3 次</td><td><span class="tag pass">已实现</span></td></tr>
+        <tr><td>不改测试、不读隐藏测试、避免功能回归</td><td>只允许 solution.py；测试只读；隐藏独立评分；现有评分记录 1 题回归</td><td><span class="tag warn">保护已实现，有回归记录</span></td></tr>
+        <tr><td>无网络、资源受限、不传宿主个人资料与密钥</td><td>断网、只读、CPU/内存/进程/超时限制；只挂载本题专用目录</td><td><span class="tag pass">执行环境可运行</span></td></tr>
+        <tr><td>三组对照、后两组各最多追加两次、实际成本</td><td>共享首轮后分叉；同一模型和预算；001 实际 200 次调用</td><td><span class="tag pass">已完成一轮</span></td></tr>
+        <tr><td>约 30 个独立测试函数及边界覆盖</td><td>3 道演示题 × 10 个测试函数；正式比较另用 164 道修复任务</td><td><span class="tag pass">已准备</span></td></tr>
+        <tr><td>首次 / 最终隐藏、超时、回归及错误分析</td><td>report、CSV、SVG 和真实案例，保留首次与最终评分记录</td><td><span class="tag pass">已统计并留档</span></td></tr>
+        <tr><td>演示公开通过但隐藏失败</td><td>空白规范化：公开 5 过、隐藏 5 败，Docker 独立验证留档</td><td><span class="tag pass">已验证</span></td></tr>
+      </tbody></table></div>
+      <div class="source"><a href="../../src/repair_assistant/agent.py" target="_blank" rel="noopener">程序</a><a href="../../docker/sandbox-python.Dockerfile" target="_blank" rel="noopener">隔离镜像</a><a href="../../results/experiments/20261101_001/report.md" target="_blank" rel="noopener">实验报告</a><a href="validation/whitespace-demo.json" target="_blank" rel="noopener">反例演示记录</a></div>
+    </section>
+
+    <section class="slide" id="conclusion" data-title="结论与不足" data-notes="回答课题最初的问题：在本次固定模型和相同提交上限下，测试反馈组比无诊断重试组多通过三道隐藏测试题，且有真实代码修改和失败反馈可以解释。这支持测试反馈可能有帮助，但当前只有一个模型、一轮、十二道首轮公开失败样本，不能作普遍或统计显著的结论。工程上已完成可执行的修复、隔离、日志和三组对照。评价上需要增加独立重复，并把后续构造的二十题单独报告。公开隐藏分离是保证效果判断不只依据可见样例的重要部分。">
+      <header class="chapter-head"><p class="eyebrow">20 / 结论与不足</p><h2>测试反馈显示出帮助，<br>结论仍受样本和评分口径限制。</h2></header>
+      <div class="two-col split-wide"><ol class="takeaways"><li><div><strong>工程成果</strong><p>完成补丁提交、隔离测试、失败反馈、有限修正及逐轮留档；三组使用相同模型和可比预算。</p></div></li><li><div><strong>本次实验观察</strong><p>C 的最终隐藏通过率为 90.2%，B 为 88.4%，相差 3 题；12 道首轮失败题中分别修好 6 题和 3 题。</p></div></li><li><div><strong>对课题问题的回答</strong><p>本批记录支持反馈有帮助的判断，但不代表所有函数都有效。应同时给出真实修复轨迹、隐藏评分和副作用记录。</p></div></li></ol><div class="stack"><div class="small-callout"><strong>主要限制</strong><p style="margin-top:8px">一个模型、一次重复；首轮成功较多，只有 12 题进入纠错。</p></div><h3>后续改进</h3><ol class="plain-list"><li>补充公开测试对边界情况的覆盖，减少公开通过但隐藏失败的情况。</li><li>增加独立重复，继续采用共享首轮比较。</li><li>单独报告 20 道补充题，不按 C 是否成功筛题。</li></ol><p class="caption">以上改进尚未计入 001 的结果，不作为本次已完成成果。</p></div></div>
+      <div class="source"><span>正文结束。附录保留其他案例和运行命令，供答辩时查阅。</span><a href="../../results/experiments/20261101_001/report.json" target="_blank" rel="noopener">原始统计结果</a></div>
+    </section>
+
+    <section class="slide" id="cases" data-title="附录 A：其他真实修复案例" data-notes="切换案例时，先读 A B C 三栏，再看代码和报错。097 要把两个数的个位相乘，148 和 412 应该是 8 乘 2 等于 16。A 写成连续取模，结果最后又对乘积取模，只剩 6。B 没改这行。C 第二次也没改对，第三次才给第二个个位取模加括号。125 无分隔符时要按字母表位置计数，A 和 B 用字符编码奇偶，正好反了；C 减去 a 的编码，数出两个 b。所有展示都读取已保存的运行记录。">
+      <header class="chapter-head"><p class="eyebrow">附录 A / 其他案例</p><h2>其他真实案例的三组对比。</h2></header>
+      <div class="case-top"><div class="tabs" role="tablist" aria-label="切换真实案例"><button class="tab" id="case-tab-070" role="tab" aria-selected="true" aria-controls="case-panel" tabindex="0" data-case="070">070 · 先最小还是先最大</button><button class="tab" id="case-tab-097" role="tab" aria-selected="false" aria-controls="case-panel" tabindex="-1" data-case="097">097 · 两个个位相乘</button><button class="tab" id="case-tab-125" role="tab" aria-selected="false" aria-controls="case-panel" tabindex="-1" data-case="125">125 · 字母位置计数</button></div></div>
+      <div id="case-panel" role="tabpanel" aria-labelledby="case-tab-070" class="stack">
+        <div class="case-explanations"><div><strong>A：第一次错在哪</strong><p id="case-arm-a"></p></div><div><strong>B：为什么仍然错</strong><p id="case-arm-b"></p></div><div><strong>C：这次改对了什么</strong><p id="case-arm-c"></p></div></div>
+        <div class="case-layout"><div class="stack"><div class="code-window"><div class="code-title"><span id="case-function">strange_sort_list</span><span>solution.py · 关键行</span></div><pre id="case-code"></pre></div><div class="case-state" id="case-status"></div></div><div class="stack"><div><p class="section-label">这次测试实际报了什么错</p><div class="feedback-box"><pre id="case-feedback"></pre></div></div><p class="case-insight" id="case-insight" hidden></p><div class="case-evidence" id="case-evidence"></div></div></div>
+        <div class="timeline" aria-label="已保存过程"><div data-stage="0"><strong>1 · 看首次代码</strong><span>三组从这里开始</span></div><div data-stage="1"><strong>2 · 看公开报错</strong><span>只有 C 收到具体内容</span></div><div data-stage="2" class="current"><strong>3 · 看最后修改</strong><span>再核对公开和隐藏结果</span></div></div>
+        <div class="replay"><button class="primary" id="replay">播放过程</button><button class="secondary" id="show-final">显示最终修改</button><span class="case-stage" id="case-stage" aria-live="polite"></span></div>
+      </div>
+      <div class="source"><span>这三题是 001 中所有“C 通过而 B 没通过”的题。展示保存的记录，不现场请求模型。</span></div>
+    </section>
+
+    <section class="slide" id="implementation" data-title="附录 B：实验运行与复现命令" data-notes="这页是给实际操作的人看的。已有项目虚拟环境时，先启动 Docker Desktop 并在本地 env 填好密钥和模型。第一次或者镜像改动后构建镜像，再运行 doctor。正式入口是 make experiment，它会先做代码检查、测试和环境检查，然后开始 164 题三组实验。运行结束看终端 Report 的路径。不要在做演示时误点付费命令，本页面只复制不执行。">
+      <header class="chapter-head"><p class="eyebrow">附录 B / 操作与复现</p><h2>实验运行步骤与复现命令。</h2><p class="lede">下面假设项目的 .venv 已安装好。模型密钥只填在本地 .env 中。</p></header>
+      <div class="run-steps">
+        <div class="run-step"><b>1</b><div><h3>启动 Docker，确认本地配置</h3><p>打开 Docker Desktop；在项目 .env 填 DEEPSEEK_API_KEY，模型设为 deepseek-flash。</p><code>REPAIR_ASSISTANT_MODEL=deepseek-flash</code></div></div>
+        <div class="run-step"><b>2</b><div><h3>准备并检查测试环境</h3><p>首次使用或镜像有改动时先构建；doctor 检查 Docker 和配置。</p><code>make sandbox-build</code><code>.venv/bin/repair-agent doctor</code></div></div>
+        <div class="run-step"><b>3</b><div><h3>启动正式实验</h3><p>默认 164 题、A/B/C 三组、重复 1 次。自动先做检查，再开始请求模型。</p><div class="command-box"><button class="copy" data-copy="make experiment" aria-label="复制正式运行命令">复制</button><pre>make experiment</pre></div></div></div>
+        <div class="run-step"><b>4</b><div><h3>打开结果，核对具体案例</h3><p>跟随终端的 Report 路径，查看 report.md；需要细节就看该题代码快照和 events.jsonl。</p><code>results/experiments/日期_序号/</code></div></div>
+      </div>
+      <p class="caption">第 3 步会产生真实 API 费用。候选代码只在 Docker 运行；默认 1 CPU、512 MB 内存、断网，每条测试命令最长 120 秒。</p>
+      <div class="source"><a href="../../Makefile" target="_blank" rel="noopener">命令入口</a><a href="../../docs/OPERATIONS.md" target="_blank" rel="noopener">完整操作手册</a><a href="../../src/repair_assistant/sandbox.py" target="_blank" rel="noopener">隔离参数</a></div>
+    </section>
+  </main>
+
+  <footer class="bottom"><div class="page-info"><b id="page-number">01 / 23</b><span id="page-title">课题 07 · 测试驱动的 Python 函数修复助手</span></div><div class="nav-controls"><span class="key-hint">← → 翻页 · O 目录</span><button id="prev" aria-label="上一页">←</button><button id="next" aria-label="下一页">→</button></div><div class="progress-track" role="progressbar" aria-label="演示进度" aria-valuemin="1" aria-valuemax="23" aria-valuenow="1" id="progress"><div class="progress-fill" id="progress-fill"></div></div></footer>
+  <div class="overlay" id="overview" role="dialog" aria-modal="true" aria-labelledby="overview-title" hidden><div class="overview-panel"><div class="panel-head"><div><p class="eyebrow">CONTENTS</p><h2 id="overview-title">选择一个章节</h2></div><button class="secondary" id="close-overview" aria-label="关闭目录">关闭 · Esc</button></div><div class="overview-grid" id="overview-grid"></div><p class="caption" style="margin-top:20px">← / → 翻页 · Home / End 首尾 · O 目录 · N 讲稿 · F 全屏 · Esc 关闭面板</p></div></div>
+  <aside class="notes-panel" id="notes" aria-labelledby="notes-title" hidden><h2 id="notes-title">本页讲稿</h2><p id="notes-text"></p></aside>
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script>
+    'use strict';
+    // Frozen evidence: 20261101_001. No fetch, API calls, or candidate execution.
+    const EVIDENCE = Object.freeze({
+      experiment: '20261101_001', model: 'deepseek-flash', repetitions: 1,
+      tasks: 164, records: 492, physicalCalls: 200, physicalTokens: 220881,
+      arms: {
+        A: {public:152, hidden:142, totalTokens:175238},
+        B: {public:157, hidden:145, totalTokens:195886, extraCalls:19, extraTokens:20648},
+        C: {public:160, hidden:148, totalTokens:200233, extraCalls:17, extraTokens:24995}
+      },
+      sharedFailures:12, commonSuccess:3, cOnly:3, bOnly:0, commonFailure:6,
+      source:'../../results/experiments/20261101_001/report.json',
+      resultSnapshot:'Recorded outcomes from experiment 20261101_001.'
+    });
+    const cases = {
+      '070': {
+        name:'strange_sort_list', b:'20261101_001_344', c:'20261101_001_345', attempts:2,
+        before:'res, switch = [], False\nwhile remaining:\n    res.append(min(remaining) if switch else max(remaining))\n    remaining.remove(res[-1])\n    switch = not switch',
+        removed:'− res.append(min(remaining) if switch else max(remaining))',
+        added:'+ res.append(min(remaining) if not switch else max(remaining))',
+        feedback:'assert candidate([1, 2, 3, 4]) == [1, 4, 2, 3]\nE assert [4, 1, 3, 2] == [1, 4, 2, 3]\nE At index 0 diff: 4 != 1',
+        insight:'按题意先取最小值。C 加上 not 后，第一次取 1，第二次取 4，得到正确的交替顺序。',
+        whyA:'开关初值是 False，代码却在 False 时取最大值，所以先取了 4，应该先取 1。',
+        whyB:'重试两次仍保留同一条件，三次都是先取最大值，公开和隐藏都没通过。',
+        whyC:'报错指出第一项 4 ≠ 1。C 加上 not，让 False 时先取最小值，第 2 次提交通过。',
+        trajectory:'C：FAIL → PASS（2 次提交） · B：FAIL → FAIL → FAIL',
+      },
+      '097': {
+        name:'multiply', b:'20261101_001_324', c:'20261101_001_323', attempts:3,
+        before:'def multiply(a, b):\n    return abs(a) % 10 * abs(b) % 10',
+        removed:'− return abs(a) % 10 * abs(b) % 10',
+        added:'+ return abs(a) % 10 * (abs(b) % 10)',
+        feedback:'assert candidate(148, 412) == 16\nE assert 6 == 16',
+        insight:'要求的是 8 × 2 = 16。加括号后先算 412 % 10 得到 2，再与 8 相乘；乘积不会再次被取模。',
+        whyA:'148 % 10 得 8，但随后算 8 × 412 再 % 10，最后只剩 6，而不是要求的 16。',
+        whyB:'后两次仍返回同一表达式，所以同样输入仍然得到 6，没有解决运算顺序问题。',
+        whyC:'报错直接显示 6 ≠ 16。C 第 2 次仍失败，第 3 次给第二个取模加括号，先求两个个位再相乘。',
+        trajectory:'C：FAIL → FAIL → PASS（3 次提交） · B：FAIL → FAIL → FAIL',
+      },
+      '125': {
+        name:'split_words', b:'20261101_001_164', c:'20261101_001_165', attempts:2,
+        before:"# 无空格 / 逗号时的计数分支\nreturn len([c for c in txt\n    if c.islower() and ord(c) % 2 != 0])",
+        removed:'− c.islower() and ord(c) % 2 != 0',
+        added:"+ c.islower() and (ord(c) - ord('a')) % 2 != 0",
+        feedback:"assert candidate('aaabb') == 2\nE assert 3 == 2",
+        insight:'a 的字母表位置是 0，b 是 1。减去 a 的编码后，只数位置为奇数的两个 b，得到 2。',
+        whyA:'a 的字符编码是 97（奇数），把三个 a 数了进去；题目要数的是字母表位置为奇数的字母。',
+        whyB:'重试两次仍按 ord(c) 的奇偶计数，所以 aaabb 仍然错误地算成 3。',
+        whyC:'报错是 3 ≠ 2。C 减去 a 的编码，把 a 变成位置 0、b 变成位置 1，数出两个 b。',
+        trajectory:'C：FAIL → PASS（2 次提交） · B：FAIL → FAIL → FAIL',
+      }
+    };
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+    const slides = $$('.slide');
+    let current = 0;
+    let selectedCase = '070';
+    let replayTimer = null;
+    let toastTimer = null;
+    let overviewReturnFocus = null;
+    const pad = number => String(number).padStart(2, '0');
+    const evidenceRoot = '../../results/experiments/20261101_001/runs/';
+
+    slides.forEach((slide, index) => {
+      const railButton = document.createElement('button');
+      railButton.textContent = pad(index + 1);
+      railButton.title = slide.dataset.title;
+      railButton.setAttribute('aria-label', `第 ${index + 1} 页：${slide.dataset.title}`);
+      railButton.addEventListener('click', () => go(index));
+      $('#rail').append(railButton);
+      const item = document.createElement('button');
+      item.className = 'overview-item';
+      const number = document.createElement('b'); number.textContent = pad(index + 1);
+      const title = document.createElement('span'); title.textContent = slide.dataset.title;
+      item.append(number, title);
+      item.addEventListener('click', () => { closeOverview(false); go(index, true); });
+      $('#overview-grid').append(item);
+      slide.setAttribute('aria-label', `第 ${index + 1} 页，共 ${slides.length} 页：${slide.dataset.title}`);
+      slide.setAttribute('tabindex', '-1');
+    });
+
+    function go(index, focus = false) {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides.forEach((slide, i) => { slide.hidden = i !== current; slide.classList.toggle('active', i === current); });
+      $$('#rail button').forEach((button, i) => i === current ? button.setAttribute('aria-current','step') : button.removeAttribute('aria-current'));
+      $$('.overview-item').forEach((button, i) => i === current ? button.setAttribute('aria-current','page') : button.removeAttribute('aria-current'));
+      $('#page-number').textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
+      $('#page-title').textContent = slides[current].dataset.title;
+      $('#notes-text').textContent = slides[current].dataset.notes;
+      $('#prev').disabled = current === 0;
+      $('#next').disabled = current === slides.length - 1;
+      $('#progress').setAttribute('aria-valuenow', String(current + 1));
+      $('#progress').setAttribute('aria-valuemax', String(slides.length));
+      $('#progress-fill').style.width = `${(current + 1) / slides.length * 100}%`;
+      if (location.hash !== `#${slides[current].id}`) history.replaceState(null, '', `#${slides[current].id}`);
+      if (slides[current].id !== 'cases') stopReplay();
+      window.scrollTo({top:0, behavior:'instant'});
+      if (focus) slides[current].focus({preventScroll:true});
+    }
+    function openOverview() {
+      overviewReturnFocus = document.activeElement;
+      $('#overview').hidden = false;
+      document.body.style.overflow = 'hidden';
+      $$('.overview-item')[current].focus();
+    }
+    function closeOverview(restoreFocus = true) {
+      $('#overview').hidden = true;
+      document.body.style.overflow = '';
+      if (restoreFocus && overviewReturnFocus) overviewReturnFocus.focus();
+    }
+    function toggleNotes() {
+      const open = $('#notes').hidden;
+      $('#notes').hidden = !open;
+      document.body.classList.toggle('notes-open', open);
+      $('[data-action="notes"]').setAttribute('aria-pressed', String(open));
+    }
+    function toast(message) {
+      clearTimeout(toastTimer); $('#toast').textContent = message; $('#toast').hidden = false;
+      toastTimer = setTimeout(() => { $('#toast').hidden = true; }, 3500);
+    }
+    async function fullscreen() {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+        else toast('浏览器不支持页面全屏，可使用浏览器的全屏菜单。');
+      } catch { toast('全屏未开启，可使用浏览器的全屏菜单。'); }
+    }
+    function stopReplay() {
+      clearTimeout(replayTimer); replayTimer = null; $('#replay').textContent = '播放过程';
+    }
+    function renderCase(stage = 2) {
+      const item = cases[selectedCase];
+      $('#case-function').textContent = item.name;
+      $('#case-arm-a').textContent = item.whyA;
+      $('#case-arm-b').textContent = item.whyB;
+      $('#case-arm-c').textContent = item.whyC;
+      $('#case-code').replaceChildren();
+      if (stage < 2) $('#case-code').textContent = item.before;
+      else {
+        const removed = document.createElement('span'); removed.className = 'diff minus'; removed.textContent = item.removed;
+        const added = document.createElement('span'); added.className = 'diff plus'; added.textContent = item.added;
+        $('#case-code').append(removed, document.createTextNode('\n'), added);
+      }
+      $('#case-feedback').textContent = stage === 0 ? '公开测试失败。\n实际错误输出在下一阶段展开。' : item.feedback;
+      $('#case-insight').textContent = stage === 2 ? item.insight : stage === 1 ? '我们的程序把这段测试报错发给 C；B 只收到“请再试”的要求。' : '这是 A 第一次交的代码，B/C 都从这里继续改。';
+      $('#case-status').replaceChildren();
+      const statuses = stage === 2 ? [['pass', 'C 公开通过'], ['pass', 'C 隐藏通过'], ['fail', 'B 隐藏未过']] : [['fail', '首次公开未过'], ['warn', '隐藏结果不告诉模型']];
+      statuses.forEach(([state, label]) => { const tag = document.createElement('span'); tag.className = `tag ${state}`; tag.textContent = label; $('#case-status').append(tag); });
+      $('#case-stage').textContent = stage === 2 ? item.trajectory : stage === 0 ? '阶段 1 / 3 · 首轮错误候选' : '阶段 2 / 3 · 控制器公开诊断';
+      $$('.timeline [data-stage]').forEach(element => element.classList.toggle('current', Number(element.dataset.stage) === stage));
+      $('#case-evidence').replaceChildren();
+      [['B 日志', `group_b/${item.b}/events.jsonl`], ['C 日志', `group_c/${item.c}/events.jsonl`], ['C 最终快照', `group_c/${item.c}/repair_attempts/${pad(item.attempts)}/solution.py`]].forEach(([label, path]) => {
+        const link = document.createElement('a'); link.textContent = label; link.href = evidenceRoot + path; link.target = '_blank'; link.rel = 'noopener'; $('#case-evidence').append(link);
+      });
+    }
+    function selectCase(id) {
+      stopReplay(); selectedCase = id;
+      $$('[data-case]').forEach(button => { const active = button.dataset.case === id; button.setAttribute('aria-selected', String(active)); button.tabIndex = active ? 0 : -1; });
+      $('#case-panel').setAttribute('aria-labelledby', `case-tab-${id}`);
+      renderCase();
+    }
+    $('#replay').addEventListener('click', () => {
+      if (replayTimer !== null) { stopReplay(); renderCase(); return; }
+      let stage = 0;
+      $('#replay').textContent = '结束播放'; renderCase(stage);
+      const advance = () => {
+        stage++; renderCase(stage);
+        if (stage < 2) replayTimer = setTimeout(advance, 2400);
+        else { replayTimer = null; $('#replay').textContent = '再次播放'; }
+      };
+      replayTimer = setTimeout(advance, 2000);
+    });
+    $('#show-final').addEventListener('click', () => { stopReplay(); renderCase(); });
+    $$('[data-case]').forEach(button => button.addEventListener('click', () => selectCase(button.dataset.case)));
+    $('.tabs').addEventListener('keydown', event => {
+      if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+      event.preventDefault(); event.stopPropagation();
+      const tabs = $$('[data-case]'); let index = tabs.findIndex(button => button.dataset.case === selectedCase);
+      if (event.key === 'Home') index = 0;
+      else if (event.key === 'End') index = tabs.length - 1;
+      else index = (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      selectCase(tabs[index].dataset.case); tabs[index].focus();
+    });
+    $('#prev').addEventListener('click', () => go(current - 1));
+    $('#next').addEventListener('click', () => go(current + 1));
+    $('[data-action="overview"]').addEventListener('click', openOverview);
+    $('#close-overview').addEventListener('click', () => closeOverview());
+    $('#overview').addEventListener('click', event => { if (event.target === $('#overview')) closeOverview(); });
+    $('[data-action="notes"]').addEventListener('click', toggleNotes);
+    $('[data-action="fullscreen"]').addEventListener('click', fullscreen);
+    $('[data-action="print"]').addEventListener('click', () => { stopReplay(); renderCase(); window.print(); });
+    $$('[data-copy]').forEach(button => button.addEventListener('click', async () => {
+      const text = button.dataset.copy;
+      try {
+        if (!navigator.clipboard) throw new Error('Clipboard unavailable');
+        await navigator.clipboard.writeText(text); button.textContent = '已复制';
+        setTimeout(() => { button.textContent = '复制'; }, 2000);
+      } catch {
+        // file:// clipboard support differs; a native prompt allows manual copying.
+        window.prompt('请复制以下命令：', text);
+      }
+    }));
+    document.addEventListener('keydown', event => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      const target = event.target;
+      if (target instanceof Element && target.closest('input, textarea, select, [contenteditable="true"]')) return;
+      if (!$('#overview').hidden) {
+        if (event.key === 'Escape') { event.preventDefault(); closeOverview(); }
+        if (event.key === 'Tab') {
+          const focusable = $$('button', $('#overview'));
+          const first = focusable[0], last = focusable[focusable.length - 1];
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }
+        return;
+      }
+      if (event.key === 'Escape' && !$('#notes').hidden) { toggleNotes(); return; }
+      if (event.key.toLowerCase() === 'o') { event.preventDefault(); openOverview(); return; }
+      if (event.key.toLowerCase() === 'n') { event.preventDefault(); toggleNotes(); return; }
+      if (event.key.toLowerCase() === 'f') { event.preventDefault(); fullscreen(); return; }
+      if (event.key === ' ' && target instanceof Element && target.closest('button, a, summary')) return;
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); go(current + 1, true); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); go(current - 1, true); }
+      if (event.key === 'Home') { event.preventDefault(); go(0, true); }
+      if (event.key === 'End') { event.preventDefault(); go(slides.length - 1, true); }
+    });
+    // Horizontal swipes navigate; vertical swipes keep normal reading/scrolling.
+    let touch = null;
+    $('#deck').addEventListener('touchstart', event => {
+      if (event.target.closest('button,a,pre,.table-wrap')) { touch = null; return; }
+      const point = event.touches[0]; touch = {x:point.clientX, y:point.clientY};
+    }, {passive:true});
+    $('#deck').addEventListener('touchend', event => {
+      if (!touch) return;
+      const point = event.changedTouches[0], dx = point.clientX - touch.x, dy = point.clientY - touch.y;
+      if (Math.abs(dx) > 80 && Math.abs(dx) > Math.abs(dy) * 1.8) go(current + (dx < 0 ? 1 : -1));
+      touch = null;
+    }, {passive:true});
+    window.addEventListener('hashchange', () => { const index = slides.findIndex(slide => `#${slide.id}` === location.hash); if (index >= 0) go(index); });
+    window.addEventListener('beforeprint', () => { stopReplay(); renderCase(); });
+    selectCase('097');
+    const initial = slides.findIndex(slide => `#${slide.id}` === location.hash);
+    go(initial < 0 ? 0 : initial);
+  </script>
+</body>
+</html>
