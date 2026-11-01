@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-094",
+  "title": "FeedbackEval HumanEval repair: skjkasdkd",
+  "goal": "Write a Python function `skjkasdkd(lst)` to solve the following problem:\nYou are given a list of integers.\nYou need to find the largest prime value and return the sum of its digits.\nExamples:\nFor lst = [0,3,2,1,3,5,7,4,5,5,5,2,181,32,4,32,3,2,32,324,4,3] the output should be 10\nFor lst = [1,0,1,8,2,4597,2,1,3,40,1,2,1,2,4,2,5,1] the output should be 25\nFor lst = [1,3,1,32,5107,34,83278,109,163,23,2323,32,30,1,9,3] the output should be 13\nFor lst = [0,724,32,71,99,32,6,0,5,91,83,0,5,6] the output should be 11\nFor lst = [0,81,12,3,1,21] the output should be 3\nFor lst = [0,8,1,2,1,7] the output should be 7",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function skjkasdkd and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/94",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "2917cc77ff38fb09b3e0842cb947bd8c86efe2dbaae962ab27f9cf57c2164357",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-094",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "dea39ef68e047978d6148ed531d90a399cebd8cf98cf121cf811164f272ea0ed",
+      "sha256": "309f5ac75493527b972fb70f80d5d294e3252333fcc7cd868e39bf71062fbbdc"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "fa2ac04dc7efdb6e5f6d2a3491b7dc8ae43b2bedb1e4284d146575ac95d9f988",
+      "sha256": "983fb8d9b311749ccd2505ca66c71c8d538140cb786ab2d7cd87c5bd5e789227"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

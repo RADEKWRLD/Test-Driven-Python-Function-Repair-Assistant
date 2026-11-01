@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-080",
+  "title": "FeedbackEval HumanEval repair: is_happy",
+  "goal": "Write a Python function `is_happy(s)` to solve the following problem:\nYou are given a string s.\nYour task is to check if the string is happy or not.\nA string is happy if its length is at least 3 and every 3 consecutive letters are distinct\nFor example:\nis_happy(a) => False\nis_happy(aa) => False\nis_happy(abcd) => True\nis_happy(aabb) => False\nis_happy(adb) => True\nis_happy(xyy) => False",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function is_happy and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/80",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "a11d05b67f6578ec142d305d7d983acdde2d3cc0a0b1b4827c011977011854f2",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-080",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "fe6638eeb3eafa165b75c267c14ed29adeda9f7c18d366207eca20c8c7d11cb8",
+      "sha256": "5f9fe8cebc5b96ddc64c4548ae967e287b43d382000515c031357424c691f0a5"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "5667e1175898d7d8ff06a78fbda45f7b965c5b3b2b891bebc84a938b2024d3fd",
+      "sha256": "3ebd6ab308cb933dbf86425416848fe35b241074ed6cc31a6fd272e0da600d6a"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-109",
+  "title": "FeedbackEval HumanEval repair: move_one_ball",
+  "goal": "Write a Python function `move_one_ball(arr)` to solve the following problem:\nWe have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\nnumbers in the array will be randomly ordered. Your task is to determine if\nit is possible to get an array sorted in non-decreasing order by performing\nthe following operation on the given array:\nYou are allowed to perform right shift operation any number of times.\nOne right shift operation means shifting all elements of the array by one\nposition in the right direction. The last element of the array will be moved to\nthe starting position in the array i.e. 0th index.\nIf it is possible to obtain the sorted array by performing the above operation\nthen return True else return False.\nIf the given array is empty then return True.\nNote: The given list is guaranteed to have unique elements.\nFor Example:\nmove_one_ball([3, 4, 5, 1, 2])==>True\nExplanation: By performin 2 right shift operations, non-decreasing order can\nbe achieved for the given array.\nmove_one_ball([3, 5, 4, 1, 2])==>False\nExplanation:It is not possible to get non-decreasing order for the given\narray by performing any number of right shift operations.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function move_one_ball and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/109",
+    "candidate_source": "llm-based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "1b5d45dfdadf20f6e2fde80f021a8bb410e6699d06f69e0c34004978d2b9c70f",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-109",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "7843fa53d9f4e1a549bba66322c6c0de63ec23995db1af717a8650cf75b95da5",
+      "sha256": "0e348c65182c35de2811c29850a515de3d088d6d45fa14e8a6914730970c1ae1"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "e1d6dd8e682f3031e0e4b0ac97003e5ce21ab7a90f85bcd79786f30e25f68d69",
+      "sha256": "db042439685198ab77e4b4973b0f888342a42b8032c5ddbcb96aa3900ba1d10b"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

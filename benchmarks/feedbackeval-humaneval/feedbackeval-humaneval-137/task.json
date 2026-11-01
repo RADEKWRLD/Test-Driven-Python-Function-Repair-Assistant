@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-137",
+  "title": "FeedbackEval HumanEval repair: compare_one",
+  "goal": "Write a Python function `compare_one(a, b)` to solve the following problem:\nCreate a function that takes integers, floats, or strings representing\nreal numbers, and returns the larger variable in its given variable type.\nReturn None if the values are equal.\nNote: If a real number is represented as a string, the floating point might be . or ,\ncompare_one(1, 2.5) ➞ 2.5\ncompare_one(1, \"2,3\") ➞ \"2,3\"\ncompare_one(\"5,1\", \"6\") ➞ \"6\"\ncompare_one(\"1\", 1) ➞ None",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function compare_one and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/137",
+    "candidate_source": "llm-based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "57b3863a0f4c3f34d44394a21de1132746396cc706876973cc3c55e94970f200",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-137",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "502a0b6660ecb81d4c86d4963a3be9bf4c926889c9478d71a156447594280bd1",
+      "sha256": "785ea49e3beac44a23e2ff3eae6e05d2a05be52412b2605b3bf5a0f92dd8951b"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "e1e676e96978cf7cb8b90fb60f37614681a7bf885a00b1717cec217ed5a7da8a",
+      "sha256": "66b9af4bbdcf76687025045e2b8625d855946de91ed56394d002d4f759e47393"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-061",
+  "title": "FeedbackEval HumanEval repair: correct_bracketing",
+  "goal": "Write a Python function `correct_bracketing(brackets: str)` to solve the following problem:\nbrackets is a string of \"(\" and \")\".\nreturn True if every opening bracket has a corresponding closing bracket.\n>>> correct_bracketing(\"(\")\nFalse\n>>> correct_bracketing(\"()\")\nTrue\n>>> correct_bracketing(\"(()())\")\nTrue\n>>> correct_bracketing(\")(()\")\nFalse",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function correct_bracketing and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/61",
+    "candidate_source": "llm-based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "9e87840d53f7b5d958d29c9edf0a48aeb0f5a09f5b736f844c348580699351b9",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-061",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "0fa5a20a42d53a352fd211a31e74dee734f231aa34d0e44cb6c5255f148d24d2",
+      "sha256": "3b665b9d116d5ff9e6e17c3d7b25c69748be2e7b38cdbd2d6b39bda3e544197e"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "8bd49b15e112803ed74881ed1099d2949f3c4e631d7fd4fc8974c76f4bc78f9c",
+      "sha256": "df84794f11ee2b75ef6930cf9671aad5709b5613b3fd1bfdc6f28f4ef104706b"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

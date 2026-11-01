@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-059",
+  "title": "FeedbackEval HumanEval repair: largest_prime_factor",
+  "goal": "Write a Python function `largest_prime_factor(n: int)` to solve the following problem:\nReturn the largest prime factor of n. Assume n > 1 and is not a prime.\n>>> largest_prime_factor(13195)\n29\n>>> largest_prime_factor(2048)\n2",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function largest_prime_factor and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/59",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "b4b499fd85cede7a4363a19d8881f7379856df4a37847645bc95dd5726a2dc25",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-059",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "b7ab2151c784296b059bdc05562d74e33da4209d8336e3b8c7e83e81d708afea",
+      "sha256": "efb218eb790f2f44fbb061598f52b680e86bafa51d0fd7d3839e83a8c032f7b9"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "314f82fea232cc1eadd1a53020421e64398c7c49ccb9a7f2ce18bf48c26cfc55",
+      "sha256": "ef905010051fe9b1e015e8c0306535485bb04833dbea57d05c80b481abe42144"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

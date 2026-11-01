@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-129",
+  "title": "FeedbackEval HumanEval repair: minPath",
+  "goal": "Write a Python function `minPath(grid, k)` to solve the following problem:\nGiven a grid with N rows and N columns (N >= 2) and a positive integer k,\neach cell of the grid contains a value. Every integer in the range [1, N * N]\ninclusive appears exactly once on the cells of the grid.\nYou have to find the minimum path of length k in the grid. You can start\nfrom any cell, and in each step you can move to any of the neighbor cells,\nin other words, you can go to cells which share an edge with you current\ncell.\nPlease note that a path of length k means visiting exactly k cells (not\nnecessarily distinct).\nYou CANNOT go off the grid.\nA path A (of length k) is considered less than a path B (of length k) if\nafter making the ordered lists of the values on the cells that A and B go\nthrough (let's call them lst_A and lst_B), lst_A is lexicographically less\nthan lst_B, in other words, there exist an integer index i (1 <= i <= k)\nsuch that lst_A[i] < lst_B[i] and for any j (1 <= j < i) we have\nlst_A[j] = lst_B[j].\nIt is guaranteed that the answer is unique.\nReturn an ordered list of the values on the cells that the minimum path go through.\nExamples:\nInput: grid = [ [1,2,3], [4,5,6], [7,8,9]], k = 3\nOutput: [1, 2, 1]\nInput: grid = [ [5,9,3], [4,1,6], [7,8,2]], k = 1\nOutput: [1]",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function minPath and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/129",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "4716a0aad59b6bcafd5bcba631b5afb385b390003f8efdef4ced0598d76461b4",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-129",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "ff6ae27f3c62cb28087a3934afde3aa34776188d584812cabc0121e0e818b128",
+      "sha256": "1649e65ed67bd71a665e0f6b167c0e44b38590b7e3f665a3c2cbf49c6ee496d0"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "a0cdd72af4e18f7e48eb8ed5d06e2bd224a58df490c8c5cb263f1a5015ebb123",
+      "sha256": "553c266c9e13bad8f7f2a4dafb4fb10e05d1c6965f9060c5ccd8feffe79d6d1d"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

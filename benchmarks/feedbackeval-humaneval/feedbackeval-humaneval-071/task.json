@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-071",
+  "title": "FeedbackEval HumanEval repair: triangle_area",
+  "goal": "Write a Python function `triangle_area(a, b, c)` to solve the following problem:\nGiven the lengths of the three sides of a triangle. Return the area of\nthe triangle rounded to 2 decimal points if the three sides form a valid triangle.\nOtherwise return -1\nThree sides make a valid triangle when the sum of any two sides is greater\nthan the third side.\nExample:\ntriangle_area(3, 4, 5) == 6.00\ntriangle_area(1, 2, 10) == -1",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function triangle_area and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/71",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "18f0f6a9c76341b199ef23403744496c36590015218f8f9678f8a730010e4332",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-071",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "fbd2f02d38dcf638d23e66284cad9c65fc6e8e986b34d5628a9b762a03d3e95d",
+      "sha256": "d1330874eb3f1da3408a59d3949a66b65b46d8a67646acceaa6500d5ef128800"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "f6f9097745c528c36a70ffd166272d54d73270ea52f10180d0388f649eaca3be",
+      "sha256": "9d0a24318d1513359f9f2116dffbaa5f59ec96205f4bd0c3930d50189ef82f6d"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

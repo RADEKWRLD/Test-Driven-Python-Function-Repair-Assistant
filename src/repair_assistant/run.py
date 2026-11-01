@@ -348,6 +348,17 @@ class RunService:
 
 def _summary(result: RunResult, model: ModelAdapter) -> dict[str, object]:
     attempts = result.agent.attempts
+    if result.agent.strategy is RepairStrategy.SINGLE_SHOT:
+        public_pass_by_attempt = [result.first_public.passed]
+    else:
+        public_pass_by_attempt = [
+            bool(attempt.repair_verification and attempt.repair_verification.passed)
+            for attempt in attempts
+        ]
+    first_success_attempt = next(
+        (index for index, passed in enumerate(public_pass_by_attempt, start=1) if passed),
+        None,
+    )
     return {
         "schema_version": 3,
         "run_id": result.run_id,
@@ -356,6 +367,8 @@ def _summary(result: RunResult, model: ModelAdapter) -> dict[str, object]:
         "model": model.name,
         "provider": model.provider,
         "attempts": len(attempts),
+        "public_pass_by_attempt": public_pass_by_attempt,
+        "first_success_attempt": first_success_attempt,
         "protocol": {
             "version": PROTOCOL_VERSION,
             "name": PROTOCOL_NAME,

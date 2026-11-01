@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-143",
+  "title": "FeedbackEval HumanEval repair: words_in_sentence",
+  "goal": "Write a Python function `words_in_sentence(sentence)` to solve the following problem:\nYou are given a string representing a sentence,\nthe sentence contains some words separated by a space,\nand you have to return a string that contains the words from the original sentence,\nwhose lengths are prime numbers,\nthe order of the words in the new string should be the same as the original one.\nExample 1:\nInput: sentence = \"This is a test\"\nOutput: \"is\"\nExample 2:\nInput: sentence = \"lets go for swimming\"\nOutput: \"go for\"\nConstraints:\n* 1 <= len(sentence) <= 100\n* sentence contains only letters",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function words_in_sentence and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/143",
+    "candidate_source": "llm-based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "ad37019d69bdab983761aa482025a2156fa577272108a3be8aa923fa55bb3709",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-143",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "40d20058c74c0217e14098da6067fef9f88fa4b37a01c48da4602828e2bceed0",
+      "sha256": "f02d56e464ef117e2b64e0088ac715529ac5ffe96ea50cf2bed4f0f3bbc8d6e2"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "8b4eddbac688707f3ddee9241bffcd60aa359775755980104dddbd1cdd7a769e",
+      "sha256": "83c2bb0f78b6f1fbe7823ccd52a26b676c19d86be4a1d5cdd98d8f479b290bea"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

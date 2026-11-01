@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-142",
+  "title": "FeedbackEval HumanEval repair: sum_squares",
+  "goal": "Write a Python function `sum_squares(lst)` to solve the following problem:\n\"\nThis function will take a list of integers. For all entries in the list, the function shall square the integer entry if its index is a\nmultiple of 3 and will cube the integer entry if its index is a multiple of 4 and not a multiple of 3. The function will not\nchange the entries in the list whose indexes are not a multiple of 3 or 4. The function shall then return the sum of all entries.\nExamples:\nFor lst = [1,2,3] the output should be 6\nFor lst = []  the output should be 0\nFor lst = [-1,-5,2,-1,-5]  the output should be -126",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function sum_squares and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/142",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "569b4b064ae2dbdc8f135caad6ea26824933e04eb12b6b64f731fce7f0705189",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-142",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "ed5b24d383210592b35d077c40977b6c87c872bcbd3af8ec12eef0babb723299",
+      "sha256": "f954ef86101d74afb7a3d47dec3fce96c46ee94977d95c155f3ce60451288a02"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "0b0df7e3643a2595b75d1180ef347d99f390cd64d5625394d43d292da3040b94",
+      "sha256": "07d0e1f00c82dbd6031365313b092081534a2a36e3c3e95eb9647a49b7b2b68d"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-068",
+  "title": "FeedbackEval HumanEval repair: pluck",
+  "goal": "Write a Python function `pluck(arr)` to solve the following problem:\n\"Given an array representing a branch of a tree that has non-negative integer nodes\nyour task is to pluck one of the nodes and return it.\nThe plucked node should be the node with the smallest even value.\nIf multiple nodes with the same smallest even value are found return the node that has smallest index.\nThe plucked node should be returned in a list, [ smalest_value, its index ],\nIf there are no even values or the given array is empty, return [].\nExample 1:\nInput: [4,2,3]\nOutput: [2, 1]\nExplanation: 2 has the smallest even value, and 2 has the smallest index.\nExample 2:\nInput: [1,2,3]\nOutput: [2, 1]\nExplanation: 2 has the smallest even value, and 2 has the smallest index.\nExample 3:\nInput: []\nOutput: []\nExample 4:\nInput: [5, 0, 3, 0, 4, 2]\nOutput: [0, 1]\nExplanation: 0 is the smallest value, but  there are two zeros,\nso we will choose the first zero, which has the smallest index.\nConstraints:\n* 1 <= nodes.length <= 10000\n* 0 <= node.value",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function pluck and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/68",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "e58808c28a825cb2bf910e7cd1a0a9c3029d83aa291c40e3188ac57d617bf797",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-068",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "87146213afd5078622b01e53c3b172b3476958449d92d252cdc542d8d8f74d12",
+      "sha256": "4fffde78a176bcd5fa89a3b3beeeb6a35d6fdd94cde99b4a5bed04de22c1ab00"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "2a9f7d2378238c590f804aab4c32936317ee84afea4779167c1a24db4ff8a10f",
+      "sha256": "15e230bf4df5d4725de349942c5d38f43d1c3c12067597c3e27aa34b6891a90f"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-095",
+  "title": "FeedbackEval HumanEval repair: check_dict_case",
+  "goal": "Write a Python function `check_dict_case(dict)` to solve the following problem:\nGiven a dictionary, return True if all keys are strings in lower\ncase or all keys are strings in upper case, else return False.\nThe function should return False is the given dictionary is empty.\nExamples:\ncheck_dict_case({\"a\":\"apple\", \"b\":\"banana\"}) should return True.\ncheck_dict_case({\"a\":\"apple\", \"A\":\"banana\", \"B\":\"banana\"}) should return False.\ncheck_dict_case({\"a\":\"apple\", 8:\"banana\", \"a\":\"apple\"}) should return False.\ncheck_dict_case({\"Name\":\"John\", \"Age\":\"36\", \"City\":\"Houston\"}) should return False.\ncheck_dict_case({\"STATE\":\"NC\", \"ZIP\":\"12345\" }) should return True.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function check_dict_case and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/95",
+    "candidate_source": "existing",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "6d628498141d3fa23772ee7ef11f440d2cfec0bd1e4e62e23e6d888260de2d51",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-095",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "3d76473ea7c6763a63e3010a388253d9c3fbce7c2e996a352065941c845c369c",
+      "sha256": "63988ccc9ce61d7fbadc9aa4728a290fcda8e0026e7efdd2ab4ea10c1b37f2a2"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "807ad06908d2a3f9bf41eca2182555b5b29a7fd1008f7675c01917a82f317f03",
+      "sha256": "9b15d9f06583976f25826838d3e3abca4cc17da2751e86e4d6507c9c341c19a1"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

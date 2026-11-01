@@ -5,7 +5,7 @@ import pytest
 
 from repair_assistant.cli import _benchmark_schedule, _events, _model_adapter, _parser
 from repair_assistant.event_log import EventLog
-from repair_assistant.model import MlxLocalAdapter
+from repair_assistant.model import DeepSeekAdapter
 
 
 def test_benchmark_schedule_repeats_every_pair_and_is_seeded() -> None:
@@ -34,7 +34,7 @@ def test_cli_rejects_more_than_three_attempts() -> None:
 def test_v3_defaults_and_resume_options() -> None:
     args = _parser().parse_args(["benchmark", "--resume", "experiment"])
     assert args.max_attempts == 3
-    assert args.tasks_dir == Path("benchmarks/humanevalpack")
+    assert args.tasks_dir == Path("benchmarks/feedbackeval-humaneval")
     assert args.resume == Path("experiment")
     assert args.repetitions == 1
 
@@ -58,14 +58,16 @@ def test_removed_dataset_import_and_advanced_retry_commands_are_rejected() -> No
             _parser().parse_args(command)
 
 
-def test_mlx_model_limits_are_configurable(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("REPAIR_ASSISTANT_PROVIDER", "mlx-local")
+def test_deepseek_model_limits_are_configurable(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    monkeypatch.setenv("REPAIR_ASSISTANT_BASE_URL", "https://deepseek.example/v1")
     monkeypatch.setenv("REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS", "321")
     monkeypatch.setenv("REPAIR_ASSISTANT_MAX_TOKENS", "1024")
 
-    adapter = _model_adapter("default_model")
+    adapter = _model_adapter("deepseek-chat")
 
-    assert isinstance(adapter, MlxLocalAdapter)
+    assert isinstance(adapter, DeepSeekAdapter)
+    assert adapter.base_url == "https://deepseek.example/v1"
     assert adapter.timeout_seconds == 321
     assert adapter.max_tokens == 1024
 

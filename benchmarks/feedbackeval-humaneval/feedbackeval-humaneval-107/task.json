@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-107",
+  "title": "FeedbackEval HumanEval repair: even_odd_palindrome",
+  "goal": "Write a Python function `even_odd_palindrome(n)` to solve the following problem:\nGiven a positive integer n, return a tuple that has the number of even and odd\ninteger palindromes that fall within the range(1, n), inclusive.\nExample 1:\nInput: 3\nOutput: (1, 2)\nExplanation:\nInteger palindrome are 1, 2, 3. one of them is even, and two of them are odd.\nExample 2:\nInput: 12\nOutput: (4, 6)\nExplanation:\nInteger palindrome are 1, 2, 3, 4, 5, 6, 7, 8, 9, 11. four of them are even, and 6 of them are odd.\nNote:\n1. 1 <= n <= 10^3\n2. returned tuple has the number of even and odd integer palindromes respectively.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function even_odd_palindrome and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/107",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "9380ed364757c22f3b157f36d81eca2fa050f0b189a811e33b01e6449e9597de",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-107",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "9cd0ce4518c4040dddc50e7d214286f1be3c94c49f6db7ac2be345611365399e",
+      "sha256": "be0a7db68a2610105d277a9e8b33ba659a5408f4fc1f7d932fe98ef41b200b2f"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "68e92ab9513410f155c4a73eb9f2d5c6512b214be374731cd27d9f4cf521d3d2",
+      "sha256": "4a5ae5b37075035afc67313b65878b619ab6467213653d6bc7016bba94951547"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-039",
+  "title": "FeedbackEval HumanEval repair: prime_fib",
+  "goal": "Write a Python function `prime_fib(n: int)` to solve the following problem:\nprime_fib returns n-th number that is a Fibonacci number and it's also prime.\n>>> prime_fib(1)\n2\n>>> prime_fib(2)\n3\n>>> prime_fib(3)\n5\n>>> prime_fib(4)\n13\n>>> prime_fib(5)\n89",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function prime_fib and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/39",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "0a79f554aa24b49b7bfa050bf0001fd8434c179d3cc3d59378dc6ebee5639c4a",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-039",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "6bfd0d2104fc7b239a61351e6fae0503122b91fa02081be689d8fd2956e5935b",
+      "sha256": "bdf25abc2249ec9b669b00fca779c5b9dc5f617030258bb035a264a4a1a407d5"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "dc469e80331cfd9c8277b5f1d3fbd785d81e030530ddb48b671db17f013666ff",
+      "sha256": "5891f134941912b94fbf5bb98ccc22fe4e78b16c3cac003a8863aa54dea69a01"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

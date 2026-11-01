@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-108",
+  "title": "FeedbackEval HumanEval repair: count_nums",
+  "goal": "Write a Python function `count_nums(arr)` to solve the following problem:\nWrite a function count_nums which takes an array of integers and returns\nthe number of elements which has a sum of digits > 0.\nIf a number is negative, then its first signed digit will be negative:\ne.g. -123 has signed digits -1, 2, and 3.\n>>> count_nums([]) == 0\n>>> count_nums([-1, 11, -11]) == 1\n>>> count_nums([1, 1, 2]) == 3",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function count_nums and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/108",
+    "candidate_source": "existing",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "fdd62ec5b827ce4ddef0ed72e86f54632604add52bc25f00713c87e8d58e48ba",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-108",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "03ddcfbb8bcb6757f79037b5e94a337ea5ae5bc1a0a356de25de87017ef88b5c",
+      "sha256": "6785fa9724e75328328b690dfd3e37785f35fb6adb7d9d9c0e3600617b58beaa"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "b52f04ace792c99614501e98975bfb88fcc78bcba47ea117870d3d9bebf9342c",
+      "sha256": "24ee239edbe138adb4b2aca1e13dd23d2a9b08a92c697efbe47fc07875811915"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

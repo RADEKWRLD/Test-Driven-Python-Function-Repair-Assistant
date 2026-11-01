@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-074",
+  "title": "FeedbackEval HumanEval repair: total_match",
+  "goal": "Write a Python function `total_match(lst1, lst2)` to solve the following problem:\nWrite a function that accepts two lists of strings and returns the list that has\ntotal number of chars in the all strings of the list less than the other list.\nif the two lists have the same number of chars, return the first list.\nExamples\ntotal_match([], []) ➞ []\ntotal_match(['hi', 'admin'], ['hI', 'Hi']) ➞ ['hI', 'Hi']\ntotal_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) ➞ ['hi', 'admin']\ntotal_match(['hi', 'admin'], ['hI', 'hi', 'hi']) ➞ ['hI', 'hi', 'hi']\ntotal_match(['4'], ['1', '2', '3', '4', '5']) ➞ ['4']",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function total_match and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/74",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback.jsonl",
+    "candidate_index": 1,
+    "candidate_sha256": "942e08af9cec63e3df0f2eb7e1da7b5a97eff02733143633a2f96670bc11b26d",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-074",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "56021cc2d175e2823af062982ae6cf2a75b546e107a35862b5afb4c2de17c94a",
+      "sha256": "322164533367561fee2e964dc3304f4ef268d0a1afbdd6e045a9509d53ceac1f"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "eafe2f467faa59ce92ad983bbba19fd5b069751a6af3efcc5c6f63beb02de07c",
+      "sha256": "44a3291cbe9e07a51a78a99d387bf1fb22aaadba9b4860c3d834888849982782"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

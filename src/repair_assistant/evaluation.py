@@ -25,6 +25,15 @@ def _cost_sum(rows: list[dict[str, Any]], key: str) -> float | int | None:
     return sum(value for value in values if isinstance(value, (int, float)))
 
 
+def _public_pass_through(row: dict[str, Any], attempt: int) -> bool:
+    values = row.get("public_pass_by_attempt")
+    if isinstance(values, list):
+        return any(value is True for value in values[:attempt])
+    if attempt == 1:
+        return bool(row.get("first_public_passed"))
+    return bool(row.get("final_public_passed"))
+
+
 def aggregate_summaries(summaries: Iterable[dict[str, Any]]) -> dict[str, Any]:
     rows = list(summaries)
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -55,6 +64,14 @@ def aggregate_summaries(summaries: Iterable[dict[str, Any]]) -> dict[str, Any]:
             "timeout_rate": _rate(valid, "timed_out"),
             "protected_test_violation_rate": _rate(valid, "protected_test_violation"),
             "workspace_policy_violation_rate": _rate(valid, "workspace_policy_violation"),
+            **{
+                f"public_cumulative_pass_rate_attempt_{attempt}": (
+                    sum(_public_pass_through(row, attempt) for row in valid) / len(valid)
+                    if valid
+                    else None
+                )
+                for attempt in range(1, 4)
+            },
             "average_duration_ms": _mean(valid, "duration_ms"),
             "average_test_runtime_ms": _mean(valid, "test_runtime_ms"),
             "average_model_calls": _mean(valid, "model_calls", cost=True),
@@ -80,6 +97,13 @@ def aggregate_summaries(summaries: Iterable[dict[str, Any]]) -> dict[str, Any]:
         item["currency"] = next(iter(currencies)) if len(currencies) == 1 else None
         if item["currency"] is None:
             item["currency_cost"] = None
+        total_tokens = item["total_tokens"]
+        successful_runs = item["successful_runs"]
+        item["tokens_per_successful_run"] = (
+            total_tokens / successful_runs
+            if isinstance(total_tokens, (int, float)) and successful_runs > 0
+            else None
+        )
         metrics[strategy] = item
     paired: dict[tuple[str, int], dict[str, bool]] = defaultdict(dict)
     for row in rows:

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-110",
+  "title": "FeedbackEval HumanEval repair: exchange",
+  "goal": "Write a Python function `exchange(lst1, lst2)` to solve the following problem:\nIn this problem, you will implement a function that takes two lists of numbers,\nand determines whether it is possible to perform an exchange of elements\nbetween them to make lst1 a list of only even numbers.\nThere is no limit on the number of exchanged elements between lst1 and lst2.\nIf it is possible to exchange elements between the lst1 and lst2 to make\nall the elements of lst1 to be even, return \"YES\".\nOtherwise, return \"NO\".\nFor example:\nexchange([1, 2, 3, 4], [1, 2, 3, 4]) => \"YES\"\nexchange([1, 2, 3, 4], [1, 5, 3, 4]) => \"NO\"\nIt is assumed that the input lists will be non-empty.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function exchange and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/110",
+    "candidate_source": "llm-based",
+    "candidate_file": "HumanEval_feedback.jsonl",
+    "candidate_index": 1,
+    "candidate_sha256": "404bde71157a29bbbaecce7f76fd790e6c8122874f321d2e79b1fe78db36a840",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-110",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "08fa304293a4479d1878b45ddbe2a281690c06d9d819802d995975069a46242d",
+      "sha256": "7cb25d5f20eb9293315e4e74902241d3f807fecaa803c959389d2c4757631508"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "99bba903ee55c64a66e0f3cfacdd758647377cfc03aeb5b07ff3c9c5938ba180",
+      "sha256": "06d5d492faa9e4223d297e388eb4b57a6cb10dbb644daa6dc452acce649489b7"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

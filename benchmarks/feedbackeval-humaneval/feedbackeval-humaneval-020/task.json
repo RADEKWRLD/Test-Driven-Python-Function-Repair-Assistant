@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-020",
+  "title": "FeedbackEval HumanEval repair: find_closest_elements",
+  "goal": "Write a Python function `find_closest_elements(numbers: List[float]) -> Tuple[float, float]` to solve the following problem:\nFrom a supplied list of numbers (of length at least two) select and return two that are the closest to each\nother and return them in order (smaller number, larger number).\n>>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])\n(2.0, 2.2)\n>>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])\n(2.0, 2.0)",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function find_closest_elements and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/20",
+    "candidate_source": "existing",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "2ed462e27bfbd48dec8432d2acace5f8a3478b77730c7a59b2d9e67998f3448f",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-020",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "86e38861548c4eebca5de18b8b45ca3dd65e76b47e0e0bcdb594f243e640d829",
+      "sha256": "7d8c9d955411f74b1f206090d000f8b31470e8638c6ace7e5a335ec24c5fc1a4"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "58760f7e3120094d76be387fb3fd34488698d8c872d85d1b0e3d47e3e01a5ef2",
+      "sha256": "56a756b053cc682e6c1851a4e34fd1e925991822fc15256a7624427bed2bab3c"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

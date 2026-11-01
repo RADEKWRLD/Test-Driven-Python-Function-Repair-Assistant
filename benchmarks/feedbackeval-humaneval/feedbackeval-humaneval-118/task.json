@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-118",
+  "title": "FeedbackEval HumanEval repair: get_closest_vowel",
+  "goal": "Write a Python function `get_closest_vowel(word)` to solve the following problem:\nYou are given a word. Your task is to find the closest vowel that stands between\ntwo consonants from the right side of the word (case sensitive).\nVowels in the beginning and ending doesn't count. Return empty string if you didn't\nfind any vowel met the above condition.\nYou may assume that the given string contains English letter only.\nExample:\nget_closest_vowel(\"yogurt\") ==> \"u\"\nget_closest_vowel(\"FULL\") ==> \"U\"\nget_closest_vowel(\"quick\") ==> \"\"\nget_closest_vowel(\"ab\") ==> \"\"",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function get_closest_vowel and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/118",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "29b35f3013bfec4d53bc9831cf8cd7084eb975a1f7d7915ddbfd28a0e6fcf108",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-118",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "e60cb2102dff6b2f78bad503e341cf97a6bde6c8984439802ccf47668fe80d49",
+      "sha256": "758115a3606c4a57582731c7403c28c53d9717540b7b3e368d809634fd463e11"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "ba059792efc733919ad99521682e35b04664e16122ced8cf6a1b123209f1fcec",
+      "sha256": "fb3989c13d7b65175712c6580eb94331f5b03b26a974e4b027b1ca198e844006"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

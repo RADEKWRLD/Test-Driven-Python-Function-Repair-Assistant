@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-036",
+  "title": "FeedbackEval HumanEval repair: fizz_buzz",
+  "goal": "Write a Python function `fizz_buzz(n: int)` to solve the following problem:\nReturn the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\n>>> fizz_buzz(50)\n0\n>>> fizz_buzz(78)\n2\n>>> fizz_buzz(79)\n3",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function fizz_buzz and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/36",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "5f09edeed08de760c75f1b68641c299ac87a338548ae434a5d39be1c399b20ea",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-036",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "d462cb73c6faeb7bf01c563c90fcc7503f03d964ca362e7fd006a444d22429dd",
+      "sha256": "0cdc64e6c5006f27fa41c8b27036b6486b94cdc3f35c4bb8bf5d20f92e744fe9"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "50bdec74c3deda635ac71dc2307a5665e63d11abe73f7b12cff8243b3999a2db",
+      "sha256": "006c87f5e6dd62b1d7532924c92a4c5bdbeee4f0c5193e04c9edad6887e194f4"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

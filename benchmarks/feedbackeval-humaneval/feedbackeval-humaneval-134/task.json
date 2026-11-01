@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-134",
+  "title": "FeedbackEval HumanEval repair: check_if_last_char_is_a_letter",
+  "goal": "Write a Python function `check_if_last_char_is_a_letter(txt)` to solve the following problem:\nCreate a function that returns True if the last character\nof a given string is an alphabetical character and is not\na part of a word, and False otherwise.\nNote: \"word\" is a group of characters separated by space.\nExamples:\ncheck_if_last_char_is_a_letter(\"apple pie\") ➞ False\ncheck_if_last_char_is_a_letter(\"apple pi e\") ➞ True\ncheck_if_last_char_is_a_letter(\"apple pi e \") ➞ False\ncheck_if_last_char_is_a_letter(\"\") ➞ False",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function check_if_last_char_is_a_letter and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/134",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "25f442afb2cf02927504199901ef3a0276fab0776aa5e00b6d0db079ba16445f",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-134",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "9ddefab60622c2b00a20f7c4840ed8c33fdc98e78945e542b09d510add98b751",
+      "sha256": "0c18eb687de6220bc9cbc8408ef81b1683521a1efba3994a3cf669ab4798f3b0"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "2e4470059440ef2d997054a9e4160e2202e0715d3668ec77a1ee1288b2ad23ea",
+      "sha256": "0c316e11345cb01c5d5ab0838cb9615c714818c53b9b6bf08f009cfb9da771e4"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

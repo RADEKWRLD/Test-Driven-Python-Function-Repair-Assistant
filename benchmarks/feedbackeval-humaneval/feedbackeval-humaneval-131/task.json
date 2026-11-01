@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-131",
+  "title": "FeedbackEval HumanEval repair: digits",
+  "goal": "Write a Python function `digits(n)` to solve the following problem:\nGiven a positive integer n, return the product of the odd digits.\nReturn 0 if all digits are even.\nFor example:\ndigits(1)  == 1\ndigits(4)  == 0\ndigits(235) == 15",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function digits and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/131",
+    "candidate_source": "llm-based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "7c6efe868d51b39ac5d58af6889615c4b69fefefe2bdf4174c1d747849c481ca",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-131",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "357b06f4718a9c9d237a2e210187f603c1af00afdb41a4acead2fda585ca41e5",
+      "sha256": "8fa7e73a3dcb14e04bc6c49c76e52d45f68fe73e3c1bd3702b489351410d5ff2"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "40237a328c3d91c0372c080e8b68f967217d7e5979c21da227b7e9635c5805f2",
+      "sha256": "109055a14d5522e4f66a1a620674f3f1b829f3d3b4a23b36dd993e9dfa7fcf17"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

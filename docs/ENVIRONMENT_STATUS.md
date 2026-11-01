@@ -52,6 +52,6 @@ cd /mnt/e/Python函数修复助手/Test-Driven-Python-Function-Repair-Assistant
 
 按最新精简要求，默认 `make experiment` 已改为 **50 题、三组、一轮，共 150 个 run**，不再默认运行三轮；本轮没有执行该命令。
 
-在原 Ubuntu/Python/Docker 环境复核：doctor、Ruff 格式/lint、mypy 均通过；39 项开发测试、1 项 Docker 集成测试全部通过。已删除的下载导入、自动拆分等外围测试不再计数。普通日志、四图 Markdown 报告和简单结果保存/跳过机制已由对应开发测试验证，MLX-LM 适配器及安全约束仍保留。
+在当前 Python/Docker 环境复核：Ruff 格式/lint、mypy 均通过；49 项开发测试、1 项 Docker 集成测试全部通过。已删除的下载导入、自动拆分等外围测试不再计数。普通日志、五图 Markdown 报告和简单结果保存/跳过机制已由对应开发测试验证；正式实验仅保留 DeepSeek 适配器，隔离安全约束不变。
 
 本轮没有新的 DeepSeek 调用、费用或正式实验结果。历史最小 API 结果保持不变；当前具体操作以 [精简操作手册](OPERATIONS.md) 为准。

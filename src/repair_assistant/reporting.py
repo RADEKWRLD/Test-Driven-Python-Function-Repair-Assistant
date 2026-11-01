@@ -1,4 +1,4 @@
-"""Course report: raw CSV, one Markdown document and four small SVG figures."""
+"""Course report: raw CSV, one Markdown document and compact SVG figures."""
 
 # ruff: noqa: RUF001
 
@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from repair_assistant.evaluation import aggregate_summaries
+from repair_assistant.output_paths import resolve_run_directory
 
 STRATEGIES = ("single-shot", "retry-without-feedback", "test-feedback")
 LABELS = {
@@ -82,6 +83,83 @@ def _csv(path: Path, fields: Sequence[str], rows: Sequence[Mapping[str, Any]]) -
         writer.writerows(rows)
 
 
+def _feedbackeval_history(output_dir: Path, row: Mapping[str, Any]) -> dict[str, Any]:
+    run_dir = resolve_run_directory(output_dir, str(row["strategy"]), str(row["run_id"]))
+    events_path = run_dir / "events.jsonl"
+    events = []
+    if events_path.is_file():
+        events = [
+            json.loads(line)
+            for line in events_path.read_text(encoding="utf-8").splitlines()
+            if line
+        ]
+    feedback_after = {
+        int(event["payload"]["attempt"]): event["payload"]["content"]
+        for event in events
+        if event.get("type") == "feedback_added"
+    }
+    costs = {
+        int(event["payload"]["attempt"]): event["payload"].get("cost", {})
+        for event in events
+        if event.get("type") == "attempt_completed"
+    }
+    passes = row.get("public_pass_by_attempt", [])
+    rounds: list[dict[str, Any]] = []
+    original = run_dir / "original_code/solution.py"
+    if original.is_file():
+        rounds.append(
+            {
+                "round": 0,
+                "generate_code": original.read_text(encoding="utf-8"),
+                "feedback": None,
+                "isTrue": False,
+            }
+        )
+    attempts = row.get("attempts", 0)
+    if isinstance(attempts, int):
+        for attempt in range(1, attempts + 1):
+            snapshot = run_dir / "repair_attempts" / f"{attempt:02d}" / "solution.py"
+            if not snapshot.is_file():
+                continue
+            if attempt == 1:
+                feedback = None
+            elif row["strategy"] == "retry-without-feedback":
+                feedback = "The code is wrong. Please fix it."
+            else:
+                feedback = feedback_after.get(attempt - 1)
+            rounds.append(
+                {
+                    "round": attempt,
+                    "generate_code": snapshot.read_text(encoding="utf-8"),
+                    "feedback": feedback,
+                    "isTrue": bool(
+                        isinstance(passes, list)
+                        and attempt <= len(passes)
+                        and passes[attempt - 1] is True
+                    ),
+                    "cost": costs.get(attempt, {}),
+                }
+            )
+    return {
+        "_id": row.get("task_id"),
+        "strategy": row.get("strategy"),
+        "repetition": row.get("repetition", 1),
+        "repair_results": [
+            {
+                "id": 0,
+                "source": (
+                    "feedbackeval-humaneval"
+                    if str(row.get("task_id", "")).startswith("feedbackeval-humaneval-")
+                    else "course-task"
+                ),
+                "repair_history": rounds,
+            }
+        ],
+        "first_hidden_passed": row.get("first_hidden_passed"),
+        "final_hidden_passed": row.get("final_hidden_passed"),
+    }
+
+
 def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> Path:
     output_dir = output_dir.resolve()
     figures = output_dir / "figures"
@@ -100,6 +178,8 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
         "outcome",
         "status",
         "attempts",
+        "public_pass_by_attempt",
+        "first_success_attempt",
         "first_public_passed",
         "final_public_passed",
         "first_hidden_passed",
@@ -122,6 +202,11 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
         "error_message",
     ]
     _csv(output_dir / "raw-runs.csv", raw_fields, [{**row, **row.get("cost", {})} for row in rows])
+    histories = [_feedbackeval_history(output_dir, row) for row in rows]
+    (output_dir / "feedbackeval-repair-histories.jsonl").write_text(
+        "".join(json.dumps(item, ensure_ascii=False) + "\n" for item in histories),
+        encoding="utf-8",
+    )
     metric_fields = sorted({key for item in metrics.values() for key in item})
     _csv(
         output_dir / "strategy-metrics.csv",
@@ -162,6 +247,15 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
     )
     charts = [
         (
+            "public-cumulative-by-attempt.svg",
+            "逐次提交后的累计公开测试通过率",
+            [
+                ("第1次提交后", "public_cumulative_pass_rate_attempt_1", True, 1),
+                ("第2次提交后", "public_cumulative_pass_rate_attempt_2", True, 1),
+                ("第3次提交后", "public_cumulative_pass_rate_attempt_3", True, 1),
+            ],
+        ),
+        (
             "hidden-pass-rates.svg",
             "首次与最终隐藏测试通过率",
             [
@@ -192,6 +286,7 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
             [
                 ("平均模型调用次数", "average_model_calls", False, 1),
                 ("平均 token", "average_total_tokens", False, 1),
+                ("每个成功 run 的 token", "tokens_per_successful_run", False, 1),
                 ("平均整题耗时（秒）", "average_duration_ms", False, 1000),
             ],
         ),
@@ -242,8 +337,9 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
             "",
             "## 实际成本",
             "",
-            "| 策略 | 模型调用总数 | 输入 token | 输出 token | 平均整题秒数 | 金额 | 币种 |",
-            "| --- | ---: | ---: | ---: | ---: | ---: | --- |",
+            "| 策略 | 模型调用总数 | 输入 token | 输出 token | 每成功 token | "
+            "平均整题秒数 | 金额 | 币种 |",
+            "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
         ]
     )
     for strategy in STRATEGIES:
@@ -257,6 +353,7 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
                 _format(item.get(key))
                 for key in ("model_calls", "prompt_tokens", "completion_tokens")
             ],
+            _format(item.get("tokens_per_successful_run")),
             _format(duration / 1000 if duration is not None else None),
             f"{item['currency_cost']:.8f}"
             if _number(item.get("currency_cost")) is not None

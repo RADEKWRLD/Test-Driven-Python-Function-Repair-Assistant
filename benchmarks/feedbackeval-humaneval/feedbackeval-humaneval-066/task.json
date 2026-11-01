@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-066",
+  "title": "FeedbackEval HumanEval repair: digitSum",
+  "goal": "Write a Python function `digitSum(s)` to solve the following problem:\nTask\nWrite a function that takes a string as input and returns the sum of the upper characters only'\nASCII codes.\nExamples:\ndigitSum(\"\") => 0\ndigitSum(\"abAB\") => 131\ndigitSum(\"abcCd\") => 67\ndigitSum(\"helloE\") => 69\ndigitSum(\"woArBld\") => 131\ndigitSum(\"aAaaaXa\") => 153",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function digitSum and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/66",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "371a71d2e71e3f38078c6b414e0870f22b3d67bb597e7a78929f0a26dc6e0937",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-066",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "5639d3309bf377af640f6f1f0e12d66a873574d68481eb06610307fd36c26736",
+      "sha256": "3f8c7fe077ba8715a815abbf0ef1fe18386051b866d79ae9219c73e916c2f865"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "780b3b37cf03f5e52661418e8682c1124459223bef56ebb0db5b4b654b43ad1c",
+      "sha256": "cdc34e0b9bd6c80438ca1145825a089961a936e0750a18989ae9454c120654fb"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

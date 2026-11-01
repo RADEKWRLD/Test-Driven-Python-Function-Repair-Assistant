@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-161",
+  "title": "FeedbackEval HumanEval repair: solve",
+  "goal": "Write a Python function `solve(s)` to solve the following problem:\nYou are given a string s.\nif s[i] is a letter, reverse its case from lower to upper or vise versa,\notherwise keep it as it is.\nIf the string contains no letters, reverse the string.\nThe function should return the resulted string.\nExamples\nsolve(\"1234\") = \"4321\"\nsolve(\"ab\") = \"AB\"\nsolve(\"#a@C\") = \"#A@c\"",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function solve and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/161",
+    "candidate_source": "llm-based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "4809d977013f046df6ed97d97fd68b9e1e1fa9c0a68c6a08b20b87cd51035408",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-161",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "42d814a79331a1e18df401cabc0dd1040135133ee75368e59f7844ffb83414cf",
+      "sha256": "833cb3d3eb99e3585429193a5cbdd44e752265c74370043b962da821c01cd051"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "03405ccc2b995c9841c52c54a1ac58148aa0f60cddeecef4b5ee96f0549b4fb5",
+      "sha256": "c23ff03cb034be5e290dfdb44c31ccd2116d6247c925a67f03bef51286fdd05f"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-144",
+  "title": "FeedbackEval HumanEval repair: simplify",
+  "goal": "Write a Python function `simplify(x, n)` to solve the following problem:\nYour task is to implement a function that will simplify the expression\nx * n. The function returns True if x * n evaluates to a whole number and False\notherwise. Both x and n, are string representation of a fraction, and have the following format,\n<numerator>/<denominator> where both numerator and denominator are positive whole numbers.\nYou can assume that x, and n are valid fractions, and do not have zero as denominator.\nsimplify(\"1/5\", \"5/1\") = True\nsimplify(\"1/6\", \"2/1\") = False\nsimplify(\"7/10\", \"10/2\") = False",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function simplify and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/144",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "b11961b97fcce1ad81299d7ddd1b691b79816a8604c5774a7f1f5db6289155a4",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-144",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "ec005fe532d6f91902fe076942848830ea69216e975210756cd178bfcde0ff60",
+      "sha256": "069b190612dfe87555883a85a7add55edc3816a59dca6c945f3c1df5e544274a"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "f1a9708b4bd17a2efdc87b9866351005fdda95baf15ad8fa52efaa13a0b1af13",
+      "sha256": "e183a24a96e9c15b167f90bdad7b33f4090b0d3d3be9b905ace6d9cacf3a6300"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

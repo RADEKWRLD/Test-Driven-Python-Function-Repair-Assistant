@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-132",
+  "title": "FeedbackEval HumanEval repair: is_nested",
+  "goal": "Write a Python function `is_nested(string)` to solve the following problem:\nCreate a function that takes a string as input which contains only square brackets.\nThe function should return True if and only if there is a valid subsequence of brackets\nwhere at least one bracket in the subsequence is nested.\nis_nested('[[]]') ➞ True\nis_nested('[]]]]]]][[[[[]') ➞ False\nis_nested('[][]') ➞ False\nis_nested('[]') ➞ False\nis_nested('[[][]]') ➞ True\nis_nested('[[]][[') ➞ True",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function is_nested and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/132",
+    "candidate_source": "existing",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "148814abe68743f4cfa6b3470965dc78477813c2f592dce5ea615aa042cf68e1",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-132",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "6c7e9ee2a4383ac92d1c40554a37bc1326fc23a9d8669bfa3688e7a9bae58de2",
+      "sha256": "f2492d1d4f18f0c8905fbb4c5e08ebacd296086253cc8c49be02a19493a1d671"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "7e4a96e30210eeff427b8f8381f4da91cc25e1c87861f26d76ade8804b9bc300",
+      "sha256": "2f961f1a3743e9c807eeb43380f04cdc336c6387b92085a829bf06231c942797"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

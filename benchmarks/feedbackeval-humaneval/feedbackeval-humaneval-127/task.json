@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-127",
+  "title": "FeedbackEval HumanEval repair: intersection",
+  "goal": "Write a Python function `intersection(interval1, interval2)` to solve the following problem:\nYou are given two intervals,\nwhere each interval is a pair of integers. For example, interval = (start, end) = (1, 2).\nThe given intervals are closed which means that the interval (start, end)\nincludes both start and end.\nFor each given interval, it is assumed that its start is less or equal its end.\nYour task is to determine whether the length of intersection of these two\nintervals is a prime number.\nExample, the intersection of the intervals (1, 3), (2, 4) is (2, 3)\nwhich its length is 1, which not a prime number.\nIf the length of the intersection is a prime number, return \"YES\",\notherwise, return \"NO\".\nIf the two intervals don't intersect, return \"NO\".\n[input/output] samples:\nintersection((1, 2), (2, 3)) ==> \"NO\"\nintersection((-1, 1), (0, 4)) ==> \"NO\"\nintersection((-3, -1), (-5, 5)) ==> \"YES\"",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function intersection and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/127",
+    "candidate_source": "existing",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "662dafbffb091f99b755a29a4edb2d488f52131f1dc44a773c7155b55f303095",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-127",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "c400f2dc88218cf5748e2961c51e5a5bb3c39a0cb40d97bfbced6a5fde5720a1",
+      "sha256": "f06d5b02e46e153c03db3d1fa6ef240202b3a9f0ba374332a16785fa95c1597b"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "dffe1e5d2266863679b3472211cfded544a2a7fba877ea668f193076e0c2725c",
+      "sha256": "0052d6c43544da29d129464574a9cc278706737b28c7f2d1c4872bd45ff9ab8c"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

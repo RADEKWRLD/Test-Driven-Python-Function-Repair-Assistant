@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-076",
+  "title": "FeedbackEval HumanEval repair: is_simple_power",
+  "goal": "Write a Python function `is_simple_power(x, n)` to solve the following problem:\nYour task is to write a function that returns true if a number x is a simple\npower of n and false in other cases.\nx is a simple power of n if n**int=x\nFor example:\nis_simple_power(1, 4) => true\nis_simple_power(2, 2) => true\nis_simple_power(8, 2) => true\nis_simple_power(3, 2) => false\nis_simple_power(3, 1) => false\nis_simple_power(5, 3) => false",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function is_simple_power and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/76",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "91228612564e55b99d5dbe773d34a3fa19db815ebafad619da988bcef886eb7c",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-076",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "673095f7d85e2786f33b45bd84ed4cf5a629afd7052364db08454f8cd3e510ec",
+      "sha256": "5dd3304672376a056d183a9ccc9a961c030cf3540b79c84f6cd34e878b07722e"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "6a03afa27f549ab2824a822b390dccd100e9aafd04b5bdaa5d4e879872fb7389",
+      "sha256": "14895da1f35946820bd1969abb24a54c19057e323a2c89d4dd2794def4f32044"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

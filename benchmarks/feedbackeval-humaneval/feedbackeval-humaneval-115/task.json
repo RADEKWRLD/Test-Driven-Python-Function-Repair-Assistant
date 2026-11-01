@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-115",
+  "title": "FeedbackEval HumanEval repair: max_fill",
+  "goal": "Write a Python function `max_fill(grid, capacity):\n    import math` to solve the following problem:\nYou are given a rectangular grid of wells. Each row represents a single well,\nand each 1 in a row represents a single unit of water.\nEach well has a corresponding bucket that can be used to extract water from it,\nand all buckets have the same capacity.\nYour task is to use the buckets to empty the wells.\nOutput the number of times you need to lower the buckets.\nExample 1:\nInput:\ngrid : [[0,0,1,0], [0,1,0,0], [1,1,1,1]]\nbucket_capacity : 1\nOutput: 6\nExample 2:\nInput:\ngrid : [[0,0,1,1], [0,0,0,0], [1,1,1,1], [0,1,1,1]]\nbucket_capacity : 2\nOutput: 5\nExample 3:\nInput:\ngrid : [[0,0,0], [0,0,0]]\nbucket_capacity : 5\nOutput: 0\nConstraints:\n* all wells have the same length\n* 1 <= grid.length <= 10^2\n* 1 <= grid[:,1].length <= 10^2\n* grid[i][j] -> 0 | 1\n* 1 <= capacity <= 10",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function max_fill and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "provenance": {
+    "dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+    "source_task_id": "HumanEval/115",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "96c244e116b23c0b635871b30c3c860c2777dd3d865ec7f00942dfca106e9241",
+    "base_test_dataset": "bigcode/humanevalpack",
+    "base_test_revision": "9a41762f73a8cb23bb5811b73d5aab164efcf378",
+    "base_task_id": "humanevalpack-python-115",
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  },
+  "test_version": "case-outcomes-v1",
+  "test_files": {
+    "workspace/tests/test_public.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "215b6c9df30ad759d45eadb70e9879d2097e2eb20f459636e5591a37dd152c12",
+      "sha256": "f130286576fcdb75222ae50bc4392250a038ecdabe814a7010c3c2d602b12e7b"
+    },
+    "hidden_tests/test_hidden.py": {
+      "granularity": "independent-assertion",
+      "previous_sha256": "01a93a83fa0302f174da39f7644949e85647b7debf56cb9d10c62b443d53f3b5",
+      "sha256": "9b0dba43ae59498a97f9d541c7ea213a64773ca643580929fd9792dc5dd03187"
+    }
+  },
+  "test_preflight_status": "pending-after-case-split"
+}

@@ -20,7 +20,7 @@ from repair_assistant.agent import MAX_ATTEMPTS, RepairStrategy
 from repair_assistant.benchmark import run_benchmark
 from repair_assistant.costs import Pricing
 from repair_assistant.event_log import EventLog
-from repair_assistant.model import DeepSeekAdapter, MlxLocalAdapter, ModelAdapter
+from repair_assistant.model import DeepSeekAdapter, ModelAdapter
 from repair_assistant.output_paths import GROUP_DIRECTORIES, create_output_directory
 from repair_assistant.reporting import generate_experiment_report
 from repair_assistant.run import RunService
@@ -47,7 +47,7 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--pricing-file", type=Path)
     benchmark = commands.add_parser("benchmark", help="Run all tasks under each strategy.")
     benchmark.add_argument(
-        "tasks_dir", type=Path, default=Path("benchmarks/humanevalpack"), nargs="?"
+        "tasks_dir", type=Path, default=Path("benchmarks/feedbackeval-humaneval"), nargs="?"
     )
     benchmark.add_argument(
         "--strategy",
@@ -217,19 +217,7 @@ def _benchmark(args: argparse.Namespace) -> int:
 
 
 def _model_adapter(model: str) -> ModelAdapter:
-    provider = os.getenv("REPAIR_ASSISTANT_PROVIDER", "deepseek").strip().lower()
     base_url = os.getenv("REPAIR_ASSISTANT_BASE_URL", "").strip()
-    if provider == "mlx-local":
-        return MlxLocalAdapter(
-            model=model,
-            base_url=base_url or "http://127.0.0.1:8080/v1",
-            timeout_seconds=_environment_positive_int(
-                "REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS", 600
-            ),
-            max_tokens=_environment_positive_int("REPAIR_ASSISTANT_MAX_TOKENS", 2048),
-        )
-    if provider != "deepseek":
-        raise ValueError("REPAIR_ASSISTANT_PROVIDER must be deepseek or mlx-local")
     api_key = os.getenv("DEEPSEEK_API_KEY", "")
     if not api_key:
         raise ValueError("DEEPSEEK_API_KEY is required for a DeepSeek live run.")

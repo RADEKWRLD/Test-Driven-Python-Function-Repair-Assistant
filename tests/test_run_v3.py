@@ -93,6 +93,8 @@ def test_v3_evaluates_baseline_first_final_without_executing_candidates(
     assert (result.run_dir / "repair_attempts/01/solution.py").is_file()
     assert (result.run_dir / "repair_attempts/02/solution.py").is_file()
     assert summary["protocol"]["version"] == 3
+    assert summary["public_pass_by_attempt"] == [False, True]
+    assert summary["first_success_attempt"] == 2
     assert summary["case_changes"]["baseline_to_final"]["fixed"] == 1
     assert summary["case_changes"]["first_to_final"]["fixed"] == 1
     assert summary["test_runtime_ms"] == 14  # 2 repair checks + 5 final-stage evaluations

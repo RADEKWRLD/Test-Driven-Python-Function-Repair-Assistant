@@ -1,6 +1,6 @@
 # 操作手册（精简版）
 
-当前范围和指标以 [实验协议](EXPERIMENT_PROTOCOL.md) 为准；保留 50 道正式题、MLX-LM、DeepSeek 和三组 1/3/3。
+当前范围和指标以 [实验协议](EXPERIMENT_PROTOCOL.md) 为准；保留 50 道 FeedbackEval-HumanEval 正式题、DeepSeek 和三组 1/3/3。
 
 ## 本机启动
 
@@ -26,18 +26,7 @@ doctor 只检查 Python、Docker CLI/引擎和镜像，不能代替 Docker 集�
 
 ```text
 DEEPSEEK_API_KEY=在本地填写
-REPAIR_ASSISTANT_PROVIDER=deepseek
 REPAIR_ASSISTANT_MODEL=deepseek-flash
-```
-
-MLX-LM 服务可用时换为：
-
-```text
-REPAIR_ASSISTANT_PROVIDER=mlx-local
-REPAIR_ASSISTANT_MODEL=default_model
-REPAIR_ASSISTANT_BASE_URL=http://127.0.0.1:8080/v1
-REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS=600
-REPAIR_ASSISTANT_MAX_TOKENS=2048
 ```
 
 三组必须共用同一个模型配置，不能中途切换提供方。DeepSeek 密钥只用于宿主 API 请求，不传入 Docker 容器。
@@ -100,7 +89,7 @@ figures/cost.svg
 .venv/bin/repair-agent report path/to/report.json
 ```
 
-旧日志仍可读取，旧报告/历史最小测试产物保留，但不混入新的精简批次。重建旧 JSON 报告也使用当前四图 Markdown 生成器。
+旧日志仍可读取，旧报告/历史最小测试产物保留，但不混入新的精简批次。重建旧 JSON 报告也使用当前五图 Markdown 生成器。
 
 ## 保存、跳过与异常
 

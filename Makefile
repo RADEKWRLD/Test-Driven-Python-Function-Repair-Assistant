@@ -1,7 +1,7 @@
 PYTHON ?= python3.12
 VENV ?= .venv
 IMAGE ?= function-repair/sandbox-python:dev
-TASKS_DIR ?= benchmarks/humanevalpack
+TASKS_DIR ?= benchmarks/feedbackeval-humaneval
 MAX_ATTEMPTS ?= 3
 REPETITIONS ?= 1
 SEED ?= 20261016

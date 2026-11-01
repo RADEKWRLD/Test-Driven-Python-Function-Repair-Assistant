@@ -1,0 +1,478 @@
+{
+  "schema_version": 1,
+  "dataset": "FeedbackEval/HumanEval_feedback_test",
+  "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+  "source_file_sha256": "33d90ad2ad96b8cd57958655793a06a763648b15087469ff0e74c8ba981910d8",
+  "candidate_pool_sha256": "97b50b5f6d717a4454ef6cf30841d7e7c9c258f10efe04fa54495eef17b63b46",
+  "selection_overrides": {
+    "74": 1,
+    "105": 0,
+    "110": 1,
+    "162": 0
+  },
+  "selection": {
+    "method": "inherit-frozen-humanevalpack-selection",
+    "base_manifest_sha256": "fc03ce3c34784efc64c2c357dc43c06677005497f6d11dc413bfc8164b707671",
+    "count": 50,
+    "outcome_blind": true
+  },
+  "test_policy": {
+    "public_and_hidden_inherited_from": "benchmarks/humanevalpack",
+    "public_hidden_disjoint": true,
+    "feedbackeval_test_field_copied": false,
+    "correct_code_copied": false,
+    "precomputed_feedback_copied": false
+  },
+  "tasks": [
+    {
+      "task_id": "feedbackeval-humaneval-127",
+      "source_task_id": "HumanEval/127",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "662dafbffb091f99b755a29a4edb2d488f52131f1dc44a773c7155b55f303095",
+      "base_task_id": "humanevalpack-python-127"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-118",
+      "source_task_id": "HumanEval/118",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "29b35f3013bfec4d53bc9831cf8cd7084eb975a1f7d7915ddbfd28a0e6fcf108",
+      "base_task_id": "humanevalpack-python-118"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-129",
+      "source_task_id": "HumanEval/129",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "4716a0aad59b6bcafd5bcba631b5afb385b390003f8efdef4ced0598d76461b4",
+      "base_task_id": "humanevalpack-python-129"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-114",
+      "source_task_id": "HumanEval/114",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "09404dd6425199359ff3ad06a9f7a20a4b38098747129db069fbda2667805d50",
+      "base_task_id": "humanevalpack-python-114"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-124",
+      "source_task_id": "HumanEval/124",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "c33b7dea22d41cf470147838d50ae5263a1d8e636b8d13f8aeccdc933b270c46",
+      "base_task_id": "humanevalpack-python-124"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-095",
+      "source_task_id": "HumanEval/95",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "6d628498141d3fa23772ee7ef11f440d2cfec0bd1e4e62e23e6d888260de2d51",
+      "base_task_id": "humanevalpack-python-095"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-071",
+      "source_task_id": "HumanEval/71",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "18f0f6a9c76341b199ef23403744496c36590015218f8f9678f8a730010e4332",
+      "base_task_id": "humanevalpack-python-071"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-144",
+      "source_task_id": "HumanEval/144",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "b11961b97fcce1ad81299d7ddd1b691b79816a8604c5774a7f1f5db6289155a4",
+      "base_task_id": "humanevalpack-python-144"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-132",
+      "source_task_id": "HumanEval/132",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "148814abe68743f4cfa6b3470965dc78477813c2f592dce5ea615aa042cf68e1",
+      "base_task_id": "humanevalpack-python-132"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-134",
+      "source_task_id": "HumanEval/134",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "25f442afb2cf02927504199901ef3a0276fab0776aa5e00b6d0db079ba16445f",
+      "base_task_id": "humanevalpack-python-134"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-059",
+      "source_task_id": "HumanEval/59",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "b4b499fd85cede7a4363a19d8881f7379856df4a37847645bc95dd5726a2dc25",
+      "base_task_id": "humanevalpack-python-059"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-020",
+      "source_task_id": "HumanEval/20",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "2ed462e27bfbd48dec8432d2acace5f8a3478b77730c7a59b2d9e67998f3448f",
+      "base_task_id": "humanevalpack-python-020"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-143",
+      "source_task_id": "HumanEval/143",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ad37019d69bdab983761aa482025a2156fa577272108a3be8aa923fa55bb3709",
+      "base_task_id": "humanevalpack-python-143"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-136",
+      "source_task_id": "HumanEval/136",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "9f51a6898bea61a7c07b95c1f688eb3a313b25b64591055d6537881d64e3d2b1",
+      "base_task_id": "humanevalpack-python-136"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-039",
+      "source_task_id": "HumanEval/39",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0a79f554aa24b49b7bfa050bf0001fd8434c179d3cc3d59378dc6ebee5639c4a",
+      "base_task_id": "humanevalpack-python-039"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-066",
+      "source_task_id": "HumanEval/66",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "371a71d2e71e3f38078c6b414e0870f22b3d67bb597e7a78929f0a26dc6e0937",
+      "base_task_id": "humanevalpack-python-066"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-109",
+      "source_task_id": "HumanEval/109",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1b5d45dfdadf20f6e2fde80f021a8bb410e6699d06f69e0c34004978d2b9c70f",
+      "base_task_id": "humanevalpack-python-109"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-094",
+      "source_task_id": "HumanEval/94",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "2917cc77ff38fb09b3e0842cb947bd8c86efe2dbaae962ab27f9cf57c2164357",
+      "base_task_id": "humanevalpack-python-094"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-142",
+      "source_task_id": "HumanEval/142",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "569b4b064ae2dbdc8f135caad6ea26824933e04eb12b6b64f731fce7f0705189",
+      "base_task_id": "humanevalpack-python-142"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-108",
+      "source_task_id": "HumanEval/108",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "fdd62ec5b827ce4ddef0ed72e86f54632604add52bc25f00713c87e8d58e48ba",
+      "base_task_id": "humanevalpack-python-108"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-111",
+      "source_task_id": "HumanEval/111",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0ab90c298b3c66c865d28d894fb9ec748a7dc44235b7015b62e2b0e694dae8e8",
+      "base_task_id": "humanevalpack-python-111"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-115",
+      "source_task_id": "HumanEval/115",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "96c244e116b23c0b635871b30c3c860c2777dd3d865ec7f00942dfca106e9241",
+      "base_task_id": "humanevalpack-python-115"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-110",
+      "source_task_id": "HumanEval/110",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback.jsonl",
+      "candidate_index": 1,
+      "candidate_sha256": "404bde71157a29bbbaecce7f76fd790e6c8122874f321d2e79b1fe78db36a840",
+      "base_task_id": "humanevalpack-python-110"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-080",
+      "source_task_id": "HumanEval/80",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "a11d05b67f6578ec142d305d7d983acdde2d3cc0a0b1b4827c011977011854f2",
+      "base_task_id": "humanevalpack-python-080"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-161",
+      "source_task_id": "HumanEval/161",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "4809d977013f046df6ed97d97fd68b9e1e1fa9c0a68c6a08b20b87cd51035408",
+      "base_task_id": "humanevalpack-python-161"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-137",
+      "source_task_id": "HumanEval/137",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "57b3863a0f4c3f34d44394a21de1132746396cc706876973cc3c55e94970f200",
+      "base_task_id": "humanevalpack-python-137"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-107",
+      "source_task_id": "HumanEval/107",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "9380ed364757c22f3b157f36d81eca2fa050f0b189a811e33b01e6449e9597de",
+      "base_task_id": "humanevalpack-python-107"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-162",
+      "source_task_id": "HumanEval/162",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "35631fda615f701264a38bffc758000174fb7e18685d7b58ed1fb8da2cfa9e3f",
+      "base_task_id": "humanevalpack-python-162"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-068",
+      "source_task_id": "HumanEval/68",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "e58808c28a825cb2bf910e7cd1a0a9c3029d83aa291c40e3188ac57d617bf797",
+      "base_task_id": "humanevalpack-python-068"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-036",
+      "source_task_id": "HumanEval/36",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "5f09edeed08de760c75f1b68641c299ac87a338548ae434a5d39be1c399b20ea",
+      "base_task_id": "humanevalpack-python-036"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-126",
+      "source_task_id": "HumanEval/126",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "80fac8e8a6c1e19954dda133b4a0b420c645883cac3789a77efcbf663afc3941",
+      "base_task_id": "humanevalpack-python-126"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-146",
+      "source_task_id": "HumanEval/146",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "53cfd91791b642f851bb25c1ed97266072d86dc252a0f8172d2eaca4e490025f",
+      "base_task_id": "humanevalpack-python-146"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-148",
+      "source_task_id": "HumanEval/148",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "823919851555cdfe0c6b1f547d943c75acf3a3e41f8f912bfe20d589e8133007",
+      "base_task_id": "humanevalpack-python-148"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-076",
+      "source_task_id": "HumanEval/76",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "91228612564e55b99d5dbe773d34a3fa19db815ebafad619da988bcef886eb7c",
+      "base_task_id": "humanevalpack-python-076"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-117",
+      "source_task_id": "HumanEval/117",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "15f80a72d859cc663077ae36092797ba63c4f4f5c9705852b8363ea04d726947",
+      "base_task_id": "humanevalpack-python-117"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-000",
+      "source_task_id": "HumanEval/0",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "085c8938b66677c21de5b76982ac96d1b445d571135dc581b912f1d1237cbd29",
+      "base_task_id": "humanevalpack-python-000"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-145",
+      "source_task_id": "HumanEval/145",
+      "candidate_source": "existing",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "a5e45e199f318de2e9da32ba5a575b9d00d2ae0be2221d51d682e7cd56b3b60b",
+      "base_task_id": "humanevalpack-python-145"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-069",
+      "source_task_id": "HumanEval/69",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ddf3fca5b948358fa362d3e42f1fbf6b718f5228f52d675c72d9faf39b7b455e",
+      "base_task_id": "humanevalpack-python-069"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-096",
+      "source_task_id": "HumanEval/96",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "169d8f7ee20d83e281f711786d501b7dec099f53aa70411b0e81e2b25e0f6221",
+      "base_task_id": "humanevalpack-python-096"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-072",
+      "source_task_id": "HumanEval/72",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "cfa33bdcab4cbad4964f14e86a9852ea4826b8a4eda1a8dfe06b4fc33811ec11",
+      "base_task_id": "humanevalpack-python-072"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-105",
+      "source_task_id": "HumanEval/105",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0dc5dbdf5ce502632a6b3e363484eaf9ed87e6bed51527e20a91391520ea8a37",
+      "base_task_id": "humanevalpack-python-105"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-131",
+      "source_task_id": "HumanEval/131",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "7c6efe868d51b39ac5d58af6889615c4b69fefefe2bdf4174c1d747849c481ca",
+      "base_task_id": "humanevalpack-python-131"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-025",
+      "source_task_id": "HumanEval/25",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "8f5b8b211e9bb612241e53946d4ec6daa643f1bcc67a132dc22a37fbe3c57a0f",
+      "base_task_id": "humanevalpack-python-025"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-087",
+      "source_task_id": "HumanEval/87",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "1101f7d290d37667d92c7d03257bb4718bdc12db252422d841e62632e317b78b",
+      "base_task_id": "humanevalpack-python-087"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-056",
+      "source_task_id": "HumanEval/56",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "ca10d2c0b1bbf4c9a91e7de2086d00ef09006e752a7d211e941b99f9627ac8c8",
+      "base_task_id": "humanevalpack-python-056"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-093",
+      "source_task_id": "HumanEval/93",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "56909030732ea84291ab517b9e7123925415feac124fbe245359d3803cf91fd3",
+      "base_task_id": "humanevalpack-python-093"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-128",
+      "source_task_id": "HumanEval/128",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "51019462fde493ccc82221673abf6fee636b9c8523976c2da1b4e68a57d12aa0",
+      "base_task_id": "humanevalpack-python-128"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-040",
+      "source_task_id": "HumanEval/40",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "0ff838555dcf077592005df0cda64dae32df12afec44fa4e3bc8841018cb7042",
+      "base_task_id": "humanevalpack-python-040"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-074",
+      "source_task_id": "HumanEval/74",
+      "candidate_source": "rule_based",
+      "candidate_file": "HumanEval_feedback.jsonl",
+      "candidate_index": 1,
+      "candidate_sha256": "942e08af9cec63e3df0f2eb7e1da7b5a97eff02733143633a2f96670bc11b26d",
+      "base_task_id": "humanevalpack-python-074"
+    },
+    {
+      "task_id": "feedbackeval-humaneval-061",
+      "source_task_id": "HumanEval/61",
+      "candidate_source": "llm-based",
+      "candidate_file": "HumanEval_feedback_test.jsonl",
+      "candidate_index": 0,
+      "candidate_sha256": "9e87840d53f7b5d958d29c9edf0a48aeb0f5a09f5b736f844c348580699351b9",
+      "base_task_id": "humanevalpack-python-061"
+    }
+  ]
+}

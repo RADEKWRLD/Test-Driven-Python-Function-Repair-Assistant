@@ -4,9 +4,9 @@
 
 ## 固定范围
 
-- 保留冻结的 **50 道 HumanEvalPack 正式题**，默认每题每策略运行一轮，共 **150 个 run**。
+- 正式题库为冻结的 **50 道 FeedbackEval-HumanEval 错误候选**，默认每题每策略运行一轮，共 **150 个 run**。需求和公隐测试沿用 HumanEvalPack 的隔离拆分，不复制 FeedbackEval 的正确答案或预生成专家反馈。
 - 保留 3 道演示题、共 30 个测试函数，覆盖空输入、重复元素、边界和索引问题。
-- 保留 **DeepSeek API 和 MLX-LM 本地模型适配器**。
+- 正式实验只保留 **DeepSeek API 适配器**，三组固定使用同一模型与参数。
 - 三组使用相同模型、题目和停止条件，A/B/C 总提交上限为 **1/3/3**，最多 350 次模型调用；不是三次额外重试。
 
 | 策略 | 总提交上限 | 模型是否看到详细失败诊断 |
@@ -36,21 +36,8 @@ Docker Desktop/Engine 在测试和实验期间保持运行。主控制器调用�
 
 ```text
 DEEPSEEK_API_KEY=在本地填写
-REPAIR_ASSISTANT_PROVIDER=deepseek
 REPAIR_ASSISTANT_MODEL=deepseek-flash
 ```
-
-MLX-LM 服务已启动时可改用：
-
-```text
-REPAIR_ASSISTANT_PROVIDER=mlx-local
-REPAIR_ASSISTANT_MODEL=default_model
-REPAIR_ASSISTANT_BASE_URL=http://127.0.0.1:8080/v1
-REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS=600
-REPAIR_ASSISTANT_MAX_TOKENS=2048
-```
-
-本地适配器接收完整 Python 源码并转换为同一提交接口；不会赋予模型代码执行权限。
 
 ## 从演示到正式实验
 
@@ -58,7 +45,7 @@ REPAIR_ASSISTANT_MAX_TOKENS=2048
 # 三道演示题，三组一轮，共 9 个 run
 make experiment TASKS_DIR=benchmarks/tasks
 
-# 默认：50 道正式题，三组一轮，共 150 个 run
+# 默认：50 道 FeedbackEval-HumanEval 正式题，三组一轮，共 150 个 run
 make experiment
 
 # 单题调试
@@ -79,10 +66,11 @@ results/experiments/20261031_001/
   results.jsonl           每个 run 结束后立即保存的结果
   report.json             机器可读汇总
   raw-runs.csv            原始逐 run 数据
+  feedbackeval-repair-histories.jsonl  FeedbackEval 风格逐轮代码与反馈轨迹
   strategy-metrics.csv    三组汇总
   test-results.csv        隐藏测试函数的结果变化
   report.md               唯一的课程报告，含人工错误分析区
-  figures/*.svg           四张图：隐藏成功率、公隐差距、可靠性、调用与耗时
+  figures/*.svg           五张图：逐轮公开通过、隐藏成功率、公隐差距、可靠性、调用与耗时
   runs/group_a/20261031_001_001/   A组任务；题目和策略见 summary.json
     events.jsonl          普通过程日志、模型响应、公开测试诊断
     summary.json          首次/最终结果、回归、超时、实际用量与耗时
