@@ -1,9 +1,13 @@
-from solution import *  # noqa: F403
+from solution import *
 
+def test_public_examples_case_001():
 
-def test_public_examples():
     def check(words_in_sentence):
-        # Check some simple cases
-        assert words_in_sentence("This is a test") == "is"
-        assert words_in_sentence("lets go for swimming") == "go for"
+        assert words_in_sentence('This is a test') == 'is'
+    check(words_in_sentence)
+
+def test_public_examples_case_002():
+
+    def check(words_in_sentence):
+        assert words_in_sentence('lets go for swimming') == 'go for'
     check(words_in_sentence)

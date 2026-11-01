@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from typing import Any
 
 
@@ -27,6 +27,8 @@ class VerificationResult:
     protected_files_unchanged: bool = True
     workspace_policy_compliant: bool = True
     violations: tuple[str, ...] = ()
+    cases: dict[str, str] = field(default_factory=dict)
+    case_results_complete: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -35,4 +37,6 @@ class VerificationResult:
             "protected_files_unchanged": self.protected_files_unchanged,
             "workspace_policy_compliant": self.workspace_policy_compliant,
             "violations": list(self.violations),
+            "cases": self.cases,
+            "case_results_complete": self.case_results_complete,
         }

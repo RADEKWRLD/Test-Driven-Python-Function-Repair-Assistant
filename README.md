@@ -1,43 +1,46 @@
-# Test-Driven Python Function Repair Assistant
+# 测试驱动的 Python 函数修复助手
 
-一个用于研究“pytest 失败反馈是否真正帮助模型修复 Python 函数”的小型可复现课设。
+用于课题 07：研究公开 pytest 失败反馈是否帮助模型真正修复短小纯函数。系统由任务、模型调用、Docker 执行、三组控制、独立隐藏评分、日志与报告六部分组成。
 
-完整的本机验收、对照实验、指标口径和答辩流程见
-[`docs/OPERATIONS.md`](docs/OPERATIONS.md)。
+## 固定范围
 
-项目只处理短小纯函数，比较三种策略：
+- 保留冻结的 **50 道 HumanEvalPack 正式题**，默认每题每策略运行一轮，共 **150 个 run**。
+- 保留 3 道演示题、共 30 个测试函数，覆盖空输入、重复元素、边界和索引问题。
+- 保留 **DeepSeek API 和 MLX-LM 本地模型适配器**。
+- 三组使用相同模型、题目和停止条件，A/B/C 总提交上限为 **1/3/3**，最多 350 次模型调用；不是三次额外重试。
 
-- `single-shot`：只允许一次修复；
-- `retry-without-feedback`：最多五次，控制器运行公开 pytest；失败时只要求重新生成，不提供诊断；
-- `test-feedback`：最多五次，使用相同的 pytest 与停止规则，并把完整失败输出交给下一轮。
+| 策略 | 总提交上限 | 模型是否看到详细失败诊断 |
+| --- | ---: | --- |
+| single-shot | 1 | 无后续修复 |
+| retry-without-feedback | 3 | 否；公开失败后只要求重新生成 |
+| test-feedback | 3 | 是；提供上一轮公开 pytest 输出 |
 
-模型没有 shell，也不能执行任何代码；每轮只有一次模型调用，并且只能通过
-`submit_solution(content)` 提交完整的 `solution.py`。两个多次提交组都由控制器执行
-公开测试并在通过时停止，唯一差异是模型能否看到详细诊断；三组结束后再由统一的
-隔离评测器对首轮和最终快照评分。
-所有候选代码只在无网络、受资源限制的 Docker 容器中执行。API Key、个人文件、
-原始基准目录和隐藏测试不会进入容器。
+模型只能通过 `submit_solution(content)` 提交完整 solution.py，没有 shell 或其他文件工具。B/C 公开通过即停止。隐藏结果不反馈给模型。
 
-## 快速开始
+## 本机运行环境
+
+固定使用 Linux/WSL Ubuntu、Python 3.12+ 和 Docker。已有本机环境可直接使用项目 `.venv`；从新环境安装时执行：
 
 ```bash
 python3.12 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
 make sandbox-build
 .venv/bin/repair-agent doctor
+make check
+make sandbox-test
 ```
 
-从项目根目录的 `.env` 注入 DeepSeek API Key（只供宿主控制面调用模型，不会传入 Docker 容器）：
+Docker Desktop/Engine 在测试和实验期间保持运行。主控制器调用模型 API，候选代码只在断网、资源受限、根文件系统及 workspace 只读的 Docker 中执行。密钥、个人目录和原始题库不会挂载给候选代码；隐藏测试只在修复结束后的评测容器挂载。
 
-```bash
-cp .env.example .env
-# 编辑 .env，填写 DEEPSEEK_API_KEY
-chmod 600 .env
-.venv/bin/repair-agent run benchmarks/tasks/public-pass-hidden-fail \
-  --strategy test-feedback
+已有 `.env` 时保留它；首次配置可复制 `.env.example`，自行填写密钥，不在聊天或日志中公开。
+
+```text
+DEEPSEEK_API_KEY=在本地填写
+REPAIR_ASSISTANT_PROVIDER=deepseek
+REPAIR_ASSISTANT_MODEL=deepseek-flash
 ```
 
-也可以连接本机 MLX-LM 的 OpenAI 兼容服务。模型服务启动后，在 `.env` 中使用：
+MLX-LM 服务已启动时可改用：
 
 ```text
 REPAIR_ASSISTANT_PROVIDER=mlx-local
@@ -47,94 +50,75 @@ REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS=600
 REPAIR_ASSISTANT_MAX_TOKENS=2048
 ```
 
-本地 Adapter 不依赖小模型正确生成工具调用：模型只返回完整 Python 源码，Adapter
-将其转换为现有控制器唯一接受的 `submit_solution(content)`。模型仍不能执行 shell，
-也仍然只能修改 `solution.py`。
+本地适配器接收完整 Python 源码并转换为同一提交接口；不会赋予模型代码执行权限。
 
-运行全部三组对照实验：
+## 从演示到正式实验
 
 ```bash
+# 三道演示题，三组一轮，共 9 个 run
+make experiment TASKS_DIR=benchmarks/tasks
+
+# 默认：50 道正式题，三组一轮，共 150 个 run
 make experiment
+
+# 单题调试
+.venv/bin/repair-agent run benchmarks/tasks/chunk-list --strategy test-feedback
 ```
 
-该命令会先完成本地及 Docker 验收，再以最多 5 次提交、固定 seed 和 1 次重复运行实验。模型名默认读取 `.env` 中的 `REPAIR_ASSISTANT_MODEL`，因此上述 MLX 配置会使用 `default_model`；也可按需显式覆盖，例如：
+测试和正式实验会调用已配置的模型并产生实际费用。重复实验是可选扩展，需显式设置 `REPETITIONS=3`；默认一轮即可，不自动增加预算。
 
-```bash
-make experiment REPETITIONS=1 SEED=42 MODEL=deepseek-chat
-```
+## 日志、评分与简洁报告
 
-聚合报告会分策略输出首次/最终公开与隐藏测试通过率、超时率、隐藏功能回归率、保护测试违规率和真实模型调用/token/延迟。实验结束后会自动生成 10 张 SVG 图、HTML 总览、Markdown 报告以及逐 run 和逐策略 CSV。由于模型价格会变，程序保留原始 token 用量，`currency_cost` 不做猜测而记为 `null`。
+每轮保存代码、模型请求/响应和公开反馈，使用普通 JSONL 日志。公开测试仍有只读保护与文件校验；去掉日志哈希链不影响测试保护。
 
-实验报告目录如下：
+修复完全停止后，独立评分首次/最终公开和隐藏测试；原始错误函数只做一次轻量隐藏评分，用于检查原本正确的测试函数是否被改坏。回归按现有 pytest 测试函数的 passed→failed 统计，没有运行时逐断言追踪或自动拆分工具。50 道题现有测试保持冻结，来源和版本元数据保留。
 
 ```text
-var/benchmarks/benchmark-<UTC时间>/
-├── report.json
-├── report.html
-├── report.md
-├── raw-runs.csv
-├── strategy-metrics.csv
-├── manifest.json
-└── figures/*.svg
+results/experiments/20261031_001/
+  config.json             基本实验配置
+  results.jsonl           每个 run 结束后立即保存的结果
+  report.json             机器可读汇总
+  raw-runs.csv            原始逐 run 数据
+  strategy-metrics.csv    三组汇总
+  test-results.csv        隐藏测试函数的结果变化
+  report.md               唯一的课程报告，含人工错误分析区
+  figures/*.svg           四张图：隐藏成功率、公隐差距、可靠性、调用与耗时
+  runs/group_a/20261031_001_001/   A组任务；题目和策略见 summary.json
+    events.jsonl          普通过程日志、模型响应、公开测试诊断
+    summary.json          首次/最终结果、回归、超时、实际用量与耗时
+    original_code/        原始错误代码快照
+    repair_attempts/01/   第一次提交；后续为 02、03
+    workspace/            工作区，保留最后一次提交
+  runs/group_b/           B组任务，每条记录仍有独立的日期编号目录
+  runs/group_c/           C组任务，每条记录仍有独立的日期编号目录
 ```
 
-已有 benchmark JSON 也可以重新生成图表：
+日期按北京时间，`20261031_001` 表示当天第 1 次实验，下次为 `_002`；逐题目录最后一段是该实验内的执行序号，A/B/C 组编号不重复。三组记录分别放在 runs/group_a/、runs/group_b/、runs/group_c/，每道题仍有独立编号目录。中断后重做尚未保存结果的任务时，会分配新序号，保留原目录的证据。单题 `run` 保存于 `results/runs/group_a（或 group_b、group_c）/日期_序号/`。可用 `--data-dir` 或 Make 的 `DATA_DIR` 指定其他根目录。旧的平铺 runs 布局仍可读取，历史 `var/` 记录保留原位置。
+
+`make experiment` 先显示格式、类型、单元测试、Docker 集成测试和 doctor 检查。正式运行开始时打印实验目录；每个任务结束只打印 A/B/C 组名（group）、重复轮次、策略、题目编号与 passed/failed/error。相邻同题不同策略间留一空行，不同题间留两空行；组别切换时增加两行分割线。执行顺序仍由原有随机调度决定，不为终端排版改变实验顺序。
+
+整批正常结束后，在 Report 路径之前按 A/B/C 顺序统一输出每组最多两个代码案例，按 results.jsonl 的实际记录顺序选取第一个符合条件的任务：A 组一次失败、一次成功各一个；B/C 组首次未成功且实际追加修复后，最终成功、最终仍失败各一个。基础设施异常不当作修复失败案例，B/C 首次成功或只有一次提交的任务不入选。没有符合条件的类别明确说明未出现，不补造案例。继续执行的汇总使用该批次全部已有记录；中断时保存报告，尚不输出最终案例。
+
+案例中显示首次与最终公开/隐藏状态、提交数和原始/最终代码修改行。`- L行号` 是原始代码中被替换或删除的行，`+ L行号` 是最终代码中新增或替换后的行；行号分别对应各自的 solution.py。单题 `run` 保留任务结束即显示修改行的行为。最后打印 report.json 和 report.md 路径。
+
+passed 表示最终公开和隐藏测试均通过，终端标记“修复成功”；failed 表示有效修复仍未通过，修改后的代码标记为“最终候选，尚未修复成功”；error 表示执行异常，不把不完整的结果标记为成功。输出的是实际修改行，不能将所有修改行都认定为已定位的错误行。每轮详细测试诊断和完整统计表仍从日志与报告查看。
+
+金额仅在提供实际日期/模型的价格配置且用量完整时计算；否则为 null，不填零。保留调用次数、输入/输出 token、缓存用量、模型延迟和整题耗时。原始异常请求也计入成本统计。
 
 ```bash
-.venv/bin/repair-agent report path/to/benchmark.json
+make experiment PRICING_FILE=pricing.json
+.venv/bin/repair-agent report path/to/report.json
+.venv/bin/repair-agent events 20261031_001_001 --data-dir results/experiments/20261031_001
 ```
 
-一次 run 的产物位于 `var/runs/<run_id>/`：
+报告不再生成 HTML、十张图、统计重采样或自动案例分析报告；终端仅按上述固定规则挑选最多六个案例。人工从原始记录中挑选 3～4 个案例分析；必须包含公开通过但隐藏失败的演示，不编造未出现的现象。
 
-```text
-events.jsonl             # 只追加、带哈希链的过程日志
-summary.json             # 首次/最终隐藏测试、超时和成本
-workspace/               # 控制器维护的最终候选工作区
-attempts/attempt-*/       # 每轮提交时的代码快照
-```
-
-## 基准与隐藏测试
-
-`benchmarks/tasks/` 中提供 3 道纯函数题，共 30 个 pytest 测试函数，覆盖空输入、重复元素、边界值和索引错误。
-
-```text
-task.json                 # 需求、公开验证命令、隐藏验证命令
-workspace/                # 错误函数与公开测试；只把文本放入模型上下文
-hidden_tests/             # 不复制、不挂载给 Agent
-```
-
-隐藏测试只在修复过程停止后由独立 verifier 容器以只读方式挂载；结果不会回馈给模型。`public-pass-hidden-fail` 的初始实现会通过公开测试但在制表符、换行和连续空格等隐藏边界上失败，用于现场演示“公开通过 ≠ 真正修复”。
-
-### HumanEvalPack 50 题
-
-`benchmarks/humanevalpack/` 已冻结 50 道 Python 修复题。筛选器先排除空测试和语法损坏记录，再在受限 Docker 中确认错误实现会使公开 pytest 正常失败；同时要求至少 2 个公开断言、至少 5 个隐藏断言且隐藏测试更多。最后按 bug 类型分层，并优先保留控制流和隐藏断言更复杂的题。标准答案不会写入仓库。
-
-重新下载和生成一批任务时使用：
+## 简单继续执行
 
 ```bash
-make dataset-bootstrap
-# 公开数据集通常不要求登录；需要令牌时只设置环境变量 HF_TOKEN
-.venv/bin/repair-agent import-humanevalpack benchmarks/humanevalpack-new \
-  --limit 50 --seed 20261018 --selection useful
+make experiment RESUME=results/experiments/20261031_001
 ```
 
-对冻结的 50 题运行三组实验：
+仅读取 config.json 和 results.jsonl，检查基本配置，跳过所有已保存任务，包括正常修复失败与基础设施失败；只执行尚无结果的任务。没有锁、哈希审计或自动失败重试系统。同一批次不要并发启动；代码、题库、镜像或测试变动后另开实验。基础设施失败需人工核对后单独补测，不删除失败证据。
 
-```bash
-make experiment TASKS_DIR=benchmarks/humanevalpack REPETITIONS=1
-```
-
-这会产生 `50 × 3 × 1 = 150` 个 run。正式重复 3 次则是 450 个 run：
-
-```bash
-make experiment TASKS_DIR=benchmarks/humanevalpack REPETITIONS=3
-```
-
-## 验收
-
-```bash
-make check               # 格式、静态类型和单元测试
-make sandbox-test        # 需要本机 Docker daemon 和已构建镜像
-```
-
-实验数据不预填模拟结果；未实际运行的指标为 `null` 或不存在。
+更详细的操作见 [操作手册](docs/OPERATIONS.md)、[实验协议](docs/EXPERIMENT_PROTOCOL.md)。历史接入结果见 [最小测试记录](docs/MINIMAL_API_CHECK.md)。

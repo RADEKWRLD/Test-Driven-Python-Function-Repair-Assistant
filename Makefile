@@ -1,23 +1,22 @@
 PYTHON ?= python3.12
 VENV ?= .venv
 IMAGE ?= function-repair/sandbox-python:dev
-TASKS_DIR ?= benchmarks/tasks
-MAX_ATTEMPTS ?= 5
-REPETITIONS ?= 3
+TASKS_DIR ?= benchmarks/humanevalpack
+MAX_ATTEMPTS ?= 3
+REPETITIONS ?= 1
 SEED ?= 20261016
 # Leave empty to let repair-agent read REPAIR_ASSISTANT_MODEL from .env.
 # Callers can still override it explicitly with `make experiment MODEL=...`.
 MODEL ?=
-DATA_DIR ?= var
+DATA_DIR ?= results
+PRICING_FILE ?=
+RESUME ?=
 
-.PHONY: bootstrap dataset-bootstrap format lint typecheck test check sandbox-build sandbox-test experiment
+.PHONY: bootstrap format lint typecheck test check sandbox-build sandbox-test experiment
 
 bootstrap:
 	$(PYTHON) -m venv $(VENV)
 	$(VENV)/bin/pip install -e '.[dev]'
-
-dataset-bootstrap:
-	$(VENV)/bin/pip install -e '.[dataset]'
 
 format:
 	$(VENV)/bin/ruff format src tests
@@ -48,4 +47,6 @@ experiment: check sandbox-test
 		--repetitions $(REPETITIONS) \
 		--seed $(SEED) $(if $(strip $(MODEL)),--model $(MODEL)) \
 		--image $(IMAGE) \
-		--data-dir $(DATA_DIR)
+		--data-dir $(DATA_DIR) \
+		$(if $(strip $(PRICING_FILE)),--pricing-file "$(PRICING_FILE)") \
+		$(if $(strip $(RESUME)),--resume "$(RESUME)")

@@ -212,3 +212,18 @@ def test_attempt_count_cannot_exceed_hard_limit(tmp_path: Path) -> None:
             strategy=RepairStrategy.RETRY_WITHOUT_FEEDBACK,
             max_attempts=MAX_ATTEMPTS + 1,
         )
+
+
+def test_feedback_arm_exhausts_exactly_three_submissions(tmp_path: Path) -> None:
+    model = RecordingModel([_submission("def f(): return 0\n") for _ in range(3)])
+    sandbox = FakeSandbox([_result(1, "failed") for _ in range(3)])
+    agent, task, _ = _build(
+        tmp_path,
+        model,
+        sandbox,
+        RepairStrategy.TEST_FEEDBACK,
+        max_attempts=3,
+    )
+    result = agent.run(task)
+    assert result.status == "attempt_limit"
+    assert len(result.attempts) == len(model.requests) == len(sandbox.commands) == 3

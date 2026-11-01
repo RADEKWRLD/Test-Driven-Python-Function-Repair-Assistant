@@ -47,7 +47,9 @@ class RepairStrategy(StrEnum):
     TEST_FEEDBACK = "test-feedback"
 
 
-MAX_ATTEMPTS = 5
+MAX_ATTEMPTS = 3
+PROTOCOL_VERSION = 3
+PROTOCOL_NAME = "shared-public-test-stopping-v3"
 MAX_SOLUTION_BYTES = 64 * 1024
 
 
@@ -211,7 +213,19 @@ class TestDrivenRepairAgent:
             },
         )
         started = time.monotonic()
-        response = self.model.complete(messages, [SUBMIT_SOLUTION_TOOL])
+        try:
+            response = self.model.complete(messages, [SUBMIT_SOLUTION_TOOL])
+        except Exception:
+            self.event_log.append(
+                "model_call_failed",
+                "controller",
+                {
+                    "attempt": attempt,
+                    "latency_ms": round((time.monotonic() - started) * 1000),
+                    "usage": None,
+                },
+            )
+            raise
         elapsed = round((time.monotonic() - started) * 1000)
         cost = AttemptCost(
             1,
@@ -293,7 +307,7 @@ class TestDrivenRepairAgent:
         )
 
     def _snapshot(self, attempt: int) -> Path:
-        destination = self.attempts_dir / f"attempt-{attempt}"
+        destination = self.attempts_dir / f"{attempt:02d}"
         if destination.exists():
             raise FileExistsError(f"attempt snapshot already exists: {destination}")
         shutil.copytree(

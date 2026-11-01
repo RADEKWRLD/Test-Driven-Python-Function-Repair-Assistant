@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import importlib
 import json
 import os
 import platform
@@ -12,27 +11,21 @@ import shutil
 import subprocess
 import sys
 from collections.abc import Sequence
-from datetime import UTC, datetime
 from pathlib import Path
 
 from dotenv import find_dotenv, load_dotenv
 
 from repair_assistant import __version__
 from repair_assistant.agent import MAX_ATTEMPTS, RepairStrategy
-from repair_assistant.evaluation import aggregate_summaries
+from repair_assistant.benchmark import run_benchmark
+from repair_assistant.costs import Pricing
 from repair_assistant.event_log import EventLog
-from repair_assistant.humanevalpack import (
-    DATASET_CONFIG,
-    DATASET_NAME,
-    DATASET_REVISION,
-    DATASET_SPLIT,
-    import_records,
-    select_useful_records,
-)
 from repair_assistant.model import DeepSeekAdapter, MlxLocalAdapter, ModelAdapter
+from repair_assistant.output_paths import GROUP_DIRECTORIES, create_output_directory
 from repair_assistant.reporting import generate_experiment_report
 from repair_assistant.run import RunService
 from repair_assistant.task import TaskSpec
+from repair_assistant.terminal import format_code_changes
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -48,11 +41,14 @@ def _parser() -> argparse.ArgumentParser:
         default=RepairStrategy.TEST_FEEDBACK.value,
     )
     run.add_argument("--max-attempts", type=_attempt_count, default=MAX_ATTEMPTS)
-    run.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-chat"))
+    run.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-flash"))
     run.add_argument("--image", default="function-repair/sandbox-python:dev")
     run.add_argument("--data-dir", type=Path, default=_data_dir())
+    run.add_argument("--pricing-file", type=Path)
     benchmark = commands.add_parser("benchmark", help="Run all tasks under each strategy.")
-    benchmark.add_argument("tasks_dir", type=Path, default=Path("benchmarks/tasks"), nargs="?")
+    benchmark.add_argument(
+        "tasks_dir", type=Path, default=Path("benchmarks/humanevalpack"), nargs="?"
+    )
     benchmark.add_argument(
         "--strategy",
         action="append",
@@ -72,40 +68,24 @@ def _parser() -> argparse.ArgumentParser:
         default=0,
         help="Seed used to randomize benchmark execution order.",
     )
-    benchmark.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-chat"))
+    benchmark.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-flash"))
     benchmark.add_argument("--image", default="function-repair/sandbox-python:dev")
     benchmark.add_argument("--data-dir", type=Path, default=_data_dir())
-    events = commands.add_parser("events", help="Verify and print an event log.")
+    benchmark.add_argument("--pricing-file", type=Path)
+    benchmark.add_argument(
+        "--resume", type=Path, help="Continue unfinished jobs; skip all saved results."
+    )
+    events = commands.add_parser("events", help="Read and print an ordinary JSONL event log.")
     events.add_argument("run_id")
     events.add_argument("--data-dir", type=Path, default=_data_dir())
-    report = commands.add_parser("report", help="Generate SVG, CSV, HTML, and Markdown reports.")
+    report = commands.add_parser("report", help="Generate CSV, Markdown, and four SVG figures.")
     report.add_argument("report_json", type=Path)
     report.add_argument("--output-dir", type=Path)
-    importer = commands.add_parser(
-        "import-humanevalpack",
-        help="Download and freeze Python HumanEvalPack tasks in the local benchmark format.",
-    )
-    importer.add_argument(
-        "output_dir",
-        type=Path,
-        nargs="?",
-        default=Path("benchmarks/humanevalpack"),
-    )
-    importer.add_argument("--limit", type=_positive_int, default=50)
-    importer.add_argument("--seed", type=int, default=20261018)
-    importer.add_argument("--revision", default=DATASET_REVISION)
-    importer.add_argument(
-        "--selection",
-        choices=("useful", "random"),
-        default="useful",
-        help="Use Docker preflight filtering or plain seeded random selection.",
-    )
-    importer.add_argument("--image", default="function-repair/sandbox-python:dev")
     return parser
 
 
 def _data_dir() -> Path:
-    return Path(os.getenv("REPAIR_ASSISTANT_DATA_DIR", "var"))
+    return Path(os.getenv("REPAIR_ASSISTANT_DATA_DIR", "results"))
 
 
 def _attempt_count(value: str) -> int:
@@ -175,7 +155,11 @@ def _run(args: argparse.Namespace) -> int:
         print(str(exc), file=sys.stderr)
         return 2
     task = TaskSpec.load(args.task_dir)
-    result = RunService(data_dir=args.data_dir, image=args.image).execute(
+    result = RunService(
+        data_dir=args.data_dir,
+        image=args.image,
+        pricing=Pricing.load(args.pricing_file) if args.pricing_file else None,
+    ).execute(
         task=task,
         model=model,
         strategy=RepairStrategy(args.strategy),
@@ -186,6 +170,8 @@ def _run(args: argparse.Namespace) -> int:
     print(f"Attempts: {len(result.agent.attempts)}")
     print(f"First hidden: {'PASS' if result.first_hidden.passed else 'FAIL'}")
     print(f"Final hidden: {'PASS' if result.final_hidden.passed else 'FAIL'}")
+    summary = json.loads((result.run_dir / "summary.json").read_text(encoding="utf-8"))
+    print(format_code_changes(result.run_dir, summary, secrets=model.sensitive_values))
     print(f"Summary: {result.run_dir / 'summary.json'}")
     return 0 if result.outcome == "passed" else 1
 
@@ -201,60 +187,32 @@ def _benchmark(args: argparse.Namespace) -> int:
         print(f"No task manifests found under {args.tasks_dir}", file=sys.stderr)
         return 2
     strategy_values = args.strategies or [item.value for item in RepairStrategy]
+    if args.max_attempts != MAX_ATTEMPTS:
+        raise ValueError("formal v3 benchmark requires --max-attempts 3 (arms 1/3/3)")
+    if len(set(strategy_values)) != len(strategy_values):
+        raise ValueError("benchmark strategies must not be repeated")
+    if set(strategy_values) != {item.value for item in RepairStrategy}:
+        raise ValueError(
+            "formal v3 benchmark requires all three strategies; use run for single-arm debugging"
+        )
     schedule = _benchmark_schedule(
         task_paths,
         strategy_values,
         repetitions=args.repetitions,
         seed=args.seed,
     )
-    summaries: list[dict[str, object]] = []
-    service = RunService(data_dir=args.data_dir, image=args.image)
-    execution_order: list[dict[str, object]] = []
-    for repetition, strategy_value, task_path in schedule:
-        task = TaskSpec.load(task_path)
-        model = _model_adapter(args.model)
-        result = service.execute(
-            task=task,
-            model=model,
-            strategy=RepairStrategy(strategy_value),
-            max_attempts=args.max_attempts,
-        )
-        summary = json.loads((result.run_dir / "summary.json").read_text(encoding="utf-8"))
-        summary["task_id"] = task.task_id
-        summary["repetition"] = repetition
-        summaries.append(summary)
-        execution_order.append(
-            {
-                "position": len(execution_order) + 1,
-                "repetition": repetition,
-                "strategy": strategy_value,
-                "task_id": task.task_id,
-                "run_id": result.run_id,
-            }
-        )
-        print(f"r{repetition:02d} {strategy_value:24} {task.task_id:28} {result.outcome}")
-    report = aggregate_summaries(summaries)
-    created_at = datetime.now(UTC)
-    report["created_at"] = created_at.isoformat().replace("+00:00", "Z")
-    report["design"] = {
-        "repair_protocol": "shared-public-test-stopping-v2",
-        "repetitions": args.repetitions,
-        "randomization_seed": args.seed,
-        "max_attempts": args.max_attempts,
-        "model_calls_per_attempt": 1,
-        "execution_order": execution_order,
-    }
-    report["raw_runs"] = summaries
-    report_root = args.data_dir.resolve() / "benchmarks"
-    experiment_dir = report_root / f"benchmark-{created_at.strftime('%Y%m%dT%H%M%S%fZ')}"
-    experiment_dir.mkdir(parents=True, exist_ok=False)
-    report_path = experiment_dir / "report.json"
-    report_path.write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    experiment_dir = run_benchmark(
+        schedule=schedule,
+        model_factory=lambda: _model_adapter(args.model),
+        image=args.image,
+        data_dir=args.data_dir,
+        seed=args.seed,
+        repetitions=args.repetitions,
+        pricing=Pricing.load(args.pricing_file) if args.pricing_file else None,
+        resume=args.resume,
     )
-    visual_report = generate_experiment_report(report, experiment_dir)
-    print(f"Report: {report_path}")
-    print(f"Visual report: {visual_report}")
+    print(f"Report: {experiment_dir / 'report.json'}")
+    print(f"Course report: {experiment_dir / 'report.md'}")
     return 0
 
 
@@ -305,15 +263,22 @@ def _benchmark_schedule(
 
 
 def _events(args: argparse.Namespace) -> int:
-    path = args.data_dir.resolve() / "runs" / args.run_id / "events.jsonl"
-    if not path.exists():
-        print(f"Run log not found: {path}", file=sys.stderr)
+    root = args.data_dir.resolve() / "runs"
+    locations = [root, *(root / group for group in GROUP_DIRECTORIES.values())]
+    paths = [base / args.run_id / "events.jsonl" for base in locations]
+    found = [path for path in paths if path.is_file()]
+    if not found:
+        print(f"Run log not found under {root}: {args.run_id}", file=sys.stderr)
         return 2
+    if len(found) > 1:
+        print("Run log is ambiguous; pass group_a/<run_id> or the matching group.", file=sys.stderr)
+        return 2
+    path = found[0]
     first = json.loads(path.read_text(encoding="utf-8").splitlines()[0])
     events = list(EventLog(path, run_id=first["run_id"], task_id=first["task_id"]).read())
     for event in events:
         print(f"{event['sequence']:03d} {event['occurred_at']} {event['type']}")
-    print(f"Integrity: OK ({len(events)} events)")
+    print(f"Events: {len(events)} (ordinary JSONL; no tamper verification)")
     return 0
 
 
@@ -331,77 +296,9 @@ def _report(args: argparse.Namespace) -> int:
     elif report_path.name == "report.json":
         output_dir = report_path.parent
     else:
-        output_dir = report_path.parent / f"{report_path.stem}-visuals"
+        output_dir = create_output_directory(report_path.parent / "reports")
     visual_report = generate_experiment_report(data, output_dir)
-    print(f"Visual report: {visual_report}")
-    return 0
-
-
-def _import_humanevalpack(args: argparse.Namespace) -> int:
-    try:
-        datasets = importlib.import_module("datasets")
-    except ImportError:
-        print(
-            "The optional 'datasets' dependency is required. "
-            "Install it with: .venv/bin/pip install -e '.[dataset]'",
-            file=sys.stderr,
-        )
-        return 2
-    token = os.getenv("HF_TOKEN") or None
-    loaded = datasets.load_dataset(
-        DATASET_NAME,
-        DATASET_CONFIG,
-        split=DATASET_SPLIT,
-        revision=args.revision,
-        token=token,
-    )
-    records = [dict(row) for row in loaded]
-    selected_task_ids = None
-    selection_method = "seeded-random"
-    selection_scores = None
-    selection_details = None
-    if args.selection == "useful":
-        selection = select_useful_records(
-            records,
-            limit=args.limit,
-            seed=args.seed,
-            image=args.image,
-        )
-        selected_task_ids = selection.source_task_ids
-        selection_scores = selection.scores
-        selection_method = "public-failure-complexity-stratified"
-        selection_details = {
-            "structurally_eligible": selection.structurally_eligible,
-            "public_failure_eligible": selection.public_failure_eligible,
-            "criteria": {
-                "minimum_public_assertions": 2,
-                "minimum_hidden_assertions": 5,
-                "hidden_assertions_must_exceed_public": True,
-                "buggy_public_pytest_exit_code": 1,
-                "public_timeout_seconds": 5,
-            },
-        }
-        print(
-            f"Preflight: {selection.public_failure_eligible}/"
-            f"{selection.structurally_eligible} structurally useful records fail public pytest"
-        )
-    result = import_records(
-        records,
-        args.output_dir,
-        limit=args.limit,
-        seed=args.seed,
-        revision=args.revision,
-        selected_task_ids=selected_task_ids,
-        selection_method=selection_method,
-        selection_scores=selection_scores,
-        selection_details=selection_details,
-    )
-    print(
-        f"Imported: {result.imported}/{result.eligible_total} eligible "
-        f"({result.source_total} source records)"
-    )
-    print(f"Tasks: {result.output_dir}")
-    print(f"Manifest: {result.manifest}")
+    print(f"Course report: {visual_report}")
     return 0
 
 
@@ -418,6 +315,4 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _events(args)
     if args.command == "report":
         return _report(args)
-    if args.command == "import-humanevalpack":
-        return _import_humanevalpack(args)
     raise AssertionError(f"unhandled command: {args.command}")

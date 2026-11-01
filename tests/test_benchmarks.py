@@ -1,4 +1,5 @@
 import ast
+import hashlib
 import json
 from pathlib import Path
 
@@ -35,8 +36,13 @@ def test_humanevalpack_contains_fifty_isolated_tasks() -> None:
         task = TaskSpec.load(task_dir)
         assert task.editable_paths == ("solution.py",)
         assert not task.hidden_tests_dir.is_relative_to(task.source_dir)
-        assert _count_tests(task.source_dir / "tests") == 1
-        assert _count_tests(task.hidden_tests_dir) == 1
+        assert _count_tests(task.source_dir / "tests") >= 1
+        assert _count_tests(task.hidden_tests_dir) >= 1
+        data = json.loads((task_dir / "task.json").read_text(encoding="utf-8"))
+        assert data["test_version"] == "case-outcomes-v1"
+        for relative, item in data["test_files"].items():
+            source = (task_dir / relative).read_text(encoding="utf-8").encode()
+            assert hashlib.sha256(source).hexdigest() == item["sha256"]
 
 
 def _count_tests(directory: Path) -> int:

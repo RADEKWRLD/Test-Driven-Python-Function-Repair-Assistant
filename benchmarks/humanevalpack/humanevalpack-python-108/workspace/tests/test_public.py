@@ -1,12 +1,25 @@
-from solution import *  # noqa: F403
+from solution import *
 
+def test_public_examples_case_001():
 
-def test_public_examples():
     def check(count_nums):
-        # Check some simple cases
         assert count_nums([]) == 0
+    check(count_nums)
+
+def test_public_examples_case_002():
+
+    def check(count_nums):
         assert count_nums([-1, 11, -11]) == 1
+    check(count_nums)
+
+def test_public_examples_case_003():
+
+    def check(count_nums):
         assert count_nums([1, 1, 2]) == 3
-        # Check some edge cases that are easy to work out by hand.
-        assert True, "This prints if this assert fails 2 (also good for debugging!)"
+    check(count_nums)
+
+def test_public_examples_case_004():
+
+    def check(count_nums):
+        assert True, 'This prints if this assert fails 2 (also good for debugging!)'
     check(count_nums)
