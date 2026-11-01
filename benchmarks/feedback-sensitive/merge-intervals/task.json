@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-merge-intervals",
+  "title": "Merge touching half-open intervals without shrinking nested coverage",
+  "goal": "Repair merge_intervals(intervals). intervals is a list of integer pairs (start, end) representing half-open intervals [start, end). Validate every pair: end < start raises ValueError. Ignore zero-length intervals. Return a new list of nonempty (start, end) tuples sorted by start, merging intervals whenever they overlap OR touch at an endpoint. Nested intervals must not shrink the covered range. Negative and arbitrarily large integer endpoints are valid. Empty input or only empty intervals returns []. Do not mutate the input list or its pairs. Preserve the signature.",
+  "constraints": ["Only edit solution.py.", "Do not add files, dependencies, or modify tests.", "Keep merge_intervals and its signature unchanged."],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored specification examples and diagnostic boundary cases",
+    "hidden_tests": "Distinct inputs and bounded independent unit-coverage checks"
+  }
+}

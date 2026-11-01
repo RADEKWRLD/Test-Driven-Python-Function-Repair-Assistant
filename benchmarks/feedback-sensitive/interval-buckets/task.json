@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-interval-buckets",
+  "title": "Accumulate half-open interval coverage across signed buckets",
+  "goal": "Repair bucket_intervals(intervals, width). intervals is a list of integer pairs (start, end) representing half-open intervals [start, end); coordinates may be negative. width is a positive integer. Bucket k is [k*width, (k+1)*width), for every integer k including negative k. Return a list of (bucket_index, total_overlap_length) tuples sorted by bucket_index, omitting zero totals. Sum contributions from every interval independently, so duplicates and overlaps accumulate rather than being merged into a union. A zero-length interval contributes nothing. Raise ValueError for width <= 0 even if intervals is empty, or for any interval with end < start. Do not modify inputs. Empty intervals with positive width returns []. Preserve the signature. Integer calculations must be exact.",
+  "constraints": ["Only edit solution.py.", "Do not add files, dependencies, or modify tests.", "Keep bucket_intervals and its signature unchanged."],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "public_tests": "Authored specification examples and diagnostic boundary cases",
+    "hidden_tests": "Distinct inputs exercising the same stated specification",
+    "correct_code_included": false
+  }
+}

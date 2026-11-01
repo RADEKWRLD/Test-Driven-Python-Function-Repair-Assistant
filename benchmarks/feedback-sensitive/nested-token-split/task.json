@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-nested-token-split",
+  "title": "Split only outside every level of parentheses",
+  "goal": "Repair split_top_level(text, delimiter=','). Both inputs are strings. Split at delimiter characters only when the current parentheses nesting depth is zero. Preserve every character other than delimiters used for splitting, including parentheses, whitespace, quotes, and backslashes. Preserve empty fields: empty text returns ['']. There is no quote or escape syntax. delimiter must be exactly one character and cannot be '(' or ')'; otherwise raise ValueError, even for empty text. Raise ValueError if any closing parenthesis lacks an earlier unmatched opening parenthesis, or any opening parenthesis remains unmatched. Parentheses may be nested arbitrarily. Return a new list of strings and preserve the signature.",
+  "constraints": ["Only edit solution.py.", "Do not add files, dependencies, or modify tests.", "Keep split_top_level and its signature unchanged."],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {"origin": "synthetic-authored", "exploratory": true, "inspired_by": "feedbackeval-humaneval-070", "model_outcomes_used_for_selection": false, "public_tests": "Authored examples and diagnostic cases", "hidden_tests": "Distinct inputs exercising the same stated specification", "correct_code_included": false}
+}

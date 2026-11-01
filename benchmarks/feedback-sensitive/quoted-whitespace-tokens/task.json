@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-quoted-whitespace-tokens",
+  "title": "Preserve empty quoted tokens while splitting whitespace",
+  "goal": "Repair tokenize_quoted(text), where text is a string. Split tokens at characters satisfying str.isspace() only while outside double quotes. A double quote toggles quoted state and is removed from output. Quoted and unquoted fragments with no separating outside whitespace concatenate into one token. Preserve an explicitly quoted empty token: two consecutive double quotes yield one empty string; adjacent empty quoted fragments without separating whitespace form one token. Preserve all characters inside quotes other than the quote delimiters, including whitespace. There is no escape syntax: backslash is always literal and does not change quote interpretation. Single quotes are ordinary characters. Raise ValueError for an unmatched double quote. Empty or all-unquoted-whitespace input returns []. Return a list of strings and preserve the signature.",
+  "constraints": ["Only edit solution.py.", "Do not add files, dependencies, or modify tests.", "Keep tokenize_quoted and its signature unchanged."],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {"origin": "synthetic-authored", "exploratory": true, "inspired_by": "feedbackeval-humaneval-070", "model_outcomes_used_for_selection": false, "public_tests": "Authored examples and diagnostic cases", "hidden_tests": "Distinct inputs exercising the same stated specification", "correct_code_included": false}
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-rotate-slice",
+  "title": "Repair rotation within a normalized list slice",
+  "goal": "Implement rotate_slice(items, start, stop, steps) for a list of integers and integer start/stop/steps. Return a new list equal to items except that the subsequence selected by ordinary Python unit-step slicing items[start:stop] is rotated to the right by steps positions. Negative steps rotate left, and the rotation wraps modulo the length of the selected subsequence. Normalize negative and out-of-range start/stop exactly as Python slicing does; if the normalized selection is empty, including when stop is before start, return an unchanged copy. Values outside the selected slice stay in their original positions. Preserve duplicates. Empty input returns []. Do not mutate items.",
+  "constraints": [
+    "Only edit solution.py; do not add files or dependencies or modify tests.",
+    "Keep the public function rotate_slice(items, start, stop, steps) and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored examples and preservation checks",
+    "hidden_tests": "Distinct authored inputs and bounded independent checks of the same stated specification"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-wildcard-match",
+  "title": "Match the complete string with zero-or-more wildcards",
+  "goal": "Repair wildcard_match(text, pattern), both strings. Return a bool indicating whether the entire text matches the entire pattern. '?' matches exactly one character; '*' matches any sequence of zero or more characters, including whitespace and newlines. All other pattern characters are literal, including dots, brackets, and backslashes. There is no escape syntax, so a backslash does not disable a following wildcard. Characters follow Python string indexing, including Unicode. Consecutive stars are allowed. Empty text matches an empty pattern or a pattern consisting only of stars; an empty pattern matches no nonempty text. Do not mutate inputs and preserve the signature.",
+  "constraints": ["Only edit solution.py.", "Do not add files, dependencies, or modify tests.", "Keep wildcard_match and its signature unchanged."],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {"origin": "synthetic-authored", "exploratory": true, "inspired_by": "feedbackeval-humaneval-070", "model_outcomes_used_for_selection": false, "public_tests": "Authored examples and diagnostic cases", "hidden_tests": "Distinct inputs exercising the same stated specification", "correct_code_included": false}
+}

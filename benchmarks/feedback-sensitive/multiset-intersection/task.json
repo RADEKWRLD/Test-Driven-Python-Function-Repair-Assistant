@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-multiset-intersection",
+  "title": "Repair occurrence consumption in ordered multiset intersection",
+  "goal": "Implement multiset_intersection(left, right) for two lists of integers. Scan left in its original order. Include a value in the result exactly when right still has an unused occurrence of that value, consuming one such occurrence for each inclusion. Thus every value appears min(left.count(value), right.count(value)) times, with result order inherited from left. Duplicate values, negative integers, and zero are valid. If either input is empty, return []. Return a new list without modifying either left or right.",
+  "constraints": [
+    "Only edit solution.py; do not add files or dependencies or modify tests.",
+    "Keep the public function multiset_intersection(left, right) and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored examples and preservation checks",
+    "hidden_tests": "Distinct authored inputs and bounded independent checks of the same stated specification"
+  }
+}

@@ -63,6 +63,14 @@ make experiment
 .venv/bin/repair-agent run benchmarks/tasks/chunk-list --strategy test-feedback
 ```
 
+另有独立的 [20 题自建诊断型补充集](benchmarks/feedback-sensitive/README.md)，用于探索状态切换和边界错误是否更容易从执行反馈中获益：
+
+```bash
+make experiment TASKS_DIR=benchmarks/feedback-sensitive REPETITIONS=3
+```
+
+该集在观察 HumanEval/70 成功案例后构造，应单独报告；预检通过仅说明错误实现能被测试检出、参考实现正确，不代表模型已经修复成功或反馈一定优于重试。
+
 测试和正式实验会调用已配置的模型并产生实际费用。重复实验是可选扩展，需显式设置 `REPETITIONS=3`；默认一轮即可，不自动增加预算。
 
 ## 日志、评分与简洁报告
@@ -80,7 +88,7 @@ results/experiments/20261031_001/
   feedbackeval-repair-histories.jsonl  FeedbackEval 风格逐轮代码与反馈轨迹
   strategy-metrics.csv    三组汇总
   test-results.csv        隐藏测试函数的结果变化
-  report.md               唯一的课程报告，含人工错误分析区
+  report.md               课程报告，自动展示 B/C 各自首个修正后公过隐失败案例
   figures/*.svg           六张图，另含共享首轮失败后的条件修复率
   runs/group_a/20261031_001_001/   A组任务；题目和策略见 summary.json
     events.jsonl          普通过程日志、模型响应、公开测试诊断
@@ -110,7 +118,12 @@ make experiment PRICING_FILE=pricing.json
 .venv/bin/repair-agent events 20261031_001_001 --data-dir results/experiments/20261031_001
 ```
 
-报告不再生成 HTML、十张图、统计重采样或自动案例分析报告；终端仅按上述固定规则挑选最多六个案例。人工从原始记录中挑选 3～4 个案例分析；必须包含公开通过但隐藏失败的演示，不编造未出现的现象。
+报告不生成 HTML 或独立案例文档；终端按上述固定规则挑选最多六个案例。
+`report.md` 的“错误分析（自动选例）”按实际记录顺序，分别提取 B/C 第一个首轮公开失败、实际提交至少两次、最终公开通过且隐藏失败的案例。
+排除基础设施错误、超时和测试/工作区违规；只有隐藏执行异常而没有失败断言的记录不入选。
+每例展示任务与 run_id、逐次评分、原始代码与逐轮差异、控制器公开诊断、C 实际收到的反馈和最终隐藏评分；B 的公开诊断注明未反馈给模型，中间提交的隐藏结果注明未评分。
+不存在合适案例或缺少日志时明确说明，不补造证据、不额外调用模型。公开通过而隐藏失败也可能涉及需求与测试不一致，不能自动归因为过拟合。
+已有实验可用 `repair-agent report path/to/report.json` 重建展示；指定 `--output-dir` 时仍从源报告同级目录读取原始轨迹。
 
 ## 简单继续执行
 

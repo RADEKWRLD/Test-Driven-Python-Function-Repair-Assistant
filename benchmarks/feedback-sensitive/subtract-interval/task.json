@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-subtract-interval",
+  "title": "Subtract overlapping cuts without revisiting already removed positions",
+  "goal": "Repair subtract_interval(interval, cuts). interval is one integer pair (start, end) and cuts is a list of integer pairs, all representing half-open intervals. Return the parts of interval not covered by the union of cuts as a new list of sorted, disjoint, nonempty (start, end) tuples. Cuts may be unsorted, overlapping, nested, duplicated, outside interval, or empty. Ignore empty cuts and clip external cuts to interval. Validate the source and EVERY cut: any end < start raises ValueError even when the source is empty or already fully covered. A valid empty source returns []. Integer endpoints may be negative. Do not modify the source or cuts. Preserve the signature.",
+  "constraints": ["Only edit solution.py.", "Do not add files, dependencies, or modify tests.", "Keep subtract_interval and its signature unchanged."],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored specification examples and diagnostic boundary cases",
+    "hidden_tests": "Distinct inputs and bounded independent unit-coverage checks"
+  }
+}

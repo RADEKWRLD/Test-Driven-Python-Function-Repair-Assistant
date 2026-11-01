@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-sliding-window-modes",
+  "title": "Repair mode counts in sliding windows",
+  "goal": "Implement sliding_modes(items, width) for a list of integers and integer width. Return one mode for each consecutive full window of exactly width elements, in window order. The mode is the most frequent integer in the window; ties are resolved by the smallest integer. Preserve duplicate occurrences when counting. A width greater than the input length, or empty input with a positive width, returns []. A non-positive width raises ValueError, even for empty input. Do not mutate items.",
+  "constraints": [
+    "Only edit solution.py; do not add files or dependencies or modify tests.",
+    "Keep the public function sliding_modes(items, width) and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored examples and preservation checks",
+    "hidden_tests": "Distinct authored inputs and bounded independent checks of the same stated specification"
+  }
+}

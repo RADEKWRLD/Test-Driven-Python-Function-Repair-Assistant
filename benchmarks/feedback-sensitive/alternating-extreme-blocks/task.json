@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-alternating-extreme-blocks",
+  "title": "Repair alternating blocks from sorted extremes",
+  "goal": "Implement alternating_extreme_blocks(items, block_size) for a list of integers and an integer block_size. Sort a copy of items. Take up to block_size of the remaining smallest elements in ascending order, then up to block_size of the remaining largest elements in descending order, alternating whole blocks until no elements remain. Start with the smallest block. Every occurrence, including duplicates, must appear exactly once. A final partial block follows the same ordering rule. Empty items returns []. A non-positive block_size raises ValueError even for empty input. Do not mutate items.",
+  "constraints": [
+    "Only edit solution.py; do not add files or dependencies or modify tests.",
+    "Keep the public function name and two-argument signature unchanged.",
+    "Assume items is a list of integers and block_size is an integer."
+  ],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored examples and preservation checks",
+    "hidden_tests": "Distinct authored inputs covering the same stated specification"
+  }
+}

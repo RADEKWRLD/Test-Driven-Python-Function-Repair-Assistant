@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-escaped-backspaces",
+  "title": "Apply backspace markers after consuming escaped characters",
+  "goal": "Repair erase_marked(text, marker='#', escape='\\'), with string inputs. marker and escape must each have exactly one character and be distinct; otherwise raise ValueError even for empty text. Process left to right: an unescaped marker deletes the last character already present in output if any, and otherwise does nothing. An escape consumes and quotes the next character literally, including a marker or another escape, removing only the escape itself. An unmatched trailing escape is kept literally. A later unescaped marker may delete any previously emitted character, including a quoted marker or escape. Return the resulting string, do not mutate inputs, and preserve the signature.",
+  "constraints": ["Only edit solution.py.", "Do not add files, dependencies, or modify tests.", "Keep erase_marked and its signature unchanged."],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {"origin": "synthetic-authored", "exploratory": true, "inspired_by": "feedbackeval-humaneval-070", "model_outcomes_used_for_selection": false, "public_tests": "Authored examples and diagnostic cases", "hidden_tests": "Distinct inputs exercising the same stated specification", "correct_code_included": false}
+}

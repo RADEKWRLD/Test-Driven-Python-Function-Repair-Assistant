@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-bounded-subarray-sums",
+  "title": "Repair the length boundary in bounded subarray counting",
+  "goal": "Implement count_bounded_sums(items, target, max_length) for a list of integers and integer target/max_length. Count all nonempty contiguous subarrays whose sum equals target and whose length is at most max_length, including length exactly max_length. Count intervals at different positions separately, even if their values are equal. Values may be negative or zero. A positive max_length greater than the input length permits all subarray lengths. Empty input returns 0. A non-positive max_length raises ValueError, even for empty input. Do not mutate items.",
+  "constraints": [
+    "Only edit solution.py; do not add files or dependencies or modify tests.",
+    "Keep the public function count_bounded_sums(items, target, max_length) and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored examples and preservation checks",
+    "hidden_tests": "Distinct authored inputs and bounded independent checks of the same stated specification"
+  }
+}

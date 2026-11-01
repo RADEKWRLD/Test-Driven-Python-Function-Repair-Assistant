@@ -288,7 +288,7 @@ def _report(args: argparse.Namespace) -> int:
         output_dir = report_path.parent
     else:
         output_dir = create_output_directory(report_path.parent / "reports")
-    visual_report = generate_experiment_report(data, output_dir)
+    visual_report = generate_experiment_report(data, output_dir, source_dir=report_path.parent)
     print(f"Course report: {visual_report}")
     return 0
 

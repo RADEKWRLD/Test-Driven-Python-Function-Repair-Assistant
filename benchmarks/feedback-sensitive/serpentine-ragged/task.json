@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-serpentine-ragged",
+  "title": "Repair serpentine flattening of ragged rows",
+  "goal": "Implement serpentine_ragged(rows) for a list of lists of integers. Flatten the nonempty rows in their original row order: copy the first nonempty row left-to-right, the second right-to-left, the third left-to-right, and continue alternating. Empty rows contribute no values and do not advance this alternation. Preserve all occurrences of duplicate values. Empty outer input or all-empty rows returns []. Return a new list without modifying either the outer list or any inner row.",
+  "constraints": [
+    "Only edit solution.py; do not add files or dependencies or modify tests.",
+    "Keep the public function name and one-argument signature unchanged.",
+    "Assume rows is a list of lists of integers."
+  ],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored examples and preservation checks",
+    "hidden_tests": "Distinct authored inputs covering the same stated specification"
+  }
+}

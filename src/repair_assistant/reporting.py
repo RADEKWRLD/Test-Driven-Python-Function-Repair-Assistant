@@ -13,6 +13,7 @@ from typing import Any
 
 from repair_assistant.evaluation import aggregate_summaries
 from repair_assistant.output_paths import resolve_run_directory
+from repair_assistant.report_cases import read_run_events, render_public_hidden_failure_cases
 
 STRATEGIES = ("single-shot", "retry-without-feedback", "test-feedback")
 LABELS = {
@@ -85,37 +86,34 @@ def _csv(path: Path, fields: Sequence[str], rows: Sequence[Mapping[str, Any]]) -
 
 def _feedbackeval_history(output_dir: Path, row: Mapping[str, Any]) -> dict[str, Any]:
     run_dir = resolve_run_directory(output_dir, str(row["strategy"]), str(row["run_id"]))
-    events_path = run_dir / "events.jsonl"
-    events = []
-    if events_path.is_file():
-        events = [
-            json.loads(line)
-            for line in events_path.read_text(encoding="utf-8").splitlines()
-            if line
-        ]
+    events, _ = read_run_events(run_dir)
     feedback_after = {
-        int(event["payload"]["attempt"]): event["payload"]["content"]
+        event["payload"]["attempt"]: event["payload"]["content"]
         for event in events
         if event.get("type") == "feedback_added"
+        and type(event["payload"].get("attempt")) is int
+        and isinstance(event["payload"].get("content"), str)
     }
     costs = {
-        int(event["payload"]["attempt"]): event["payload"].get("cost", {})
+        event["payload"]["attempt"]: event["payload"].get("cost", {})
         for event in events
-        if event.get("type") == "attempt_completed"
+        if event.get("type") == "attempt_completed" and type(event["payload"].get("attempt")) is int
     }
     for event in events:
         if event.get("type") != "shared_first_inherited":
             continue
         payload = event["payload"]
-        costs.setdefault(int(payload["attempt"]), payload.get("attributed_cost", {}))
+        if type(payload.get("attempt")) is int:
+            costs.setdefault(payload["attempt"], payload.get("attributed_cost", {}))
     passes = row.get("public_pass_by_attempt", [])
     rounds: list[dict[str, Any]] = []
     original = run_dir / "original_code/solution.py"
-    if original.is_file():
+    original_code = _optional_code(original)
+    if original_code is not None:
         rounds.append(
             {
                 "round": 0,
-                "generate_code": original.read_text(encoding="utf-8"),
+                "generate_code": original_code,
                 "feedback": None,
                 "isTrue": False,
             }
@@ -124,7 +122,8 @@ def _feedbackeval_history(output_dir: Path, row: Mapping[str, Any]) -> dict[str,
     if isinstance(attempts, int):
         for attempt in range(1, attempts + 1):
             snapshot = run_dir / "repair_attempts" / f"{attempt:02d}" / "solution.py"
-            if not snapshot.is_file():
+            code = _optional_code(snapshot)
+            if code is None:
                 continue
             if attempt == 1:
                 feedback = None
@@ -135,7 +134,7 @@ def _feedbackeval_history(output_dir: Path, row: Mapping[str, Any]) -> dict[str,
             rounds.append(
                 {
                     "round": attempt,
-                    "generate_code": snapshot.read_text(encoding="utf-8"),
+                    "generate_code": code,
                     "feedback": feedback,
                     "isTrue": bool(
                         isinstance(passes, list)
@@ -165,8 +164,18 @@ def _feedbackeval_history(output_dir: Path, row: Mapping[str, Any]) -> dict[str,
     }
 
 
-def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> Path:
+def _optional_code(path: Path) -> str | None:
+    try:
+        return path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return None
+
+
+def generate_experiment_report(
+    report: Mapping[str, Any], output_dir: Path, *, source_dir: Path | None = None
+) -> Path:
     output_dir = output_dir.resolve()
+    source_dir = source_dir.resolve() if source_dir is not None else output_dir
     figures = output_dir / "figures"
     figures.mkdir(parents=True, exist_ok=True)
     rows = [dict(row) for row in report.get("raw_runs", [])]
@@ -230,7 +239,7 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
             }
         )
     _csv(output_dir / "raw-runs.csv", raw_fields, raw_rows)
-    histories = [_feedbackeval_history(output_dir, row) for row in rows]
+    histories = [_feedbackeval_history(source_dir, row) for row in rows]
     (output_dir / "feedbackeval-repair-histories.jsonl").write_text(
         "".join(json.dumps(item, ensure_ascii=False) + "\n" for item in histories),
         encoding="utf-8",
@@ -433,22 +442,10 @@ def generate_experiment_report(report: Mapping[str, Any], output_dir: Path) -> P
             f"{_format(data.get('physical_cost', {}).get('total_tokens'))}。",
             "成本包含已记录的基础设施失败请求。不同图表指标分别使用自己的刻度。",
             "",
-            "## 错误分析（人工填写）",
-            "",
-            "从 raw-runs.csv 与每轮日志中选择 3～4 个真实案例，分别分析：",
-            "",
-            "1. 测试反馈后成功修复。",
-            "2. 用完预算仍未修好。",
-            "3. 公开通过但隐藏失败。",
-            "4. 实际发生的回归或超时（没有则明确未观察到）。",
-            "",
-            "每例记录题目、run_id、初始缺陷、逐轮代码差异、公开反馈、最终结果和原因。",
-            "不得编造案例；小样本和全部首轮通过不能证明反馈有效。",
-            "",
-            "## 关键图表",
-            "",
         ]
     )
+    lines.extend(render_public_hidden_failure_cases(rows, source_dir, report_dir=output_dir))
+    lines.extend(["", "## 关键图表", ""])
     for filename, title, _ in charts:
         lines.extend([f"![{title}](figures/{filename})", ""])
     lines.extend(

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "feedback-sensitive-deletion-index-map",
+  "title": "Map original indices after normalized duplicate deletions",
+  "goal": "Repair map_after_deletions(length, removed). length is a nonnegative integer and removed is a list of integer indices into the ORIGINAL sequence of that length. Accept Python-style negative indices in [-length, length); normalize negatives by adding length. Reject a negative length or any out-of-range index with ValueError, including every attempted deletion from length zero. Duplicate indices, including a negative index and its equivalent positive index, delete that original position only once. Return a new list of exactly length entries: entry i is None if original index i is deleted, otherwise it is the zero-based position of that element among surviving elements in original order. Validate every index. Do not modify removed. Preserve the signature.",
+  "constraints": ["Only edit solution.py.", "Do not add files, dependencies, or modify tests.", "Keep map_after_deletions and its signature unchanged."],
+  "editable_paths": ["solution.py"],
+  "public_verification": {"command": "python -m pytest -q tests", "protected_paths": ["tests"]},
+  "hidden_verification": {"tests": "hidden_tests", "command": "python -m pytest -q /hidden_tests"},
+  "test_version": "feedback-sensitive-v1",
+  "provenance": {
+    "origin": "synthetic-authored",
+    "exploratory": true,
+    "inspired_by": "feedbackeval-humaneval-070",
+    "model_outcomes_used_for_selection": false,
+    "correct_code_included": false,
+    "public_tests": "Authored specification examples and diagnostic boundary cases",
+    "hidden_tests": "Distinct inputs and bounded independent surviving-index enumeration"
+  }
+}
