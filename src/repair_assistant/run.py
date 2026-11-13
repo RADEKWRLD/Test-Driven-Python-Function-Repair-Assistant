@@ -170,9 +170,7 @@ class RunService:
                 "model": model.name,
                 "provider": model.provider,
                 "image": self.image,
-                "thinking_mode": "disabled"
-                if model.provider == "deepseek"
-                else "server-controlled",
+                "thinking_mode": model.thinking_mode,
                 "network": "none",
                 "max_attempts": 1 if strategy is RepairStrategy.SINGLE_SHOT else max_attempts,
                 "model_calls_per_attempt": 1,

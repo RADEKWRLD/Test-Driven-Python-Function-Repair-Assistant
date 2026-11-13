@@ -9,7 +9,8 @@
 - 正式题库为完整的 **164 道 FeedbackEval-HumanEval 错误候选**。公开反馈使用冻结的 HumanEval 基础测试，最终隐藏判定使用 HumanEval+ v0.1.10 扩展测试；不复制正确答案或预生成专家反馈。
 - 题目一题未删。HumanEval/32 中 7 个连官方参考实现也无法在固定 Docker/Python 3.12 oracle 下稳定通过的数值输入被剔除，规则和数量冻结在 manifest；其余 HumanEval+ 输入全部保留。公开预检为 164/164 初始失败，隐藏参考预检为 164/164 通过。
 - 保留 3 道演示题、共 30 个测试函数，覆盖空输入、重复元素、边界和索引问题。
-- 正式实验只保留 **DeepSeek API 适配器**，三组固定使用同一模型与参数。
+- 模型通过 OpenAI-compatible 适配层接入，支持 DeepSeek 和阿里云百炼 Qwen；同一批
+  A/B/C 必须固定使用同一提供方、模型与参数。
 - A 组生成唯一首轮提交；仅当它公开测试失败时，B/C 才从这份完全相同的代码快照分叉，并各自最多追加两次。每个策略的总提交上限仍为 **1/3/3**，完整题库每轮保存 492 条策略结果，物理调用上限 820 次。
 
 | 策略 | 总提交上限 | 模型是否看到详细失败诊断 |
@@ -47,10 +48,18 @@ Docker Desktop/Engine 在测试和实验期间保持运行。主控制器调用�
 
 已有 `.env` 时保留它；首次配置可复制 `.env.example`，自行填写密钥，不在聊天或日志中公开。
 
+百炼 Qwen 实验配置：
+
 ```text
-DEEPSEEK_API_KEY=在本地填写
-REPAIR_ASSISTANT_MODEL=deepseek-flash
+REPAIR_ASSISTANT_PROVIDER=bailian
+DASHSCOPE_API_KEY=在本地填写
+REPAIR_ASSISTANT_MODEL=qwen3.8-flash
+BAILIAN_BASE_URL=https://业务空间ID.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
 ```
+
+若未设置 `BAILIAN_BASE_URL`，程序兼容使用北京区
+`https://dashscope.aliyuncs.com/compatible-mode/v1`。也可以继续设置
+`REPAIR_ASSISTANT_PROVIDER=deepseek` 与 `DEEPSEEK_API_KEY` 运行 DeepSeek。
 
 ## 从演示到正式实验
 
@@ -59,10 +68,11 @@ REPAIR_ASSISTANT_MODEL=deepseek-flash
 make experiment TASKS_DIR=benchmarks/tasks
 
 # 默认：完整 164 道 FeedbackEval-HumanEval，保存 492 条策略结果
-make experiment
+make experiment PROVIDER=bailian MODEL=qwen3.8-flash
 
 # 单题调试
-.venv/bin/repair-agent run benchmarks/tasks/chunk-list --strategy test-feedback
+.venv/bin/repair-agent run benchmarks/tasks/chunk-list \
+  --provider bailian --model qwen3.8-flash --strategy test-feedback
 ```
 
 另有独立的 [20 题自建诊断型补充集](benchmarks/feedback-sensitive/README.md)，用于探索状态切换和边界错误是否更容易从执行反馈中获益：

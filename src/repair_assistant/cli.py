@@ -20,7 +20,7 @@ from repair_assistant.agent import MAX_ATTEMPTS, RepairStrategy
 from repair_assistant.benchmark import run_benchmark
 from repair_assistant.costs import Pricing
 from repair_assistant.event_log import EventLog
-from repair_assistant.model import DeepSeekAdapter, ModelAdapter
+from repair_assistant.model import BailianQwenAdapter, DeepSeekAdapter, ModelAdapter
 from repair_assistant.output_paths import GROUP_DIRECTORIES, create_output_directory
 from repair_assistant.reporting import generate_experiment_report
 from repair_assistant.run import RunService
@@ -41,7 +41,8 @@ def _parser() -> argparse.ArgumentParser:
         default=RepairStrategy.TEST_FEEDBACK.value,
     )
     run.add_argument("--max-attempts", type=_attempt_count, default=MAX_ATTEMPTS)
-    run.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-flash"))
+    run.add_argument("--provider", choices=("deepseek", "bailian"), default=_provider())
+    run.add_argument("--model")
     run.add_argument("--image", default="function-repair/sandbox-python:dev")
     run.add_argument("--data-dir", type=Path, default=_data_dir())
     run.add_argument("--pricing-file", type=Path)
@@ -71,7 +72,8 @@ def _parser() -> argparse.ArgumentParser:
         default=0,
         help="Seed used to randomize benchmark execution order.",
     )
-    benchmark.add_argument("--model", default=os.getenv("REPAIR_ASSISTANT_MODEL", "deepseek-flash"))
+    benchmark.add_argument("--provider", choices=("deepseek", "bailian"), default=_provider())
+    benchmark.add_argument("--model")
     benchmark.add_argument("--image", default="function-repair/sandbox-python:dev")
     benchmark.add_argument("--data-dir", type=Path, default=_data_dir())
     benchmark.add_argument("--pricing-file", type=Path)
@@ -89,6 +91,10 @@ def _parser() -> argparse.ArgumentParser:
 
 def _data_dir() -> Path:
     return Path(os.getenv("REPAIR_ASSISTANT_DATA_DIR", "results"))
+
+
+def _provider() -> str:
+    return os.getenv("REPAIR_ASSISTANT_PROVIDER", "deepseek").strip().lower() or "deepseek"
 
 
 def _attempt_count(value: str) -> int:
@@ -153,7 +159,7 @@ def _doctor() -> int:
 
 def _run(args: argparse.Namespace) -> int:
     try:
-        model = _model_adapter(args.model)
+        model = _model_adapter(args.model, provider=args.provider)
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -181,7 +187,7 @@ def _run(args: argparse.Namespace) -> int:
 
 def _benchmark(args: argparse.Namespace) -> int:
     try:
-        _model_adapter(args.model)
+        _model_adapter(args.model, provider=args.provider)
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -206,7 +212,7 @@ def _benchmark(args: argparse.Namespace) -> int:
     )
     experiment_dir = run_benchmark(
         schedule=schedule,
-        model_factory=lambda: _model_adapter(args.model),
+        model_factory=lambda: _model_adapter(args.model, provider=args.provider),
         image=args.image,
         data_dir=args.data_dir,
         seed=args.seed,
@@ -219,19 +225,49 @@ def _benchmark(args: argparse.Namespace) -> int:
     return 0
 
 
-def _model_adapter(model: str) -> ModelAdapter:
+def _model_adapter(model: str | None, *, provider: str | None = None) -> ModelAdapter:
+    selected_provider = (provider or _provider()).strip().lower()
+    configured_provider = _provider()
+    configured_model = os.getenv("REPAIR_ASSISTANT_MODEL", "").strip()
+    if model:
+        selected_model = model
+    elif selected_provider == configured_provider and configured_model:
+        selected_model = configured_model
+    else:
+        selected_model = {
+            "deepseek": "deepseek-flash",
+            "bailian": "qwen3.8-flash",
+        }.get(selected_provider, "")
     base_url = os.getenv("REPAIR_ASSISTANT_BASE_URL", "").strip()
-    api_key = os.getenv("DEEPSEEK_API_KEY", "")
-    if not api_key:
-        raise ValueError("DEEPSEEK_API_KEY is required for a DeepSeek live run.")
-    return DeepSeekAdapter(
-        api_key=api_key,
-        model=model,
-        base_url=base_url or os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
-        timeout_seconds=_environment_positive_int("REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS", 120),
-        max_tokens=_environment_positive_int("REPAIR_ASSISTANT_MAX_TOKENS", 8192),
-        ca_bundle=os.getenv("REPAIR_ASSISTANT_CA_BUNDLE"),
-    )
+    timeout_seconds = _environment_positive_int("REPAIR_ASSISTANT_MODEL_TIMEOUT_SECONDS", 120)
+    max_tokens = _environment_positive_int("REPAIR_ASSISTANT_MAX_TOKENS", 8192)
+    ca_bundle = os.getenv("REPAIR_ASSISTANT_CA_BUNDLE")
+    if selected_provider == "deepseek":
+        api_key = os.getenv("DEEPSEEK_API_KEY", "")
+        if not api_key:
+            raise ValueError("DEEPSEEK_API_KEY is required for a DeepSeek live run.")
+        return DeepSeekAdapter(
+            api_key=api_key,
+            model=selected_model,
+            base_url=base_url or os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+            timeout_seconds=timeout_seconds,
+            max_tokens=max_tokens,
+            ca_bundle=ca_bundle,
+        )
+    if selected_provider == "bailian":
+        api_key = os.getenv("DASHSCOPE_API_KEY", "")
+        if not api_key:
+            raise ValueError("DASHSCOPE_API_KEY is required for an Alibaba Cloud Model Studio run.")
+        return BailianQwenAdapter(
+            api_key=api_key,
+            model=selected_model,
+            base_url=base_url
+            or os.getenv("BAILIAN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+            timeout_seconds=timeout_seconds,
+            max_tokens=max_tokens,
+            ca_bundle=ca_bundle,
+        )
+    raise ValueError(f"unsupported model provider: {selected_provider}")
 
 
 def _benchmark_schedule(

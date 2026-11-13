@@ -51,6 +51,10 @@ class RecordingModel:
         return "test"
 
     @property
+    def thinking_mode(self) -> str:
+        return "not-applicable"
+
+    @property
     def sensitive_values(self) -> tuple[str, ...]:
         return ()
 

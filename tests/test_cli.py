@@ -5,7 +5,7 @@ import pytest
 
 from repair_assistant.cli import _benchmark_schedule, _events, _model_adapter, _parser
 from repair_assistant.event_log import EventLog
-from repair_assistant.model import DeepSeekAdapter
+from repair_assistant.model import BailianQwenAdapter, DeepSeekAdapter
 
 
 def test_benchmark_schedule_repeats_every_pair_and_is_seeded() -> None:
@@ -39,6 +39,13 @@ def test_v4_defaults_and_resume_options() -> None:
     assert args.repetitions == 1
 
 
+def test_cli_accepts_bailian_provider_and_qwen_model() -> None:
+    args = _parser().parse_args(["benchmark", "--provider", "bailian", "--model", "qwen3.8-flash"])
+
+    assert args.provider == "bailian"
+    assert args.model == "qwen3.8-flash"
+
+
 def test_removed_multi_turn_option_is_rejected() -> None:
     with pytest.raises(SystemExit):
         _parser().parse_args(["run", "task", "--max-turns", "12"])
@@ -70,6 +77,19 @@ def test_deepseek_model_limits_are_configurable(monkeypatch: pytest.MonkeyPatch)
     assert adapter.base_url == "https://deepseek.example/v1"
     assert adapter.timeout_seconds == 321
     assert adapter.max_tokens == 1024
+
+
+def test_bailian_provider_uses_qwen_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("REPAIR_ASSISTANT_MODEL", raising=False)
+    monkeypatch.setenv("DASHSCOPE_API_KEY", "test-key")
+    monkeypatch.setenv("BAILIAN_BASE_URL", "https://workspace.example/compatible-mode/v1")
+
+    adapter = _model_adapter(None, provider="bailian")
+
+    assert isinstance(adapter, BailianQwenAdapter)
+    assert adapter.name == "qwen3.8-flash"
+    assert adapter.provider == "bailian"
+    assert adapter.base_url == "https://workspace.example/compatible-mode/v1"
 
 
 @pytest.mark.parametrize("group", ["", "group_c"])

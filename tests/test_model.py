@@ -5,7 +5,7 @@ from urllib.request import Request
 import pytest
 
 import repair_assistant.model as model_module
-from repair_assistant.model import DeepSeekAdapter, ModelResponse, ScriptedModel
+from repair_assistant.model import BailianQwenAdapter, DeepSeekAdapter, ModelResponse, ScriptedModel
 
 SUBMIT_TOOL = {
     "type": "function",
@@ -75,6 +75,53 @@ def test_deepseek_submission_explicitly_disables_server_default_thinking(
     assert captured["tool_choice"]["function"]["name"] == "submit_solution"
     assert response.tool_calls[0].name == "submit_solution"
     assert response.usage["total_tokens"] == 18
+
+
+def test_bailian_qwen_uses_openai_tools_and_disables_thinking(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_urlopen(request: Request, **_kwargs: object) -> FakeResponse:
+        assert request.full_url.endswith("/compatible-mode/v1/chat/completions")
+        assert isinstance(request.data, bytes)
+        captured.update(json.loads(request.data))
+        return FakeResponse(
+            {
+                "id": "qwen-response",
+                "model": "qwen3.8-flash",
+                "choices": [
+                    {
+                        "finish_reason": "tool_calls",
+                        "message": {
+                            "content": "",
+                            "tool_calls": [
+                                {
+                                    "id": "submission",
+                                    "type": "function",
+                                    "function": {
+                                        "name": "submit_solution",
+                                        "arguments": json.dumps({"content": "def f(): return 1\n"}),
+                                    },
+                                }
+                            ],
+                        },
+                    }
+                ],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 8, "total_tokens": 18},
+            }
+        )
+
+    monkeypatch.setattr(model_module, "urlopen", fake_urlopen)
+    adapter = BailianQwenAdapter(api_key="test-key")
+    response = adapter.complete([{"role": "user", "content": "repair f"}], [SUBMIT_TOOL])
+
+    assert captured["enable_thinking"] is False
+    assert "thinking" not in captured
+    assert captured["tool_choice"]["function"]["name"] == "submit_solution"
+    assert response.provider == "bailian"
+    assert response.tool_calls[0].name == "submit_solution"
+    assert adapter.thinking_mode == "disabled"
 
 
 def test_scripted_model_remains_an_offline_test_adapter() -> None:

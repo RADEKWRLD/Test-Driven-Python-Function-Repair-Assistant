@@ -22,14 +22,17 @@ doctor 只检查 Python、Docker CLI/引擎和镜像，不能代替 Docker 集�
 
 ## 模型配置
 
-已有 `.env` 中的密钥不覆盖、不输出。默认使用实际接入过的 DeepSeek 配置：
+已有 `.env` 中的密钥不覆盖、不输出。百炼 Qwen 配置如下：
 
 ```text
-DEEPSEEK_API_KEY=在本地填写
-REPAIR_ASSISTANT_MODEL=deepseek-flash
+REPAIR_ASSISTANT_PROVIDER=bailian
+DASHSCOPE_API_KEY=在本地填写
+REPAIR_ASSISTANT_MODEL=qwen3.8-flash
+BAILIAN_BASE_URL=https://业务空间ID.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
 ```
 
-三组必须共用同一个模型配置，不能中途切换提供方。DeepSeek 密钥只用于宿主 API 请求，不传入 Docker 容器。
+没有业务空间专属域名时可省略 `BAILIAN_BASE_URL`，程序会使用北京区兼容域名。
+三组必须共用同一个模型配置，不能中途切换提供方。API 密钥只用于宿主请求，不传入 Docker 容器。
 
 ## 演示与正式实验
 
@@ -37,13 +40,14 @@ REPAIR_ASSISTANT_MODEL=deepseek-flash
 
 ```bash
 # 单题调试
-.venv/bin/repair-agent run benchmarks/tasks/chunk-list --strategy test-feedback
+.venv/bin/repair-agent run benchmarks/tasks/chunk-list \
+  --provider bailian --model qwen3.8-flash --strategy test-feedback
 
 # 三道演示题，9 个 run
 make experiment TASKS_DIR=benchmarks/tasks
 
 # 164 道正式题，保存492条策略结果；最坏820次物理调用
-make experiment
+make experiment PROVIDER=bailian MODEL=qwen3.8-flash
 ```
 
 每道题先由A生成一次共享首轮；公开失败后B/C继承同一快照并各自最多追加两次，公开通过即停止。重复实验需显式设置 `REPETITIONS=3`。

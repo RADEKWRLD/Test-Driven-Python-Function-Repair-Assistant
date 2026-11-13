@@ -1,4 +1,4 @@
-"""Provider-independent model turns and a minimal DeepSeek adapter."""
+"""Provider-independent model turns and OpenAI-compatible provider adapters."""
 
 from __future__ import annotations
 
@@ -59,6 +59,9 @@ class ModelAdapter(Protocol):
     def provider(self) -> str: ...
 
     @property
+    def thinking_mode(self) -> str: ...
+
+    @property
     def sensitive_values(self) -> tuple[str, ...]: ...
 
     def complete(
@@ -66,21 +69,29 @@ class ModelAdapter(Protocol):
     ) -> ModelResponse: ...
 
 
-class DeepSeekAdapter:
+class OpenAICompatibleAdapter:
     def __init__(
         self,
         *,
         api_key: str,
-        model: str = "deepseek-flash",
-        base_url: str = "https://api.deepseek.com",
+        model: str,
+        provider: str,
+        provider_label: str,
+        base_url: str,
+        request_options: Mapping[str, Any] | None = None,
+        thinking_mode: str = "server-controlled",
         timeout_seconds: int = 120,
         max_tokens: int = 8192,
         ca_bundle: str | None = None,
     ) -> None:
         if not api_key:
-            raise ValueError("DeepSeek API key is required")
+            raise ValueError(f"{provider_label} API key is required")
         self.api_key = api_key
         self._name = model
+        self._provider = provider
+        self._provider_label = provider_label
+        self._thinking_mode = thinking_mode
+        self._request_options = dict(request_options or {})
         self.base_url = base_url.rstrip("/")
         self.timeout_seconds = timeout_seconds
         self.max_tokens = max_tokens
@@ -95,7 +106,11 @@ class DeepSeekAdapter:
 
     @property
     def provider(self) -> str:
-        return "deepseek"
+        return self._provider
+
+    @property
+    def thinking_mode(self) -> str:
+        return self._thinking_mode
 
     @property
     def sensitive_values(self) -> tuple[str, ...]:
@@ -116,11 +131,11 @@ class DeepSeekAdapter:
             "messages": list(messages),
             "tools": list(tools),
             "tool_choice": tool_choice,
-            "thinking": {"type": "disabled"},
             "temperature": 0,
             "max_tokens": self.max_tokens,
             "stream": False,
         }
+        payload.update(self._request_options)
         request = Request(
             f"{self.base_url}/chat/completions",
             data=json.dumps(payload, ensure_ascii=False).encode(),
@@ -139,9 +154,11 @@ class DeepSeekAdapter:
                 body = response.read().decode()
         except HTTPError as exc:
             detail = exc.read().decode(errors="replace")
-            raise ModelAdapterError(f"DeepSeek returned HTTP {exc.code}: {detail}") from exc
+            raise ModelAdapterError(
+                f"{self._provider_label} returned HTTP {exc.code}: {detail}"
+            ) from exc
         except URLError as exc:
-            raise ModelAdapterError(f"DeepSeek request failed: {exc.reason}") from exc
+            raise ModelAdapterError(f"{self._provider_label} request failed: {exc.reason}") from exc
         try:
             data = cast(dict[str, Any], json.loads(body))
             choice = cast(dict[str, Any], data["choices"][0])
@@ -158,13 +175,67 @@ class DeepSeekAdapter:
                 usage=usage,
             )
         except (KeyError, IndexError, TypeError, ValueError) as exc:
-            raise ModelAdapterError("DeepSeek returned an invalid completion") from exc
+            raise ModelAdapterError(
+                f"{self._provider_label} returned an invalid completion"
+            ) from exc
 
     @staticmethod
     def _parse_tool_call(value: Any) -> ToolCall:
         item = cast(dict[str, Any], value)
         function = cast(dict[str, Any], item["function"])
         return ToolCall(str(item["id"]), str(function["name"]), str(function["arguments"]))
+
+
+class DeepSeekAdapter(OpenAICompatibleAdapter):
+    def __init__(
+        self,
+        *,
+        api_key: str,
+        model: str = "deepseek-flash",
+        base_url: str = "https://api.deepseek.com",
+        timeout_seconds: int = 120,
+        max_tokens: int = 8192,
+        ca_bundle: str | None = None,
+    ) -> None:
+        super().__init__(
+            api_key=api_key,
+            model=model,
+            provider="deepseek",
+            provider_label="DeepSeek",
+            base_url=base_url,
+            request_options={"thinking": {"type": "disabled"}},
+            thinking_mode="disabled",
+            timeout_seconds=timeout_seconds,
+            max_tokens=max_tokens,
+            ca_bundle=ca_bundle,
+        )
+
+
+class BailianQwenAdapter(OpenAICompatibleAdapter):
+    """Qwen through Alibaba Cloud Model Studio's OpenAI-compatible endpoint."""
+
+    def __init__(
+        self,
+        *,
+        api_key: str,
+        model: str = "qwen3.8-flash",
+        base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        timeout_seconds: int = 120,
+        max_tokens: int = 8192,
+        ca_bundle: str | None = None,
+    ) -> None:
+        super().__init__(
+            api_key=api_key,
+            model=model,
+            provider="bailian",
+            provider_label="Alibaba Cloud Model Studio",
+            base_url=base_url,
+            request_options={"enable_thinking": False},
+            thinking_mode="disabled",
+            timeout_seconds=timeout_seconds,
+            max_tokens=max_tokens,
+            ca_bundle=ca_bundle,
+        )
 
 
 class ScriptedModel:
@@ -180,6 +251,10 @@ class ScriptedModel:
     @property
     def provider(self) -> str:
         return "scripted"
+
+    @property
+    def thinking_mode(self) -> str:
+        return "not-applicable"
 
     @property
     def sensitive_values(self) -> tuple[str, ...]:

@@ -51,7 +51,7 @@ def run_benchmark(
         "model_options": {
             key: getattr(model, key, None) for key in ("base_url", "max_tokens", "timeout_seconds")
         },
-        "thinking_mode": "disabled" if model.provider == "deepseek" else "server-controlled",
+        "thinking_mode": model.thinking_mode,
         "image": image,
         "repetitions": repetitions,
         "randomization_seed": seed,

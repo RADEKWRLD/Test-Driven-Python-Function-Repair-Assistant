@@ -51,8 +51,8 @@ C−B 比较只使用同题同重复编号下都有有效结果的配对，报�
 
 ```json
 {
-  "provider": "deepseek",
-  "model": "deepseek-flash",
+  "provider": "bailian",
+  "model": "qwen3.8-flash",
   "effective_date": "YYYY-MM-DD",
   "currency": "CNY",
   "input_per_million": null,

@@ -8,6 +8,7 @@ SEED ?= 20261016
 # Leave empty to let repair-agent read REPAIR_ASSISTANT_MODEL from .env.
 # Callers can still override it explicitly with `make experiment MODEL=...`.
 MODEL ?=
+PROVIDER ?=
 DATA_DIR ?= results
 PRICING_FILE ?=
 RESUME ?=
@@ -46,7 +47,8 @@ experiment: check sandbox-test
 	$(VENV)/bin/repair-agent benchmark $(TASKS_DIR) \
 		--max-attempts $(MAX_ATTEMPTS) \
 		--repetitions $(REPETITIONS) \
-		--seed $(SEED) $(if $(strip $(MODEL)),--model $(MODEL)) \
+		--seed $(SEED) $(if $(strip $(PROVIDER)),--provider $(PROVIDER)) \
+		$(if $(strip $(MODEL)),--model $(MODEL)) \
 		--image $(IMAGE) \
 		--data-dir $(DATA_DIR) \
 		$(if $(strip $(PRICING_FILE)),--pricing-file "$(PRICING_FILE)") \
