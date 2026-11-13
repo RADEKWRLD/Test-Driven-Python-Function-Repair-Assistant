@@ -151,6 +151,14 @@
     .arm-letter { display: grid; place-items: center; width: 28px; height: 28px; background: var(--blue-soft); color: var(--blue); font-family: var(--display); font-size: 22px; flex-shrink: 0; }
     .arm-name code { background: transparent; padding: 0; font-size: 12px; }
     .row-highlight { background: var(--blue-soft); }
+    @media (min-width: 761px) {
+      #baselines .table-wrap { flex: 1; min-height: 420px; display: flex; overflow: visible; }
+      #baselines table { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+      #baselines thead, #baselines tbody { display: grid; min-height: 0; }
+      #baselines tbody { grid-template-rows: repeat(3, minmax(0, 1fr)); }
+      #baselines thead tr, #baselines tbody tr { display: grid; grid-template-columns: 26% 10% 38% 26%; }
+      #baselines th, #baselines td { display: flex; flex-direction: column; justify-content: center; }
+    }
     .results-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 48px; }
     .bar-chart { display: flex; flex-direction: column; gap: 26px; padding: 20px 0 8px; }
     .bar-row { display: grid; grid-template-columns: 110px 1fr 72px; gap: 16px; align-items: center; }
@@ -182,6 +190,31 @@
     .pair-summary span { font-size: 12px; color: var(--muted); }
     .pair-summary b { display: block; color: var(--ink); font-family: var(--display); font-size: 36px; line-height: 1.2; }
     .small-callout { background: var(--blue-soft); padding: 20px 24px; font-size: 14px; }
+    .conditional-stat { display: flex; align-items: baseline; gap: 8px; color: var(--blue); }
+    .conditional-stat b { font-family: var(--display); font-size: 50px; line-height: 1; }
+    .conditional-stat span { color: var(--muted); font-size: 12px; }
+    @media (min-width: 761px) {
+      #conditional { gap: clamp(16px, 2vw, 28px); }
+      #conditional > .two-col { flex: 1; min-height: 0; align-items: stretch; grid-template-columns: minmax(0, 1.25fr) minmax(340px, .85fr); }
+      #conditional > .two-col > .stack:first-child { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: clamp(20px, 2vw, 32px); }
+      #conditional .section-label { font-size: 13px; }
+      #conditional .tile-rows { justify-content: center; gap: clamp(36px, 5vh, 64px); }
+      #conditional .tile-row { grid-template-columns: 54px minmax(0, 1fr) 90px; gap: 20px; }
+      #conditional .tile-row > strong { font-size: clamp(24px, 2vw, 34px); }
+      #conditional .tile { height: clamp(40px, 3vw, 56px); min-height: 0; aspect-ratio: auto; font-size: 18px; }
+      #conditional .tile-percent { font-size: clamp(40px, 3.4vw, 56px); }
+      #conditional .pair-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; padding-top: clamp(24px, 3vh, 40px); }
+      #conditional .pair-summary span { font-size: 13px; }
+      #conditional .pair-summary b { font-size: clamp(42px, 3.5vw, 56px); }
+      #conditional > .two-col > .stack:last-child { height: 100%; }
+      #conditional .small-callout { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; padding: clamp(32px, 4vw, 72px); font-size: clamp(16px, 1.4vw, 22px); }
+      #conditional .conditional-stat { flex-direction: column; align-items: flex-start; gap: 12px; }
+      #conditional .conditional-stat b { font-size: clamp(76px, 8vw, 128px); line-height: .85; }
+      #conditional .conditional-stat span { font-size: 14px; }
+      #conditional .small-callout strong { font-size: clamp(22px, 2vw, 30px); }
+      #conditional .small-callout p { line-height: 1.8; }
+      #conditional > .source { display: none; }
+    }
     .case-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: center; }
     .tabs { display: flex; flex-wrap: wrap; gap: 6px; }
     .tab { padding: 8px 14px; border: 1px solid var(--line); background: transparent; font-size: 13px; border-radius: 2px; }
@@ -197,6 +230,48 @@
     .feedback-box pre { margin-top: 7px; font-size: 12px; }
     .case-insight { font-size: 14px; }
     .case-state { display: flex; gap: 8px; flex-wrap: wrap; }
+    .case-source-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 24px; align-items: stretch; }
+    .case-source-layout > *, .case-trajectory > *, .c-evidence-grid > * { min-width: 0; }
+    .full-source { display: flex; flex-direction: column; }
+    .full-source pre { flex: 1; min-height: 0; font-size: 11px; line-height: 1.55; }
+    .code-bad { color: oklch(86% .09 25); background: oklch(32% .05 25); }
+    .code-good { color: oklch(87% .09 155); background: oklch(31% .045 155); }
+    .case-change-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .case-change-summary > div { padding: 12px 0; border-top: 1px solid var(--line); font-size: 12px; }
+    .case-change-summary strong { display: block; margin-bottom: 4px; font-size: 14px; }
+    .case-change-summary .fixed strong { color: var(--blue); }
+    .case-change-summary .missed strong { color: var(--red); }
+    .case-result-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid var(--line); background: var(--line); }
+    .case-result-compare > div { padding: 12px 14px; background: var(--paper); }
+    .case-result-compare span { display: block; color: var(--muted); font-size: 11px; }
+    .case-result-compare code { display: block; margin-top: 5px; font-size: 13px; }
+    .case-trajectory { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); gap: 28px; align-items: stretch; }
+    .case-track { min-width: 0; display: flex; flex-direction: column; gap: 14px; padding-top: 15px; border-top: 2px solid var(--ink); }
+    .case-track.c { border-color: var(--blue); }
+    .case-track h3 { font-size: 19px; }
+    .message-quote { padding: 14px 16px; background: var(--blue-soft); font-size: 13px; }
+    .attempt-ledger { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid var(--line); background: var(--line); }
+    .attempt-ledger > div { padding: 12px 14px; background: var(--paper); font-size: 12px; }
+    .attempt-ledger strong { display: block; color: var(--blue); font-size: 14px; }
+    .c-evidence-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); gap: 18px; }
+    .audit-reasoning { padding: 13px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .audit-reasoning strong { font-size: 14px; }
+    .audit-reasoning ol { margin: 8px 0 0; padding-left: 1.35em; display: flex; flex-direction: column; gap: 6px; font-size: 12px; }
+    .audit-note { color: var(--muted); font-size: 10px; line-height: 1.6; }
+    .case-final-code pre { min-height: 0; font-size: 10.5px; line-height: 1.55; }
+    @media (min-width: 761px) {
+      #case-a, #case-bc { gap: 16px; padding-top: clamp(24px, 2.5vw, 36px); padding-bottom: clamp(24px, 2.5vw, 36px); }
+      #case-a .chapter-head, #case-bc .chapter-head { gap: 6px; }
+      #case-a h2, #case-bc h2 { font-size: clamp(34px, 3.4vw, 50px); }
+      #case-a .example-rule { padding: 10px 16px; }
+      #case-a .case-source-layout { flex: none; align-items: start; gap: 20px; }
+      #case-a .stack { gap: 10px; }
+      #case-a .full-source pre { font-size: 10.5px; line-height: 1.45; }
+      #case-a .case-a-diff { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; font-size: 10.5px; line-height: 1.4; }
+      #case-a .case-change-summary > div { padding: 8px 0; font-size: 11px; }
+      #case-a .case-change-summary strong { font-size: 13px; }
+      #case-a .case-result-compare > div { padding: 8px 12px; }
+    }
     .replay { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .primary { border: 1px solid var(--blue); color: var(--paper); background: var(--blue); padding: 8px 16px; font-size: 12px; border-radius: 2px; }
     .secondary { border: 1px solid var(--line); color: var(--ink); background: transparent; padding: 8px 14px; font-size: 12px; border-radius: 2px; }
@@ -250,6 +325,25 @@
     .architecture-part .micro-actions { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
     .micro-actions span { padding: 3px 7px; border: 1px solid oklch(73% .07 265); background: var(--paper); color: var(--ink); font-family: var(--mono); font-size: 9px; }
     .architecture-arrow { flex: 0 0 16px; align-self: center; color: var(--blue); font-family: var(--mono); font-size: 18px; text-align: center; }
+    @media (min-width: 761px) {
+      #architecture { gap: 18px; padding-top: clamp(26px, 2.3vw, 38px); padding-bottom: clamp(26px, 2.3vw, 38px); }
+      #architecture .chapter-head { gap: 6px; }
+      #architecture h2 { font-size: clamp(36px, 3.1vw, 50px); }
+      #architecture .architecture-board { gap: 8px; }
+      #architecture .architecture-layer { grid-template-columns: 176px minmax(0, 1fr); gap: 16px; padding: 12px 16px; }
+      #architecture .layer-heading { gap: 4px; }
+      #architecture .layer-heading b { font-size: 11px; }
+      #architecture .layer-heading h3 { font-size: 16px; }
+      #architecture .layer-heading p { font-size: 10.5px; line-height: 1.45; }
+      #architecture .architecture-parts { gap: 8px; }
+      #architecture .architecture-part { padding: 11px 13px; }
+      #architecture .architecture-part h4 { font-size: 14.5px; }
+      #architecture .architecture-part code { margin-top: 2px; font-size: 9px; }
+      #architecture .architecture-part p { margin-top: 6px; font-size: 10px; line-height: 1.45; }
+      #architecture .architecture-arrow { flex-basis: 12px; font-size: 16px; }
+      #architecture .architecture-part .micro-actions { gap: 4px; margin-top: 6px; }
+      #architecture .micro-actions span { padding: 2px 5px; font-size: 8px; }
+    }
     .mount-map { border-top: 2px solid var(--blue); }
     .mount-row { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 18px; padding: 15px 0; border-bottom: 1px solid var(--line); }
     .mount-row strong { color: var(--blue); font-size: 13px; }
@@ -412,6 +506,9 @@
       .example-rule { flex-direction: column; gap: 8px; font-size: 14px; }
       .case-explanations { grid-template-columns: minmax(0, 1fr); gap: 14px; }
       .case-explanations p { font-size: 13px; } .array-comparison strong { font-size: 19px; }
+      .case-source-layout, .case-trajectory, .c-evidence-grid { grid-template-columns: minmax(0, 1fr); }
+      .case-source-layout, .case-trajectory { flex: none; }
+      .case-change-summary { grid-template-columns: minmax(0, 1fr); }
       .hero-layout > *, .cost-layout > *, .results-layout > *, .case-layout > * { min-width: 0; }
       .hero h1 { font-size: clamp(34px, 10vw, 46px); }
       .rule-note { flex-wrap: wrap; gap: 8px; }
@@ -559,7 +656,7 @@ for index, arguments in enumerate(INPUTS):
     </section>
 
     <section class="slide" id="workspace" data-title="实现边界：运行目录与 Docker 挂载" data-notes="文件没有逐次上传到 Docker。程序先把题目的 workspace 复制到本次 run 目录，模型返回代码后由宿主机覆盖其中的 solution.py。Docker 使用 bind mount 把这个目录映射为只读的 /workspace，因此宿主机写入后容器立即看到。修复和公开评分只挂载 /workspace；隐藏评分才额外挂载工作区外的 hidden_tests 到 /hidden_tests。">
-      <header class="chapter-head"><p class="eyebrow">05 / 实现边界：运行目录与 Docker 挂载</p><h2>文件先复制到运行目录，<br>再以只读挂载进入 Docker。</h2></header>
+      <header class="chapter-head"><p class="eyebrow">05 / 实现边界：运行目录与 Docker 挂载</p><h2>文件先复制到运行目录，<br>再挂载进入 Docker。</h2></header>
       <div class="two-col split-wide">
         <div class="file-tree"><pre>070 题目源目录/
 ├── task.json
@@ -580,7 +677,7 @@ for index, arguments in enumerate(INPUTS):
           <div class="mount-row"><strong>③ 隐藏评分</strong><p>候选快照 → <code>/workspace</code>；<code>hidden_tests/</code> → <code>/hidden_tests</code>，均只读</p></div>
         </div>
       </div>
-      <div class="rule-note"><strong>不是 docker cp</strong><span>控制器在宿主机写 solution.py；bind mount 让容器看到最新内容，候选代码不能反向修改工作区。</span></div>
+      <div class="rule-note"><span>控制器在宿主机写 solution.py；bind mount 让容器看到最新内容，候选代码不能反向修改工作区。</span></div>
     </section>
 
     <section class="slide" id="model-io" data-title="模型接口：输入与输出" data-notes="模型接口只有一个输入边界和一个输出边界。每次都发送需求、当前 solution.py 和公开测试源码；B 重试只多一句请再试，C 重试再附上一次公开 pytest 报错；隐藏测试从不进入请求。模型必须调用 submit_solution，content 是完整文件文本，不是补丁，也不是执行命令。">
@@ -657,28 +754,65 @@ E At index 0 diff: 4 != 1</pre></div></div>
 
     <section class="slide" id="conditional" data-title="结果分析：首轮失败后的修复效果" data-notes="164 题里，有 152 题第一次公开测试就通过了，按规则不再重试。真正能比较 B C 后续修改的只有 12 题。在这 12 题中，B 最终隐藏通过 3 题，C 通过 6 题。三道共同成功，三道只有 C 成功，没有只有 B 成功的题，另六道都失败。这里的 25% 到 50% 只针对这 12 题，不是全部 164 题。第一次公开通过但隐藏失败的 10 题，因为早停没有机会再修。">
       <header class="chapter-head"><p class="eyebrow">12 / 结果分析：首轮失败后的修复效果</p><h2>首轮公开失败的 12 题中，<br>B 修好 3 题，C 修好 6 题。</h2></header>
-      <div class="two-col split-wide"><div class="stack"><p class="section-label">这 12 题中，最后有几题通过隐藏测试？每格 1 题，按通过数排列。</p><div class="tile-rows"><div class="tile-row"><strong>B</strong><div class="tiles" aria-label="B 通过 3/12"><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span></div><span class="tile-percent">25%</span></div><div class="tile-row"><strong>C</strong><div class="tiles" aria-label="C 通过 6/12"><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span></div><span class="tile-percent">50%</span></div></div><div class="pair-summary"><span><b>3</b>B/C 都修好</span><span><b>3</b>只有 C 修好</span><span><b>0</b>只有 B 修好</span><span><b>6</b>两组都没修好</span></div></div><div class="stack"><div class="small-callout"><strong>为什么差距看起来不大？</strong><p style="margin-top:8px">152 题第一次公开就通过，没有后续修改；差异只能出现在剩下的 12 题。</p></div></div></div>
-      <div class="source"><span>全部题目的分母是 164；本页的分母是 12。</span></div>
+      <div class="two-col split-wide"><div class="stack"><p class="section-label">这 12 题中，最后有几题通过隐藏测试？每格 1 题，按通过数排列。</p><div class="tile-rows"><div class="tile-row"><strong>B</strong><div class="tiles" aria-label="B 通过 3/12"><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span></div><span class="tile-percent">25%</span></div><div class="tile-row"><strong>C</strong><div class="tiles" aria-label="C 通过 6/12"><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span></div><span class="tile-percent">50%</span></div></div><div class="pair-summary"><span><b>3</b>B/C 都修好</span><span><b>3</b>只有 C 修好</span><span><b>0</b>只有 B 修好</span><span><b>6</b>两组都没修好</span></div></div><div class="stack"><div class="small-callout"><div class="conditional-stat"><b>152</b><span>题首轮公开测试直接通过</span></div><div><strong>为什么差距看起来不大？</strong><p style="margin-top:8px">这些题没有后续修改；差异只能出现在剩下的 12 题。</p></div></div></div></div>
+      <div class="source"></div>
     </section>
 
-    <section class="slide" id="case-a" data-title="成功案例 070：首次修改为何失败" data-notes="先不用看复杂函数，按题意手算：输入 1、2、3、4，先取最小的 1，再取最大的 4，再取最小的 2，最后是 3。A 的首轮代码 switch 初值为 False，但是那一行写的是条件为真取 min，为假取 max。所以第一次执行就选了 max，也就是 4，后续整段顺序反过来。A 虽然加了 remaining=list(lst) 避免改动输入，但没有把方向修正。它没有重试机会，最终公开和隐藏都没过。">
-      <header class="chapter-head"><p class="eyebrow">13 / 成功案例 070：首次修改为何失败</p><h2>案例 070：首次修改仍保留了<br>交替取数的方向错误。</h2></header>
-      <div class="example-rule"><strong>题目要求</strong><span>从列表中交替取<strong>最小、最大、最小、最大</strong>……直到取完。</span></div>
-      <div class="two-col"><div class="stack"><div class="code-window"><div class="code-title"><span>A 的首次提交 · 关键行</span><span>其余行未展示</span></div><pre>res, switch = [], False
-...
-res.append(
-    min(remaining) if switch
-    else max(remaining)
-)</pre></div><ol class="plain-list"><li><code>switch = False</code>：第一次条件为假。</li><li>所以走 <code>else max(...)</code>，先取到 <strong>4</strong>。</li><li>题目要求先取最小的 <strong>1</strong>，第一步就错了。</li></ol></div><div class="stack"><p class="section-label">输入 [1, 2, 3, 4]，按顺序比较</p><div class="array-comparison"><div><span>题目要求</span><strong class="accent">[1, 4, 2, 3]</strong></div><div><span>A 实际输出</span><strong class="wrong">[4, 1, 3, 2]</strong></div></div><p>A 做对了一件事：加了 <code>remaining = list(lst)</code>，避免修改输入列表。<br>但取数方向仍然反了。</p><div class="case-state"><span class="tag fail">A 公开 FAIL</span><span class="tag fail">A 隐藏 FAIL</span><span class="tag">只交 1 次，不能继续改</span></div></div></div>
+    <section class="slide" id="case-a" data-title="成功案例 070：A 改了什么，为什么仍失败" data-notes="先看原始函数。它直接从 lst 删除元素，会修改调用者的输入，而且 switch 初值为 False 时走 else max，所以第一次先取最大值。A 的首轮提交新增 remaining=list(lst)，并把循环和删除都改到副本上，修复了输入副作用。但它完整保留了 if switch else max 这个方向判断，所以输入 1、2、3、4 时仍得到 4、1、3、2。A 只允许提交一次，因此公开和隐藏都失败后直接结束。">
+      <header class="chapter-head"><p class="eyebrow">13 / 案例 070：A 改了什么，为什么仍失败</p><h2>A 修复了输入副作用，<br>却保留了取数方向错误。</h2></header>
+      <div class="example-rule"><strong>题目要求</strong><span>从列表中交替取<strong>最小、最大、最小、最大</strong>……输入 <code>[1, 2, 3, 4]</code> 应得到 <code>[1, 4, 2, 3]</code>。</span></div>
+      <div class="case-source-layout">
+        <div class="code-window full-source"><div class="code-title"><span>原始 solution.py · 完整函数</span><span>冻结题目文件</span></div><pre>def strange_sort_list(lst):
+    '''
+    Given list of integers, return list in strange order.
+    Strange sorting, is when you start with the minimum value,
+    then maximum of the remaining integers, then minimum and so on.
+
+    Examples:
+    strange_sort_list([1, 2, 3, 4]) == [1, 4, 2, 3]
+    strange_sort_list([5, 5, 5, 5]) == [5, 5, 5, 5]
+    strange_sort_list([]) == []
+    '''
+
+    res, switch = [], False
+    while lst:
+        res.append(<span class="code-bad">min(lst) if switch else max(lst)</span>)
+        lst.remove(res[-1])
+        switch = not switch
+    return res</pre></div>
+        <div class="stack"><h3>A 的首轮提交</h3><div class="code-window"><div class="code-title"><span>相对原始代码的实际修改</span><span>attempt 01</span></div><pre class="case-a-diff"><span class="diff plus">+ remaining = list(lst)</span>
+<span class="diff minus">− while lst:</span>
+<span class="diff plus">+ while remaining:</span>
+<span class="diff minus">− min(lst) if switch else max(lst)</span>
+<span class="diff plus">+ min(remaining) if switch else max(remaining)</span>
+<span class="diff minus">− lst.remove(res[-1])</span>
+<span class="diff plus">+ remaining.remove(res[-1])</span></pre></div><div class="case-change-summary"><div class="fixed"><strong>改对了</strong><span>复制列表后再删除，不再修改调用者传入的 <code>lst</code>。</span></div><div class="missed"><strong>没改到</strong><span><code>switch=False</code> 仍走 <code>else max</code>，第一步继续取 4。</span></div></div><div class="case-result-compare"><div><span>期望输出</span><code class="accent">[1, 4, 2, 3]</code></div><div><span>A 实际输出</span><code class="wrong">[4, 1, 3, 2]</code></div></div><div class="case-state"><span class="tag fail">公开 FAIL</span><span class="tag fail">隐藏 FAIL</span><span class="tag">A 到此停止</span></div></div>
+      </div>
     </section>
 
-    <section class="slide" id="case-bc" data-title="成功案例 070：反馈对应哪一处修改" data-notes="B C 起点就是上页 A 的同一份代码。B 的第二和第三次提交都保留了 if switch else max 这条关键条件，所以仍然先取最大值。不能猜模型心里怎么想，我们只根据代码确认它没有改对这一处。C 收到测试报错，里面明确说期望第一项是 1，实际却是 4。C 的第二次提交加了 not：False 取反变 True，第一步取 min；开关翻转后下一步取 max，因此符合交替取数的要求。它通过了全部公开测试，也在修复结束后的隐藏评分中通过。">
-      <header class="chapter-head"><p class="eyebrow">14 / 成功案例 070：反馈对应哪一处修改</p><h2>同一份首轮代码，<br>B 未修正条件，C 根据报错修正。</h2></header>
-      <div class="two-col">
-        <div class="stack"><h3>B：只有“请再试”，没有具体报错</h3><div class="code-window"><div class="code-title"><span>第 1、2、3 次提交都保留了这一行</span></div><pre>min(remaining) if switch else max(remaining)</pre></div><p><code>switch</code> 还是从 False 开始，<br>所以三次都先取最大值，仍输出 <code>[4, 1, 3, 2]</code>。</p><div class="case-state"><span class="tag fail">公开 FAIL → FAIL → FAIL</span><span class="tag fail">最终隐藏 FAIL</span></div><p class="caption">能确认的是关键条件没改对；不能从日志推测模型内部怎么想。</p></div>
-        <div class="stack"><h3>C：看到了第一项就不相等</h3><div class="feedback-box"><pre>E assert [4, 1, 3, 2] == [1, 4, 2, 3]
-E At index 0 diff: 4 != 1</pre></div><div class="code-window"><div class="code-title"><span>第 2 次提交的修改</span></div><pre><span class="diff minus">− min(remaining) if switch else max(remaining)</span>
-<span class="diff plus">+ min(remaining) if not switch else max(remaining)</span></pre></div><p>False 加上 <code>not</code> 变 True，先取 <strong>min = 1</strong>；下一轮取 max = 4。之后继续交替，得到题目要求的顺序。</p><div class="case-state"><span class="tag pass">公开 FAIL → PASS</span><span class="tag pass">最终隐藏 PASS</span></div></div>
+    <section class="slide" id="case-bc" data-title="成功案例 070：B 重试与 C 反馈修复" data-notes="B 和 C 都从 A 的首轮代码开始。B 每次只收到重新考虑当前实现并提交完整替换的消息，不会看到失败输入或实际输出。它的第二和第三次 solution.py 与 A 完全相同，都是零行变化，因此继续失败。C 收到 pytest 报错，明确看到实际第一项是 4、期望是 1。这个运行关闭了思考模式，模型响应正文为空，因此不能展示原始思维链。能够审计的是输入反馈和代码差异：第二次提交只在条件上增加 not，让 False 时先取 min。公开测试随后通过，停止修复；最终隐藏测试也通过。">
+      <header class="chapter-head"><p class="eyebrow">14 / 案例 070：B 重试与 C 反馈修复</p><h2>B 只知道“没通过”，<br>C 看到了第一项为什么错。</h2></header>
+      <div class="case-trajectory">
+        <div class="case-track"><h3>B · 无具体报错的两次重试</h3><div><p class="section-label">模型收到的追加消息</p><div class="message-quote">“请重新考虑当前实现，并提交一份完整替换。”</div></div><div class="code-window"><div class="code-title"><span>第 2、3 次仍提交同一实现</span><span>关键行</span></div><pre>res, switch = [], False
+remaining = list(lst)
+while remaining:
+    res.append(
+        <span class="code-bad">min(remaining) if switch
+        else max(remaining)</span>
+    )</pre></div><div class="attempt-ledger"><div><strong>第 2 次 · 0 行变化</strong><span>公开 FAIL</span></div><div><strong>第 3 次 · 0 行变化</strong><span>公开 FAIL</span></div></div><div class="case-state"><span class="tag fail">FAIL → FAIL → FAIL</span><span class="tag fail">最终隐藏 FAIL</span></div><p class="audit-note">记录能证明“代码没有变化”，不能据此猜测模型内部原因。</p></div>
+        <div class="case-track c"><h3>C · 带 pytest 诊断的第 2 次提交</h3><div class="c-evidence-grid"><div class="stack"><div><p class="section-label">模型实际收到的错误</p><div class="feedback-box"><pre>E assert [4, 1, 3, 2]
+      == [1, 4, 2, 3]
+E At index 0 diff: 4 != 1</pre></div></div><div class="audit-reasoning"><strong>可审计的修正依据</strong><ol><li>期望第一项是 1，实际却是 4。</li><li><code>switch=False</code> 会走 <code>else max</code>。</li><li>给条件加 <code>not</code>，第一次便改走 <code>min</code>。</li></ol></div><p class="audit-note"><code>thinking_mode=disabled</code>，模型响应正文为空；这里展示的是反馈、提交代码与结果之间可核对的因果关系，不是隐藏思维链。</p></div><div class="stack"><div class="code-window case-final-code"><div class="code-title"><span>C 第 2 次提交 · 最终实现主体</span><span>1 行关键修改</span></div><pre>def strange_sort_list(lst):
+    res, switch = [], False
+    remaining = list(lst)
+    while remaining:
+        res.append(
+            <span class="code-good">min(remaining) if not switch
+            else max(remaining)</span>
+        )
+        remaining.remove(res[-1])
+        switch = not switch
+    return res</pre></div><div class="case-state"><span class="tag pass">公开 FAIL → PASS</span><span class="tag pass">最终隐藏 PASS</span></div><p><code>not False</code> 为 True，第一次取 <strong>min = 1</strong>；开关翻转后第二次取 <strong>max = 4</strong>。</p></div></div></div>
       </div>
     </section>
 
