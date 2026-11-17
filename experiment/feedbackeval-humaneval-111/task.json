@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task_id": "feedbackeval-humaneval-111",
+  "title": "FeedbackEval HumanEval repair: histogram",
+  "goal": "Repair histogram so it satisfies its documented behavior and the public examples while preserving its signature.",
+  "constraints": [
+    "Only edit solution.py.",
+    "Do not add dependencies or modify tests.",
+    "Keep the public function histogram and its signature unchanged."
+  ],
+  "editable_paths": [
+    "solution.py"
+  ],
+  "public_verification": {
+    "command": "python -m pytest -q tests",
+    "protected_paths": [
+      "tests"
+    ]
+  },
+  "hidden_verification": {
+    "tests": "hidden_tests",
+    "command": "python -m pytest -q /hidden_tests"
+  },
+  "test_version": "feedbackeval-base-evalplus-v0.1.10-hidden-v2",
+  "provenance": {
+    "repair_dataset": "FeedbackEval/HumanEval_feedback_test",
+    "feedbackeval_commit": "bd8d8aefbc2319e9fdab5b1b85091b0665a48e50",
+    "source_task_id": "HumanEval/111",
+    "candidate_source": "rule_based",
+    "candidate_file": "HumanEval_feedback_test.jsonl",
+    "candidate_index": 0,
+    "candidate_sha256": "0ab90c298b3c66c865d28d894fb9ec748a7dc44235b7015b62e2b0e694dae8e8",
+    "public_tests": "FeedbackEval frozen HumanEval base tests",
+    "hidden_tests": "EvalPlus HumanEval+ v0.1.10 base+extra inputs and oracle",
+    "evalplus_version": "v0.1.10",
+    "oracle_invalid_inputs_removed": 0,
+    "correct_code_included": false,
+    "precomputed_feedback_included": false
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "dataset": "FeedbackEval-HumanEval curated experiment subset",
+  "source_dataset": "benchmarks/feedbackeval-humaneval-full",
+  "count": 30,
+  "selection": {
+    "method": "outcome-informed stratified selection",
+    "outcome_informed": true,
+    "purpose": "high-information strategy comparison and regression testing",
+    "not_for_unbiased_population_estimates": true,
+    "source_experiments": [
+      {
+        "experiment": "20261101_001",
+        "model": "deepseek-flash",
+        "valid_tasks": 164
+      },
+      {
+        "experiment": "20261113_002",
+        "model": "qwen3.8-flash",
+        "valid_tasks": 160
+      }
+    ]
+  },
+  "strata": {
+    "persistent-hard": [
+      "feedbackeval-humaneval-032",
+      "feedbackeval-humaneval-050",
+      "feedbackeval-humaneval-076",
+      "feedbackeval-humaneval-114",
+      "feedbackeval-humaneval-124",
+      "feedbackeval-humaneval-132",
+      "feedbackeval-humaneval-145",
+      "feedbackeval-humaneval-147",
+      "feedbackeval-humaneval-154"
+    ],
+    "strategy-sensitive": [
+      "feedbackeval-humaneval-070",
+      "feedbackeval-humaneval-089",
+      "feedbackeval-humaneval-097",
+      "feedbackeval-humaneval-121",
+      "feedbackeval-humaneval-122",
+      "feedbackeval-humaneval-125",
+      "feedbackeval-humaneval-127",
+      "feedbackeval-humaneval-163"
+    ],
+    "retry-recoverable": [
+      "feedbackeval-humaneval-038",
+      "feedbackeval-humaneval-063",
+      "feedbackeval-humaneval-069",
+      "feedbackeval-humaneval-119",
+      "feedbackeval-humaneval-130",
+      "feedbackeval-humaneval-138",
+      "feedbackeval-humaneval-146"
+    ],
+    "model-sensitive-or-hidden-trap": [
+      "feedbackeval-humaneval-049",
+      "feedbackeval-humaneval-082",
+      "feedbackeval-humaneval-091",
+      "feedbackeval-humaneval-108",
+      "feedbackeval-humaneval-111",
+      "feedbackeval-humaneval-126"
+    ]
+  },
+  "tasks": [
+    {"task_id": "feedbackeval-humaneval-032", "function": "find_zero", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-038", "function": "decode_cyclic", "stratum": "retry-recoverable"},
+    {"task_id": "feedbackeval-humaneval-049", "function": "modp", "stratum": "model-sensitive-or-hidden-trap"},
+    {"task_id": "feedbackeval-humaneval-050", "function": "decode_shift", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-063", "function": "fibfib", "stratum": "retry-recoverable"},
+    {"task_id": "feedbackeval-humaneval-069", "function": "search", "stratum": "retry-recoverable"},
+    {"task_id": "feedbackeval-humaneval-070", "function": "strange_sort_list", "stratum": "strategy-sensitive"},
+    {"task_id": "feedbackeval-humaneval-076", "function": "is_simple_power", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-082", "function": "prime_length", "stratum": "model-sensitive-or-hidden-trap"},
+    {"task_id": "feedbackeval-humaneval-089", "function": "encrypt", "stratum": "strategy-sensitive"},
+    {"task_id": "feedbackeval-humaneval-091", "function": "is_bored", "stratum": "model-sensitive-or-hidden-trap"},
+    {"task_id": "feedbackeval-humaneval-097", "function": "multiply", "stratum": "strategy-sensitive"},
+    {"task_id": "feedbackeval-humaneval-108", "function": "count_nums", "stratum": "model-sensitive-or-hidden-trap"},
+    {"task_id": "feedbackeval-humaneval-111", "function": "histogram", "stratum": "model-sensitive-or-hidden-trap"},
+    {"task_id": "feedbackeval-humaneval-114", "function": "minSubArraySum", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-119", "function": "match_parens", "stratum": "retry-recoverable"},
+    {"task_id": "feedbackeval-humaneval-121", "function": "solution", "stratum": "strategy-sensitive"},
+    {"task_id": "feedbackeval-humaneval-122", "function": "add_elements", "stratum": "strategy-sensitive"},
+    {"task_id": "feedbackeval-humaneval-124", "function": "valid_date", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-125", "function": "split_words", "stratum": "strategy-sensitive"},
+    {"task_id": "feedbackeval-humaneval-126", "function": "is_sorted", "stratum": "model-sensitive-or-hidden-trap"},
+    {"task_id": "feedbackeval-humaneval-127", "function": "intersection", "stratum": "strategy-sensitive"},
+    {"task_id": "feedbackeval-humaneval-130", "function": "tri", "stratum": "retry-recoverable"},
+    {"task_id": "feedbackeval-humaneval-132", "function": "is_nested", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-138", "function": "is_equal_to_sum_even", "stratum": "retry-recoverable"},
+    {"task_id": "feedbackeval-humaneval-145", "function": "order_by_points", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-146", "function": "specialFilter", "stratum": "retry-recoverable"},
+    {"task_id": "feedbackeval-humaneval-147", "function": "get_max_triples", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-154", "function": "cycpattern_check", "stratum": "persistent-hard"},
+    {"task_id": "feedbackeval-humaneval-163", "function": "generate_integers", "stratum": "strategy-sensitive"}
+  ]
+}
