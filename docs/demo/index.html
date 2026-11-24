@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#1649db">
-  <meta name="description" content="课题07课程设计报告：研究目标、修复程序、隔离配置、公开与隐藏测试、三组对照、实验指标、补丁轨迹与要求完成情况。">
+  <meta name="description" content="课题07演示报告：先讲系统架构与实现，再由研究负责人统一汇报数据、实验和案例。">
   <title>测试驱动的 Python 函数修复助手｜课题 07 课程设计报告</title>
   <style>
     :root {
@@ -615,7 +615,7 @@
   </nav>
   <noscript><p class="no-js">当前浏览器未启用 JavaScript，以下按顺序展示全部内容；翻页和轨迹回放需要 JavaScript。</p></noscript>
   <main id="deck" tabindex="-1">
-    <section class="slide hero" id="architecture-intro" data-title="测试驱动的 Python 函数修复助手" data-notes="本报告对应课题 07，方向是智能体与可靠性，主要内容是代码生成与执行反馈。研究的问题是测试反馈能否帮助模型修复函数错误。我们实现了受控的修复与测试程序，用一次修复、无诊断重试和测试反馈三组做对照。报告先展示 DeepSeek 主实验，再用百炼 Qwen 复现实验检查结论是否跨模型保持一致。">
+    <section class="slide hero" id="architecture-intro" data-title="测试驱动的 Python 函数修复助手" data-notes="老师好，我们汇报课题 07。前半部分集中说明系统怎样实现：组长讲总体问题、架构、对照与编排；模型负责人讲输入输出协议和修复循环；沙盒负责人讲容器隔离、测试分层和可复现执行。后半部分再由研究负责人统一讲数据集、指标、实验结果和全部案例，最后由组长收尾。">
       <p class="eyebrow">课题 07 / 智能体与可靠性 / 课程设计报告</p>
       <div class="hero-layout">
         <div class="hero-copy"><h1>测试驱动的<br>Python 函数<br><span class="accent">修复助手</span></h1><p class="hero-question">研究问题：测试反馈能否帮助模型真正修复错误，<br>而不只是生成看似合理的补丁？</p><div class="hero-meta"><span>代码生成与执行反馈</span></div></div>
@@ -626,11 +626,11 @@
           <p class="caption">以隐藏测试检查修复效果。重点比较 C 与 B，区分具体反馈和额外尝试的作用。</p>
         </div>
       </div>
-      <div class="source"><span>报告顺序：课题目标 → 方案与实现 → 对照实验 → 结果与案例 → 结论与附录</span></div>
+      <div class="source"><span>汇报结构：架构与实现 → 实验设计与结果 → 案例分析 → 总体收尾</span></div>
     </section>
 
-    <section class="slide" id="purpose" data-title="课题目标与任务范围" data-notes="课题不是要求证明某种模型足够强，而是研究在相同题目和尝试预算下，实际测试反馈能否增加修复成功。我们只处理短小纯函数，每题准备需求、错误实现、公开测试和隐藏测试。公开测试用于修复过程，隐藏测试留给最后判断。程序需要保留每轮代码和日志，并记录超时、回归和调用成本。模型权重不训练，反馈通过后续请求影响生成。">
-      <header class="chapter-head"><p class="eyebrow">01 / 课题目标与任务范围</p><h2>评价的是修复效果，<br>不是补丁看起来是否合理。</h2></header>
+    <section class="slide" id="purpose" data-title="组长：项目背景与研究问题" data-notes="大模型会生成代码，但第一次答案并不总是正确。真实开发中，人会根据测试失败继续修改。我们的课题把这个过程变成可控系统和对照实验：同一道函数修复题，在题目、模型和提交预算相同的情况下，比较一般重试与真实测试诊断。评价的是最后能否通过未见测试，不是代码看起来是否合理。">
+      <header class="chapter-head"><p class="eyebrow">组长 / 项目背景与研究问题</p><h2>代码生成之后，<br>测试反馈能否让模型真正修好？</h2><p class="lede">把“生成—执行—诊断—再修复”做成可重复、可比较、可审计的系统。</p></header>
       <div class="two-col">
         <div class="purpose-questions"><h3>要回答的三个问题</h3><ol class="question-bars"><li><span class="question-number">01</span><div><strong>有效性</strong><p>与只允许重试相比，给出具体报错能否多修好一些题？</p></div></li><li><span class="question-number">02</span><div><strong>可靠性</strong><p>修改是否造成超时，或破坏原来已经正确的部分？</p></div></li><li><span class="question-number">03</span><div><strong>成本</strong><p>新增成功需要多少次模型调用和多少 token？</p></div></li></ol></div>
         <div class="stack"><h3>本课题的处理范围</h3><div class="checklist"><div class="check"><i>1</i><div><strong>短小 Python 纯函数</strong><p>列表、字符串、数值和边界条件；不扩展为多文件项目修复。</p></div></div><div class="check"><i>2</i><div><strong>每题四项材料</strong><p>需求、错误函数、公开测试、独立保存的隐藏测试。</p></div></div><div class="check"><i>3</i><div><strong>完整保留修复过程</strong><p>每次提交的代码、模型输入输出、公开报错和最终评分。</p></div></div><div class="check"><i>4</i><div><strong>隔离执行和有限修改</strong><p>模型只交代码，程序在受限 Docker 中测试；B/C 最多各追加两次。</p></div></div></div></div>
@@ -638,8 +638,8 @@
       <div class="source"><span>对应课题书：要解决的问题、任务范围、基础实现要求与对照实验。</span></div>
     </section>
 
-    <section class="slide" id="baselines" data-title="对照实验：A/B/C 三组" data-notes="同一批次的三个组使用同一个模型，不是用不同模型代表 A、B、C。DeepSeek 和百炼 Qwen 分别完整运行同一套 A/B/C 协议。三组开始时都能看到需求、错误代码和公开测试源码。A 到第一次提交就结束。B 和 C 如果失败，最多各自再交两次，而且都在公开测试通过后停止。B 只收到重新考虑当前代码的要求，C 还会看到失败断言和实际输出。">
-      <header class="chapter-head"><p class="eyebrow">02 / 对照实验：A/B/C 三组</p><h2>三组控制相同条件，<br>分别考察重试和测试反馈的作用。</h2></header>
+    <section class="slide" id="baselines" data-title="组长：A/B/C 对照设计" data-notes="三组使用同一题、同一模型和同一共享首轮。A 只提交一次；B 和 C 从 A 的相同首轮快照分叉，公开失败时最多各追加两次。B 只知道没通过，C 能看到真实 pytest 诊断。这样 A 到 B 表示多尝试的作用，C 对 B 才是测试反馈的主要比较。">
+      <header class="chapter-head"><p class="eyebrow">组长 / A/B/C 对照设计</p><h2>共享同一首轮，<br>只改变后续能看到的信息。</h2></header>
       <div class="table-wrap"><table><thead><tr><th>组别</th><th>最多交几次</th><th>测试没过后，模型会收到什么</th><th>什么时候结束</th></tr></thead><tbody>
         <tr><td><div class="arm-name"><span class="arm-letter">A</span><span>只改一次<br><code>single-shot</code></span></div></td><td>1 次</td><td>不再让模型修改</td><td>交完这一次就评分</td></tr>
         <tr><td><div class="arm-name"><span class="arm-letter">B</span><span>没过就再试<br><code>retry-without-feedback</code></span></div></td><td>3 次</td><td>“请重新考虑当前代码，提交一份完整替换。”<br><span class="muted tiny">不提供失败输入、实际输出或错误类型</span></td><td>公开测试过了，或已经交了 3 次</td></tr>
@@ -647,28 +647,17 @@
       </tbody></table></div>
     </section>
 
-    <section class="slide" id="public-hidden" data-title="测试管理：公开反馈与隐藏评分" data-notes="这里直接看 070 的两个真实文件。workspace/tests/test_public.py 位于工作区内，控制程序会把源码读成文字发给三组模型；C 在运行失败后还会收到 pytest 报错。hidden_tests/test_hidden.py 物理上位于 workspace 外，只在修复停止后的评分容器挂载。它包含公开输入，也增加负数、逆序、不同长度等 HumanEval+ 输入，仍检查同一个交替取数规则。隐藏结果只写评分和报告，不反馈给模型。">
-      <header class="chapter-head"><p class="eyebrow">03 / 测试管理：公开反馈与隐藏评分</p><h2>公开测试用于修复过程，<br>隐藏测试用于最终判定。</h2><p class="lede">它们测的是同一个函数、同一份要求，区别在于模型能否看到，以及什么时候使用。</p></header>
+    <section class="slide" id="public-hidden" data-title="沙盒负责人：公开测试与隐藏评分" data-notes="公开测试位于工作区内，模型能看到源码，C 在失败后还能收到对应 pytest 诊断。隐藏测试物理上位于工作区外，只在修复停止后的评分容器挂载。两者检查同一需求，但承担不同职责：公开测试驱动循环停止与诊断，隐藏测试只做独立验收，结果不再返回模型。">
+      <header class="chapter-head"><p class="eyebrow">沙盒负责人 / 测试分层</p><h2>公开测试驱动修复，<br>隐藏测试独立验收。</h2><p class="lede">测试内容和挂载时机都由控制器决定，模型无法越过阶段边界。</p></header>
       <div class="two-col test-pair">
-        <div class="test-side"><span class="tag">公开测试 · 修复时可见</span><code class="test-file">workspace/tests/test_public.py</code><h3>文件中直接写输入与期望输出</h3><pre>assert candidate([1, 2, 3, 4]) \
-    == [1, 4, 2, 3]
-assert candidate([]) == []
-assert candidate([0, 2, 2, 2, 5, 5, -5, -5]) \
-    == [-5, 5, -5, 5, 0, 2, 2, 2]</pre><p>三组都会读到这份源码；运行失败时，只有 C 会在下一次请求中收到实际值与期望值。</p></div>
-        <div class="test-side"><span class="tag">隐藏测试 · 修复时不可见</span><code class="test-file">hidden_tests/test_hidden.py</code><h3>同一规则，增加未用于修复的输入</h3><pre>INPUTS = [
-    [[-5, 0, 5, 10]],
-    [[10, 9, 8, 7, 6, 5]],
-    [[100, 200, 300, 150, 75, 35, 10]],
-    ...
-]
-
-for index, arguments in enumerate(INPUTS):
-    output = candidate(*copy.deepcopy(arguments))</pre><p>这个文件只在停止修复后的评分容器挂载；结果不会触发重试。</p></div>
+        <div class="test-side"><span class="tag">阶段 1 · 公开验证</span><code class="test-file">/workspace/tests/test_public.py</code><h3>修复循环中的唯一诊断来源</h3><div class="mount-map"><div class="mount-row"><strong>模型可见</strong><p>测试源码随题目上下文发送</p></div><div class="mount-row"><strong>容器执行</strong><p>每次合法提交后运行同一条 pytest 命令</p></div><div class="mount-row"><strong>结果用途</strong><p>决定停止或重试；只有 C 获得详细失败输出</p></div></div></div>
+        <div class="test-side"><span class="tag warn">阶段 2 · 隐藏评分</span><code class="test-file">/hidden_tests/test_hidden.py</code><h3>停止修复后的独立验收</h3><div class="mount-map"><div class="mount-row"><strong>模型不可见</strong><p>文件不在工作区，也不进入任何提示词</p></div><div class="mount-row"><strong>按需挂载</strong><p>只在评分容器中以只读方式增加</p></div><div class="mount-row"><strong>结果用途</strong><p>写入摘要和报告，不触发新的模型调用</p></div></div></div>
       </div>
+      <div class="rule-note"><strong>阶段隔离</strong><span>公开通过只表示停止修复；最终成功仍要求公开与隐藏同时通过。</span></div>
     </section>
 
-    <section class="slide" id="architecture" data-title="系统设计：三层架构" data-notes="这张图把源码里的工作部件放回三层。实验编排层由 TaskSpec、run_benchmark 和 RunService 组成，负责读题、生成共享首轮和组织 A/B/C。修复协议层由提示构造、TestDrivenRepairAgent 和 OpenAICompatibleAdapter 组成，具体使用 DeepSeekAdapter 或 BailianQwenAdapter。执行验证层复制独立工作区，通过 DockerSandbox 运行 PublicVerifier 和 HiddenVerifier，并由 EventLog 留下过程证据。">
-      <header class="chapter-head"><p class="eyebrow">04 / 系统设计：三层架构</p><h2>项目架构</h2></header>
+    <section class="slide" id="architecture" data-title="组长：总体架构" data-notes="总体架构分三层。实验编排层读题、生成计划并组织共享首轮和 B/C 分支；模型协议层拼装输入、调用模型并校验 submit_solution；执行验证层把候选代码交给 Docker，先跑公开测试，停止修复后再跑隐藏评分。隐藏结果不会反向回到模型。">
+      <header class="chapter-head"><p class="eyebrow">组长 / 总体架构</p><h2>项目架构</h2></header>
       <div class="architecture-board" aria-label="测试驱动函数修复系统的三层架构">
         <div class="architecture-layer">
           <div class="layer-heading"><b>01 · 实验编排层</b><h3>组织题目与对照实验</h3><p>确定做什么、分到哪一组、什么时候停止。</p></div>
@@ -705,17 +694,17 @@ for index, arguments in enumerate(INPUTS):
       </div>
     </section>
 
-    <section class="slide" id="workspace" data-title="实现边界：运行目录与 Docker 挂载" data-notes="文件没有逐次上传到 Docker。程序先把题目的 workspace 复制到本次 run 目录，模型返回代码后由宿主机覆盖其中的 solution.py。Docker 使用 bind mount 把这个目录映射为只读的 /workspace，因此宿主机写入后容器立即看到。修复和公开评分只挂载 /workspace；隐藏评分才额外挂载工作区外的 hidden_tests 到 /hidden_tests。">
-      <header class="chapter-head"><p class="eyebrow">05 / 实现边界：运行目录与 Docker 挂载</p><h2>文件先复制到运行目录，<br>再挂载进入 Docker。</h2></header>
+    <section class="slide" id="workspace" data-title="沙盒负责人：Docker 隔离与挂载边界" data-notes="候选代码不在宿主直接运行。程序先复制独立工作区，模型提交后只覆盖 solution.py；Docker 以断网、只读根文件系统和只读工作区运行 pytest。公开阶段只挂载工作区，隐藏评分阶段才额外挂载工作区外的 hidden_tests。项目根目录、API 密钥、个人目录和 Docker socket 都不挂载。">
+      <header class="chapter-head"><p class="eyebrow">沙盒负责人 / Docker 隔离</p><h2>候选代码进入容器，<br>密钥和宿主文件留在边界之外。</h2></header>
       <div class="two-col split-wide">
-        <div class="file-tree"><pre>070 题目源目录/
+        <div class="file-tree"><pre>单题源目录/
 ├── task.json
 ├── workspace/
 │   ├── solution.py
 │   └── tests/test_public.py
 └── hidden_tests/test_hidden.py
 
-本次 C 组运行目录/
+某次策略运行目录/
 ├── workspace/solution.py
 ├── workspace/tests/test_public.py
 ├── repair_attempts/01/solution.py
@@ -730,28 +719,18 @@ for index, arguments in enumerate(INPUTS):
       <div class="rule-note"><span>控制器在宿主机写 solution.py；bind mount 让容器看到最新内容，候选代码不能反向修改工作区。</span></div>
     </section>
 
-    <section class="slide" id="model-io" data-title="模型接口：输入与输出" data-notes="模型接口只有一个输入边界和一个输出边界。每次都发送需求、当前 solution.py 和公开测试源码；B 重试只多一句请再试，C 重试再附上一次公开 pytest 报错；隐藏测试从不进入请求。模型必须调用 submit_solution，content 是完整文件文本，不是补丁，也不是执行命令。">
-      <header class="chapter-head"><p class="eyebrow">06 / 模型接口：输入与输出</p><h2>模型只接收文字，<br>并只返回一个完整文件。</h2></header>
+    <section class="slide" id="model-io" data-title="模型负责人：输入、输出与 submit_solution" data-notes="模型接口只负责文本协议，不负责执行代码。每次输入都由系统统一拼装：题目要求、当前 solution.py 和公开测试源码；B 重试加入一般重试指令，C 重试再加入上一轮公开测试诊断。隐藏测试、密钥和宿主文件永远不进入模型请求。输出必须调用 submit_solution，content 是完整文件文本。">
+      <header class="chapter-head"><p class="eyebrow">模型负责人 / 输入输出协议</p><h2>统一输入边界，<br>唯一输出接口。</h2><p class="lede">模型不接触文件系统，不运行命令，只生成下一版完整代码。</p></header>
       <div class="two-col">
-        <div class="stack"><h3>请求内容</h3><div class="mount-map"><div class="mount-row"><strong>每次都有</strong><p>函数要求 + 当前 <code>solution.py</code> + <code>test_public.py</code></p></div><div class="mount-row"><strong>重试差异</strong><p>B：请再试　/　C：请再试 + 上一次公开报错</p></div><div class="mount-row"><strong>从不发送</strong><p><code>test_hidden.py</code>、API 密钥、宿主文件系统</p></div></div><div class="feedback-box"><pre>C 第 2 次请求中的真实反馈：
-E assert [4, 1, 3, 2] == [1, 4, 2, 3]
-E At index 0 diff: 4 != 1</pre></div></div>
-        <div class="stack"><h3>唯一输出：submit_solution(content)</h3><div class="code-window"><div class="code-title"><span>content = 完整 solution.py</span><span>070 第 2 次提交</span></div><pre>def strange_sort_list(lst):
-    res, switch = [], False
-    remaining = list(lst)
-    while remaining:
-        res.append(
-            min(remaining) if not switch
-            else max(remaining)
-        )
-        remaining.remove(res[-1])
-        switch = not switch
-    return res</pre></div><p class="caption">这是返回值，不是模型执行的命令；模型没有 shell，也不运行 pytest。</p></div>
+        <div class="stack"><h3>输入由 <code>_attempt_prompt()</code> 统一构造</h3><div class="mount-map"><div class="mount-row"><strong>固定上下文</strong><p>题目要求 + 当前 <code>solution.py</code> + <code>test_public.py</code></p></div><div class="mount-row"><strong>策略差异</strong><p>A：单次生成　/　B：一般重试　/　C：重试 + 公开诊断</p></div><div class="mount-row"><strong>严格排除</strong><p><code>test_hidden.py</code>、API 密钥、宿主目录、历史隐藏结果</p></div></div></div>
+        <div class="stack"><h3>输出由 <code>_model_submission()</code> 校验</h3><div class="code-window"><div class="code-title"><span>唯一合法工具调用</span><span>Function Calling</span></div><pre>submit_solution({
+    "content": "完整的 solution.py 文本"
+})</pre></div><div class="checklist"><div class="check"><i>1</i><div><strong>名称必须匹配</strong><p>只接受 <code>submit_solution</code>，其他工具名直接拒绝。</p></div></div><div class="check"><i>2</i><div><strong>参数必须可解析</strong><p>缺少 tool call、非法 JSON 或缺少 content 记为协议错误。</p></div></div><div class="check"><i>3</i><div><strong>合法后才落盘</strong><p>只覆盖独立工作区中的 <code>solution.py</code>。</p></div></div></div></div>
       </div>
     </section>
 
-    <section class="slide" id="sequence" data-title="实现流程：提交、测试、反馈与评分" data-notes="按时间从上往下读，箭头表示信息发送方向。第一步本机读题，把需求、代码和公开测试发给云端。第二步云端返回完整代码。第三步本机保存并把公开测试交给 Docker 执行。第四步容器交回 pytest 结果。公开通过就停止，否则如果还没交满三次，B 只请求重新生成，C 额外附报错，然后重复。停止修复以后，才在评分容器里挂载隐藏测试，检查首次和最终代码。A 不走重试循环。">
-      <header class="chapter-head"><p class="eyebrow">07 / 实现流程：提交、测试、反馈与评分</p><h2>修复与评分的执行顺序。</h2><p class="lede">从上往下读。模型只收发文字；保存文件、运行测试都由本机程序安排。</p></header>
+    <section class="slide" id="sequence" data-title="组长：运行编排" data-notes="一次运行从读取任务开始。模型通过 submit_solution 返回代码，宿主写入独立工作区，Docker 执行公开测试。公开通过就停止；失败且有预算时，B 只请求再试，C 额外附上诊断。修复停止后才做隐藏评分。A 不进入重试循环，隐藏结果也不回流模型。">
+      <header class="chapter-head"><p class="eyebrow">组长 / 运行编排</p><h2>提交、公开测试、反馈循环，<br>最后才做隐藏评分。</h2><p class="lede">模型只收发文字；保存文件、执行代码与切换测试阶段都由本机程序安排。</p></header>
       <div class="sequence-wrap" tabindex="0" aria-label="时序图，可在小屏横向滚动">
         <svg class="sequence-svg" viewBox="0 0 1060 476" role="img" aria-labelledby="sequence-title sequence-desc">
           <title id="sequence-title">本机程序、云端模型、Docker 测试容器的执行顺序</title><desc id="sequence-desc">程序发题给模型，模型返回代码；程序保存并要求容器运行公开测试；容器返回结果。失败时 B 请求再试，C 附具体报错。公开通过或提交次数用完后停止修复，再运行隐藏评分，评分不返回模型。</desc>
@@ -767,14 +746,14 @@ E At index 0 diff: 4 != 1</pre></div></div>
       <p class="caption">A 只交一次，不进入重试循环。B/C 都是公开测试通过就停，不会为了隐藏得分继续改。</p>
     </section>
 
-    <section class="slide" id="dataset" data-title="测试准备：30 个测试函数与正式题库" data-notes="课题要求准备约三十个独立测试函数。项目的三道流程演示题各有五个公开和五个隐藏测试，总计三十个 pytest 测试函数，不是三十道修复题。正式效果实验使用完整的一百六十四道 FeedbackEval HumanEval 任务和 HumanEval+ 隐藏扩展。DeepSeek 与百炼 Qwen 使用同一题库、相同提交上限和停止规则。二十道自建补充题不计入这两批正式结果。">
-      <header class="chapter-head"><p class="eyebrow">08 / 测试准备：30 个测试函数与正式题库</p><h2>先用 30 个测试函数检查流程，<br>再用 164 道题比较修复效果。</h2></header>
-      <div class="table-wrap"><table><thead><tr><th>流程演示题</th><th>公开 / 隐藏测试函数</th><th>覆盖内容</th></tr></thead><tbody><tr><td>列表分块 <code>chunk_list</code></td><td>5 / 5</td><td>空输入、单元素、整除边界、尾段遗漏、切片索引端点、非法大小</td></tr><tr><td>保序去重 <code>unique_stable</code></td><td>5 / 5</td><td>重复与非连续重复、负数、元组、输入顺序、输入不被修改</td></tr><tr><td>空白规范化 <code>normalize_whitespace</code></td><td>5 / 5</td><td>空字符串、首尾空白、连续空格、制表符、换行、Unicode 空白</td></tr></tbody></table></div>
-      <div class="dataset-foot"><div><strong>正式实验：164 道修复任务</strong><span class="muted">错误实现和公开基础测试来自冻结的 FeedbackEval-HumanEval；隐藏检查使用 HumanEval+ v0.1.10。未按 001 的模型结果筛题。</span></div><div><strong>数量与版本说明</strong><span class="muted">30 指 pytest 测试函数，不是修复题数。32 号题事先剔除 7 个参考实现也不稳定的数值输入。另有 20 道自建题，尚未计入本批结果。</span></div></div>
+    <section class="slide" id="dataset" data-title="研究负责人：FeedbackEval 全量 164 题" data-notes="正式主实验采用 FeedbackEval 的 HumanEval 分支全量 164 题。每题从确定错误实现出发，公开基础测试用于修复；HumanEval+ v0.1.10 扩展输入作为隐藏验收。164 题全部进入实验，不根据模型结果筛题。预检确认 164 个错误候选都能被公开测试发现，164 个参考实现都能通过隐藏测试。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 数据集选择</p><h2>关键选择：FeedbackEval 的<br>HumanEval 分支全量 164 题。</h2><p class="lede">先确保存在真实错误和反馈机会，再比较一般重试与测试诊断。</p></header>
+      <div class="dataset-flow"><div class="dataset-col"><span class="dataset-title">164</span><h3>FeedbackEval-HumanEval</h3><p>每题包含明确需求、冻结的错误函数和公开基础测试；0～163 全部运行。</p><span class="tag">修复阶段可见</span></div><div class="dataset-arrow" aria-hidden="true">→</div><div class="dataset-col"><span class="dataset-title">+</span><h3>HumanEval+ v0.1.10</h3><p>补充更多边界输入，只在停止修复后挂载，用于检验是否真正泛化。</p><span class="tag warn">只用于隐藏评分</span></div></div>
+      <div class="dataset-foot"><div><strong>全量而非结果筛选</strong><span class="muted">两批正式实验均使用共享首轮 A/B/C 协议，题目不按模型结果删选。</span></div><div><strong>数据质量预检</strong><span class="muted">164/164 错误候选公开失败，164/164 参考实现隐藏通过；修订记录单独披露。</span></div></div>
     </section>
 
-    <section class="slide" id="metrics" data-title="评价指标：效果、超时、回归与成本" data-notes="主指标是整题最终隐藏通过率，首次隐藏通过率作为基线。超时和正常修复失败保留在有效运行的分母中，环境异常另列。DeepSeek 批次没有环境异常，百炼 Qwen 批次有四道题出现基础设施异常，因此跨模型主图只比较两批都有效的同一百六十题。功能回归检查原始代码已通过的测试函数是否在最终代码中失败。">
-      <header class="chapter-head"><p class="eyebrow">09 / 评价指标：效果、超时、回归与成本</p><h2>评价指标与计算方法。</h2><p class="lede">以隐藏测试衡量修复效果，同时统计超时、功能回归和实际调用成本。</p></header>
+    <section class="slide" id="metrics" data-title="研究负责人：指标设计" data-notes="统计单位是一道题、一种策略、一个重复编号构成一个 run，run 内可以有多次 attempt。主指标是有效运行中的最终隐藏通过率，整题成功要求最终公开和隐藏同时通过。C 对 B 的配对差用于估计反馈增益；同时报告条件修复率、公开隐藏差距、超时、回归、异常覆盖和调用成本。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 指标设计</p><h2>以最终隐藏通过率为主，<br>同时看条件修复、回归与成本。</h2><p class="lede">164 × 3 = 492 条策略记录；一次运行内部可以包含多轮提交。</p></header>
       <div class="table-wrap"><table class="metric-definitions"><thead><tr><th>指标</th><th>计算或判定方式</th><th>要说明的问题</th></tr></thead><tbody>
         <tr><td>首次 / 最终隐藏通过率</td><td>相应快照通过整题隐藏测试的题数 ÷ 有效题数</td><td>第一次是否改对，最终又多修好多少</td></tr>
         <tr><td>隐藏提升率</td><td>首次隐藏未过、最终通过的题数 ÷ 有效题数</td><td>追加修复带来的成功；退步情况另列</td></tr>
@@ -786,8 +765,8 @@ E At index 0 diff: 4 != 1</pre></div></div>
       <p class="caption">001 每组有效分母 164，环境异常 0；条件修复分母为 12。回归按现有 pytest 测试函数统计，不追踪函数内部的每条断言。</p>
     </section>
 
-    <section class="slide" id="results" data-title="DeepSeek 结果：首次与最终隐藏通过率" data-notes="这里的通过，是整道题最终隐藏测试通过。DeepSeek 三组第一次都是 142 题通过，B 最后变成 145，C 最后变成 148。因此不能只说 C 比 A 多 6 题就都是反馈的作用，因为 B 光重试也多了 3 题。C 比 B 多出的 3 题，才是这次重点观察的差异。这些数字来自 20261101_001 保存的 164 题完整记录。">
-      <header class="chapter-head"><p class="eyebrow">10 / DeepSeek 结果：首次与最终隐藏通过率</p><h2>最终隐藏通过率：<br>A 86.6%，B 88.4%，C 90.2%。</h2><p class="lede">这里的“通过”指整题隐藏测试通过，不是只通过公开样例。</p></header>
+    <section class="slide" id="results" data-title="研究负责人：全量 164 题主结果" data-notes="FeedbackEval 164 题全量 DeepSeek 结果中，A、B、C 最终隐藏分别通过 142、145、148 题。B 比 A 多 3 题，说明多尝试本身有作用；C 比 B 再多 3 题、增加 1.83 个百分点，才是反馈相对一般重试的主要差异。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 全量实验结果</p><h2>164 题全部运行：<br>A 86.6%，B 88.4%，C 90.2%。</h2><p class="lede">C 相对 B 多通过 3 题；这里的通过指整题隐藏测试通过。</p></header>
       <div class="results-layout"><div class="stack"><div class="section-label">最终隐藏通过率 · 横轴从 0% 开始</div><div class="bar-chart" role="img" aria-label="A 142/164，86.6%；B 145/164，88.4%；C 148/164，90.2%">
         <div class="bar-row"><div class="bar-label"><b>A</b>只改一次</div><div class="bar-track"><div class="bar-fill" style="width:86.5853658537%"></div></div><div class="bar-value">86.6%</div></div>
         <div class="bar-row"><div class="bar-label"><b>B</b>没过再试</div><div class="bar-track"><div class="bar-fill b" style="width:88.4146341463%"></div></div><div class="bar-value">88.4%</div></div>
@@ -797,8 +776,8 @@ E At index 0 diff: 4 != 1</pre></div></div>
       <div class="source"><span>数据来源：DeepSeek 批次 20261101_001，完整 164 题。</span></div>
     </section>
 
-    <section class="slide" id="model-comparison" data-title="跨模型对比：最终隐藏通过率" data-notes="为了让两个模型使用相同分母，这页只比较两批都有效的同一百六十道题。DeepSeek 的 A、B、C 最终隐藏通过数分别是 138、141、144。百炼 Qwen 分别是 131、138、143。两个模型上 C 都高于 B：DeepSeek 多三题，百炼 Qwen 多五题。Qwen 批次另有四道基础设施异常，没有把它们当成失败，也没有只从 Qwen 分母删除后直接与 DeepSeek 的一百六十四题比较。">
-      <header class="chapter-head"><p class="eyebrow">11 / 跨模型对比：最终隐藏通过率</p><h2>两个模型上，<br>C 的最终隐藏通过率都高于 B。</h2><p class="lede">共同有效的 160 题，相同 A/B/C 协议、提交上限和停止规则。</p></header>
+    <section class="slide" id="model-comparison" data-title="研究负责人：跨模型结果" data-notes="这里的 Qwen 是后续稳定接入的百炼 Qwen 3.8 Flash，不是前期无法稳定提交的 Qwen 0.5B。为保持相同分母，只比较两批都有效的 160 题。DeepSeek 的 A、B、C 为 138、141、144；Qwen 3.8 Flash 为 131、138、143。两个模型上 C 都高于 B。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 跨模型复核</p><h2>两个稳定模型上，<br>C 的最终隐藏通过率都高于 B。</h2><p class="lede">共同有效 160 题；这里的 Qwen 指 3.8 Flash，不是前期的 0.5B。</p></header>
       <div class="model-comparison-layout">
         <div class="compare-chart" role="img" aria-label="共同 160 题的最终隐藏通过率。A 组 DeepSeek 86.3%，Qwen 81.9%。B 组 DeepSeek 88.1%，Qwen 86.3%。C 组 DeepSeek 90.0%，Qwen 89.4%。">
           <div class="compare-legend"><span><i></i>DeepSeek Flash</span><span><i class="qwen"></i>百炼 Qwen 3.8 Flash</span><span>横轴从 0% 开始</span></div>
@@ -821,19 +800,19 @@ E At index 0 diff: 4 != 1</pre></div></div>
       <div class="source"><span>共同题集口径：从两批各取相同 160 题。Qwen 的 001、011、033、106 因基础设施异常从两边同时排除。DeepSeek 原始 164 题结果仍保留在上一页。</span><span>来源：20261101_001 / 20261113_002</span></div>
     </section>
 
-    <section class="slide" id="cost" data-title="成本与可靠性：调用、超时和功能回归" data-notes="这页继续说明 DeepSeek 主实验的成本。输入和输出 token 可以理解成 API 处理文字的用量单位。B C 追加部分分别花了 20648 和 24995 token，最终新增隐藏成功 3 和 6 题。全批真实请求 200 次，不能把三组包含共享首轮的归因成本直接相加。无超时和环境异常；有一题原始到最终的功能回归，这个问题在共享首轮已经发生。">
-      <header class="chapter-head"><p class="eyebrow">12 / 成本与可靠性：调用、超时和功能回归</p><h2>记录修复成本，<br>也检查超时与功能回归。</h2><p class="lede">DeepSeek 主实验中，C 比 B 多用 4,347 token，多通过 3 题。</p></header>
+    <section class="slide" id="cost" data-title="研究负责人：运行记录、成本与可靠性" data-notes="实验入口先生成计划，再按题组织共享首轮和 B/C 分支。每次运行保存 summary、events 和每轮代码，最后生成表格与图。DeepSeek 全量实际请求 200 次：共享首轮 164 次，加 B 追加 19 次和 C 追加 17 次；不能把三组包含共享成本的等价调用直接相加。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 运行实验</p><h2>每条结果都能回到代码、日志、<br>测试摘要与调用成本。</h2><p class="lede">DeepSeek 全量：200 次真实请求，220,881 token；共享首轮只计算一次。</p></header>
       <div class="cost-layout"><div class="stack"><div class="table-wrap"><table class="mini-table"><thead><tr><th>指标</th><th>A 一次</th><th>B 重试</th><th>C 反馈</th></tr></thead><tbody><tr><td>策略等价调用数</td><td>164</td><td>183</td><td>181</td></tr><tr><td>策略等价总 token</td><td>175,238</td><td>195,886</td><td>200,233</td></tr><tr><td>首轮后追加调用</td><td>0</td><td>19</td><td>17</td></tr><tr><td>首轮后追加 token</td><td>0</td><td>20,648</td><td>24,995</td></tr><tr class="row-highlight"><td>每最终成功 token</td><td>1,234</td><td>1,351</td><td>1,353</td></tr></tbody></table></div><p class="caption">策略等价成本包含共享首轮，三组不能直接相加。物理实际调用为 164 + 19 + 17 = 200 次。</p><p class="caption">追加 token ÷ 新增隐藏成功题数：B 为 6,883，C 为 4,166。它和“每最终成功 token”的分母不同。</p><p class="caption">“功能回归”指原来正确的部分被改错。本次三组同一题的回归发生在共享首轮，不能归因于 C 的后续反馈。</p></div><div class="ledger"><div class="section-label">整批实际消耗与问题</div><div class="ledger-row"><span>模型请求，首轮只算一次</span><b>200 次</b></div><div class="ledger-row"><span>总用量</span><b>220,881 token</b></div><div class="ledger-row"><span>代码超时 / 环境异常</span><b>0 / 0</b></div><div class="ledger-row"><span>原始 → 最终，出现功能回归</span><b>1 / 164 题</b></div></div></div>
     </section>
 
-    <section class="slide" id="conditional" data-title="DeepSeek 分析：首轮失败后的修复效果" data-notes="DeepSeek 的一百六十四题里，有一百五十二题第一次公开测试就通过了，按规则不再重试。真正能比较 B C 后续修改的只有十二题。在这十二题中，B 最终隐藏通过三题，C 通过六题。三道共同成功，三道只有 C 成功，没有只有 B 成功的题，另六道都失败。这里的百分之二十五到百分之五十只针对这十二题。">
-      <header class="chapter-head"><p class="eyebrow">13 / DeepSeek 分析：首轮失败后的修复效果</p><h2>首轮公开失败的 12 题中，<br>B 修好 3 题，C 修好 6 题。</h2></header>
+    <section class="slide" id="conditional" data-title="研究负责人：进入重试后的效果" data-notes="全量 164 题中有 152 题首轮公开直接通过，真正进入 B/C 后续修改的只有 12 题。在这 12 题里，B 最终隐藏通过 3 题，C 通过 6 题；三题共同成功，三题只有 C 成功，没有只有 B 成功的题，六题都失败。25% 到 50% 只适用于该条件子集。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 条件效果</p><h2>首轮公开失败的 12 题中，<br>B 修好 3 题，C 修好 6 题。</h2></header>
       <div class="two-col split-wide"><div class="stack"><p class="section-label">这 12 题中，最后有几题通过隐藏测试？每格 1 题，按通过数排列。</p><div class="tile-rows"><div class="tile-row"><strong>B</strong><div class="tiles" aria-label="B 通过 3/12"><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span></div><span class="tile-percent">25%</span></div><div class="tile-row"><strong>C</strong><div class="tiles" aria-label="C 通过 6/12"><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile success">✓</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span><span class="tile">·</span></div><span class="tile-percent">50%</span></div></div><div class="pair-summary"><span><b>3</b>B/C 都修好</span><span><b>3</b>只有 C 修好</span><span><b>0</b>只有 B 修好</span><span><b>6</b>两组都没修好</span></div></div><div class="stack"><div class="small-callout"><div class="conditional-stat"><b>152</b><span>题首轮公开测试直接通过</span></div><div><strong>为什么差距看起来不大？</strong><p style="margin-top:8px">这些题没有后续修改；差异只能出现在剩下的 12 题。</p></div></div></div></div>
       <div class="source"></div>
     </section>
 
-    <section class="slide" id="case-a" data-title="成功案例 070：A 改了什么，为什么仍失败" data-notes="先看原始函数。它直接从 lst 删除元素，会修改调用者的输入，而且 switch 初值为 False 时走 else max，所以第一次先取最大值。A 的首轮提交新增 remaining=list(lst)，并把循环和删除都改到副本上，修复了输入副作用。但它完整保留了 if switch else max 这个方向判断，所以输入 1、2、3、4 时仍得到 4、1、3、2。A 只允许提交一次，因此公开和隐藏都失败后直接结束。">
-      <header class="chapter-head"><p class="eyebrow">14 / 案例 070：A 改了什么，为什么仍失败</p><h2>A 修复了输入副作用，<br>却保留了取数方向错误。</h2></header>
+    <section class="slide" id="case-a" data-title="研究负责人：案例 070 的共享首轮" data-notes="现在由研究负责人进入案例分析。070 题原始函数直接删除输入列表，而且 switch 初值为 False 时走 else max，所以第一次先取最大值。共享首轮新增 remaining=list(lst)，修复了输入副作用，却保留方向判断错误，因此输入 1、2、3、4 仍得到 4、1、3、2。A 到此停止，B/C 从这份相同代码继续。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 案例 070</p><h2>共享首轮修好一个问题，<br>却保留了断言真正暴露的错误。</h2></header>
       <div class="example-rule"><strong>题目要求</strong><span>从列表中交替取<strong>最小、最大、最小、最大</strong>……输入 <code>[1, 2, 3, 4]</code> 应得到 <code>[1, 4, 2, 3]</code>。</span></div>
       <div class="case-source-layout">
         <div class="code-window full-source"><div class="code-title"><span>原始 solution.py · 完整函数</span><span>冻结题目文件</span></div><pre>def strange_sort_list(lst):
@@ -864,8 +843,8 @@ E At index 0 diff: 4 != 1</pre></div></div>
       </div>
     </section>
 
-    <section class="slide" id="case-bc" data-title="成功案例 070：B 重试与 C 反馈修复" data-notes="B 和 C 都从 A 的首轮代码开始。B 每次只收到重新考虑当前实现并提交完整替换的消息，不会看到失败输入或实际输出。它的第二和第三次 solution.py 与 A 完全相同，都是零行变化，因此继续失败。C 收到 pytest 报错，明确看到实际第一项是 4、期望是 1。这个运行关闭了思考模式，模型响应正文为空，因此不能展示原始思维链。能够审计的是输入反馈和代码差异：第二次提交只在条件上增加 not，让 False 时先取 min。公开测试随后通过，停止修复；最终隐藏测试也通过。">
-      <header class="chapter-head"><p class="eyebrow">15 / 案例 070：B 重试与 C 反馈修复</p><h2>B 只知道“没通过”，<br>C 看到了第一项为什么错。</h2></header>
+    <section class="slide" id="case-bc" data-title="研究负责人：案例 070 的 B/C 分化" data-notes="B 和 C 从相同首轮开始。B 只收到重新考虑并提交完整替换的消息，第二和第三次代码都是零行变化。C 收到 pytest 报错，看到实际第一项是 4、期望是 1，第二次提交只在条件上增加 not，让 False 时先取 min。公开测试随后通过并停止修复，最终隐藏也通过。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 案例 070</p><h2>B 只知道“没通过”，<br>C 看到了第一项为什么错。</h2></header>
       <div class="case-trajectory">
         <div class="case-track"><h3>B · 无具体报错的两次重试</h3><div><p class="section-label">模型收到的追加消息</p><div class="message-quote">“请重新考虑当前实现，并提交一份完整替换。”</div></div><div class="code-window"><div class="code-title"><span>第 2、3 次仍提交同一实现</span><span>关键行</span></div><pre>res, switch = [], False
 remaining = list(lst)
@@ -890,8 +869,8 @@ E At index 0 diff: 4 != 1</pre></div></div><div class="audit-reasoning"><strong>
       </div>
     </section>
 
-    <section class="slide" id="generalization-demo" data-title="验收演示：公开通过，隐藏失败" data-notes="这页专门对应课题要求的公开通过但隐藏失败演示。使用项目已有的空白规范化题，要求任意连续空白变成一个普通空格。现有实现按字面空格切分，再用空格拼回，因此简单单词和首尾空格的五条公开测试全过，但连续空格、制表符、换行和 Unicode 空白的五条隐藏测试全失败。这已经在断网只读 Docker 中实测，日志单独保存。它是预先准备的演示代码，不是 001 模型生成结果，也不计入 164 题通过率。">
-      <header class="chapter-head"><p class="eyebrow">16 / 验收演示：公开通过，隐藏失败</p><h2>公开通过、隐藏失败的具体案例。</h2></header>
+    <section class="slide" id="generalization-demo" data-title="研究负责人：公开通过但隐藏失败案例" data-notes="这页继续由研究负责人分析公开覆盖边界。空白规范化函数在五条公开测试上全部通过，但连续空格、制表符、换行和 Unicode 空白五条隐藏测试全部失败。公开通过使修复循环停止，随后隐藏评分才暴露覆盖缺口。该题是独立沙盒演示，不计入 164 题实验。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 反例分析</p><h2>公开通过，<br>仍然可能没有真正修好。</h2></header>
       <div class="example-rule"><strong>需求</strong><span>将任意连续空白变成一个普通空格，并去掉首尾空白。</span></div>
       <div class="two-col">
         <div class="stack"><div class="code-window"><div class="code-title"><span>normalize_whitespace · 项目已有演示代码</span></div><pre>def normalize_whitespace(text):
@@ -904,14 +883,50 @@ E At index 0 diff: 4 != 1</pre></div></div><div class="audit-reasoning"><strong>
       <div class="source"><span>独立演示代码，已在断网、只读 Docker 实测；不是 001 的模型提交，不计入正式胜率。</span></div>
     </section>
 
-    <section class="slide" id="conclusion" data-title="结论与不足" data-notes="回答课题最初的问题：在相同提交上限下，DeepSeek 和百炼 Qwen 两个独立批次中，测试反馈组的最终隐藏通过率都高于无诊断重试组。共同一百六十题上，DeepSeek 多通过三题，Qwen 多通过五题。这个方向一致的复现比单模型结果更可靠，但每个模型仍只有一次重复，进入纠错的样本也有限，Qwen 还有四道基础设施异常，因此不能声称统计显著或普遍有效。">
-      <header class="chapter-head"><p class="eyebrow">17 / 结论与不足</p><h2>两个模型得到一致方向，<br>测试反馈组都优于无诊断重试。</h2></header>
+    <section class="slide" id="model-loop" data-title="模型负责人：测试反馈修复循环实现" data-notes="模型模块的核心是 TestDrivenRepairAgent.run。每一轮先调用 _attempt_prompt 构造消息，再由适配器强制调用 submit_solution，校验后写入 solution.py，随后等待沙盒返回公开 VerificationResult。公开通过立即停止；失败且仍有预算时进入下一轮。B 只加入一般重试指令，C 通过 previous_feedback 注入 stdout 和 stderr。协议错误同样消耗一次尝试，但不会把非法内容写入工作区。">
+      <header class="chapter-head"><p class="eyebrow">模型负责人 / 修复循环实现</p><h2>同一个状态机，<br>由策略决定下一轮能看到什么。</h2></header>
+      <div class="steps">
+        <div class="step"><div class="step-no">01</div><h3>构造本轮 Prompt</h3><p>读取当前代码、题目和公开测试；C 在第二轮以后追加 <span class="mono">previous_feedback</span>。</p><code>agent.py::_attempt_prompt()</code></div>
+        <div class="step"><div class="step-no">02</div><h3>调用模型适配器</h3><p>统一封装 DeepSeek 与 Qwen 兼容接口，并通过 <span class="mono">tool_choice</span> 强制工具调用。</p><code>model.py::complete()</code></div>
+        <div class="step"><div class="step-no">03</div><h3>校验并提交代码</h3><p>验证工具名称和参数，合法后覆盖本轮 <span class="mono">solution.py</span>，非法则记录协议错误。</p><code>agent.py::_model_submission()</code></div>
+        <div class="step"><div class="step-no">04</div><h3>接收公开结果</h3><p>沙盒返回通过状态和诊断；模型模块本身不执行 pytest，也看不到隐藏评分。</p><code>VerificationResult</code></div>
+        <div class="step"><div class="step-no">05</div><h3>判断停止或重试</h3><p>公开通过立即停止；A 一轮结束，B/C 最多三次提交。</p><code>RepairStrategy</code></div>
+        <div class="step"><div class="step-no">06</div><h3>保留过程证据</h3><p>每轮请求、响应、代码快照和协议异常都写入事件日志。</p><code>events.jsonl</code></div>
+      </div>
+      <div class="rule-note"><strong>实现边界</strong><span>模型模块只决定“发什么文字、收什么代码、是否继续”，代码执行统一交给沙盒。</span></div>
+    </section>
+
+    <section class="slide" id="sandbox-repro" data-title="沙盒负责人：安全与可复现性" data-notes="安全和可复现性来自统一执行约束。容器关闭网络，根文件系统和工作区只读，移除附加能力并禁止提权；每次最多使用 1 个 CPU、512 MiB 内存、128 个进程或线程，pytest 默认限时 120 秒。公开测试运行前后校验 SHA-256 和文件白名单。A/B/C 使用同一镜像、相同资源和相同命令，运行目录保留代码快照、事件日志与测试摘要。">
+      <header class="chapter-head"><p class="eyebrow">沙盒负责人 / 安全与可复现性</p><h2>统一容器约束，<br>保证三组在同一执行条件下比较。</h2></header>
+      <div class="table-wrap"><table><thead><tr><th>控制面</th><th>固定设置</th><th>实验作用</th></tr></thead><tbody>
+        <tr><td>网络与挂载</td><td>无外网；rootfs、workspace 只读；不挂载密钥、个人目录、Docker socket</td><td>候选代码不能访问宿主敏感信息或改写题库</td></tr>
+        <tr><td>权限与临时空间</td><td>普通 UID/GID；drop capabilities；no-new-privileges；<code>/tmp</code> 64 MiB</td><td>pytest 可以写临时报告，候选不能提权</td></tr>
+        <tr><td>计算与时间</td><td>1 CPU、512 MiB、128 PIDs；单次 pytest 默认 120 秒</td><td>死循环、内存分配和进程创建都有上界</td></tr>
+        <tr><td>一致性与证据</td><td>固定镜像与命令；SHA-256 测试指纹；逐轮代码、JUnit、events、summary</td><td>A/B/C 条件一致，失败可以回到具体提交复核</td></tr>
+      </tbody></table></div>
+      <div class="source"><span>沙盒负责人到这里结束：只说明执行机制，不分析具体题目或实验案例。</span></div>
+    </section>
+
+    <section class="slide" id="pilot" data-title="研究负责人：前期试跑与数据集转向" data-notes="从这里开始进入研究与实验。前期先用 30 道 HumanEval 题试跑 DeepSeek，结果 30/30 同时通过公开和隐藏测试，公开通过后立即停止，因此没有反馈循环可观察。随后尝试 Qwen 0.5B，它又无法稳定按 submit_solution 工具协议输出，经常产生 model_protocol_error。前者说明题目太容易，后者是协议遵循不稳定，都不能干净测量反馈收益，因此研究转向从确定错误实现出发的 FeedbackEval。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 数据集搜索起点</p><h2>30 题太容易，0.5B 又不稳定，<br>原方案无法回答研究问题。</h2></header>
+      <div class="results-layout"><div class="stack"><div class="result-callout"><div class="gain">30<span> / 30</span></div><p>DeepSeek 首次提交同时通过公开与隐藏测试。</p><p class="caption">没有“首轮失败 → 读取诊断 → 再修复”的观测机会。</p></div><div class="small-callout"><strong>研究含义</strong><p style="margin-top:8px">这不是反馈机制取得 100% 成功，而是该试跑集无法区分 B 与 C。</p></div></div><div class="stack"><div class="code-window"><div class="code-title"><span>Qwen 0.5B · 早期试验</span><span>协议遵循不稳定</span></div><pre>期望：submit_solution({"content": "..."})&#10;实际：纯文本 / 非法 JSON / 缺少 tool_call&#10;记录：model_protocol_error</pre></div><div class="warning"><strong>不能混为一谈</strong><p>协议错误表示没有稳定提交合法候选，不等于已经证明代码推理能力失败。</p></div></div></div>
+      <div class="source"><span>因此改用：专门面向代码修复、从确定错误实现出发的 FeedbackEval。</span></div>
+    </section>
+
+    <section class="slide" id="supplement" data-title="研究负责人：精选 30 题补充验证" data-notes="主实验之后，对结果敏感的 30 题做了独立首轮补充压力测试。公开最终通过数 A/B/C 为 18、25、26，C 比 B 多 1 题；隐藏最终通过数是 12、18、18，B/C 净差为零。C 在 125 独赢，B 在 154 独赢。这 30 题按历史结果精选，而且使用 independent-arms-v1，不是无偏随机复验，也不能与共享首轮全量批次混称。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 30 题补充验证</p><h2>补充批次看到公开趋势，<br>最终隐藏结果 B/C 持平。</h2><p class="lede">精选 30 题是压力测试，不替代 FeedbackEval 164 题全量主结果。</p></header>
+      <div class="two-col split-wide"><div class="table-wrap"><table><thead><tr><th>策略</th><th>最终公开</th><th>最终隐藏</th><th>解释</th></tr></thead><tbody><tr><td>A · 一次提交</td><td>18/30 · 60.0%</td><td>12/30 · 40.0%</td><td>独立首轮基线</td></tr><tr><td>B · 无诊断重试</td><td>25/30 · 83.3%</td><td>18/30 · 60.0%</td><td>多尝试带来改善</td></tr><tr class="row-highlight"><td>C · 测试反馈</td><td>26/30 · 86.7%</td><td>18/30 · 60.0%</td><td>公开 +1 题，隐藏净差 0</td></tr></tbody></table></div><div class="stack"><div class="small-callout"><strong>补充了什么？</strong><p style="margin-top:8px">验证流水线能在困难样本上运行，也说明公开多修好一题不一定转化为隐藏净增益。</p></div><div class="warning"><strong>结论边界</strong><p>结果导向精选、独立首轮协议、仅一次重复；不能估计全题库比例或声称稳定显著。</p></div></div></div>
+      <div class="source"><span>补充批次 20261117_001：A/B/C 隐藏 12/18/18；C 独赢 125，B 独赢 154。</span></div>
+    </section>
+
+    <section class="slide" id="conclusion" data-title="组长：总体收尾" data-notes="最后由组长收尾。工程上，系统已经完成从模型协议、Docker 隔离、公开反馈到隐藏验收和证据留存的闭环。研究上，FeedbackEval-HumanEval 全量 164 题显示 C 相对 B 多通过 3 题；另一稳定模型的 160 个共同有效题上，C 又多 5 题。精选 30 题补充批次最终隐藏 B/C 持平，提醒我们不要把方向性结果说成普遍规律。">
+      <header class="chapter-head"><p class="eyebrow">组长 / 总体收尾</p><h2>先把系统实现可靠，<br>再用全量实验回答研究问题。</h2></header>
       <div class="two-col split-wide"><ol class="takeaways"><li><div><strong>工程成果</strong><p>同一修复协议已经接入 DeepSeek 与百炼 Qwen，并保留隔离测试、逐轮代码和评分证据。</p></div></li><li><div><strong>跨模型观察</strong><p>共同 160 题中，C 相对 B 在 DeepSeek 多通过 3 题，在 Qwen 多通过 5 题。</p></div></li><li><div><strong>对课题问题的回答</strong><p>两批记录都支持具体报错有帮助的判断。结论来自隐藏评分，不只依据公开测试。</p></div></li></ol><div class="stack"><div class="small-callout"><strong>主要限制</strong><p style="margin-top:8px">每个模型只有一次重复。进入纠错的题仍较少，Qwen 另有 4 道基础设施异常。</p></div></div></div>
       <div class="source"><span>正文结束。附录保留其他真实案例，供答辩时查阅。</span></div>
     </section>
 
-    <section class="slide" id="cases" data-title="附录 A：其他真实修复案例" data-notes="切换案例时，先读 A B C 三栏，再看代码和报错。097 要把两个数的个位相乘，148 和 412 应该是 8 乘 2 等于 16。A 写成连续取模，结果最后又对乘积取模，只剩 6。B 没改这行。C 第二次也没改对，第三次才给第二个个位取模加括号。125 无分隔符时要按字母表位置计数，A 和 B 用字符编码奇偶，正好反了；C 减去 a 的编码，数出两个 b。所有展示都读取已保存的运行记录。">
-      <header class="chapter-head"><p class="eyebrow">附录 A / 其他案例</p><h2>其他真实案例的三组对比。</h2></header>
+    <section class="slide" id="cases" data-title="研究负责人附录：其他真实修复案例" data-notes="本页是研究负责人备查案例。切换案例时，先读 A B C 三栏，再看代码和报错。097 要把两个数的个位相乘；125 要按字母表位置计数。所有展示都读取已保存运行记录，模型负责人和沙盒负责人不在实现段落中讲这些题。">
+      <header class="chapter-head"><p class="eyebrow">研究负责人 / 附录案例</p><h2>其他真实案例的三组对比。</h2></header>
       <div class="case-top"><div class="tabs" role="tablist" aria-label="切换真实案例"><button class="tab" id="case-tab-070" role="tab" aria-selected="true" aria-controls="case-panel" tabindex="0" data-case="070">070 · 先最小还是先最大</button><button class="tab" id="case-tab-097" role="tab" aria-selected="false" aria-controls="case-panel" tabindex="-1" data-case="097">097 · 两个个位相乘</button><button class="tab" id="case-tab-125" role="tab" aria-selected="false" aria-controls="case-panel" tabindex="-1" data-case="125">125 · 字母位置计数</button></div></div>
       <div id="case-panel" role="tabpanel" aria-labelledby="case-tab-070" class="stack">
         <div class="case-explanations"><div><strong>A：第一次错在哪</strong><p id="case-arm-a"></p></div><div><strong>B：为什么仍然错</strong><p id="case-arm-b"></p></div><div><strong>C：这次改对了什么</strong><p id="case-arm-c"></p></div></div>
@@ -924,7 +939,7 @@ E At index 0 diff: 4 != 1</pre></div></div><div class="audit-reasoning"><strong>
 
   </main>
 
-  <footer class="bottom"><div class="page-info"><b id="page-number">01 / 19</b><span id="page-title">课题 07 · 测试驱动的 Python 函数修复助手</span></div><div class="nav-controls"><span class="key-hint">← → 翻页 · O 目录</span><button id="prev" aria-label="上一页">←</button><button id="next" aria-label="下一页">→</button></div><div class="progress-track" role="progressbar" aria-label="演示进度" aria-valuemin="1" aria-valuemax="19" aria-valuenow="1" id="progress"><div class="progress-fill" id="progress-fill"></div></div></footer>
+  <footer class="bottom"><div class="page-info"><b id="page-number">01 / 23</b><span id="page-title">课题 07 · 测试驱动的 Python 函数修复助手</span></div><div class="nav-controls"><span class="key-hint">← → 翻页 · O 目录</span><button id="prev" aria-label="上一页">←</button><button id="next" aria-label="下一页">→</button></div><div class="progress-track" role="progressbar" aria-label="演示进度" aria-valuemin="1" aria-valuemax="23" aria-valuenow="1" id="progress"><div class="progress-fill" id="progress-fill"></div></div></footer>
   <div class="overlay" id="overview" role="dialog" aria-modal="true" aria-labelledby="overview-title" hidden><div class="overview-panel"><div class="panel-head"><div><p class="eyebrow">CONTENTS</p><h2 id="overview-title">选择一个章节</h2></div><button class="secondary" id="close-overview" aria-label="关闭目录">关闭 · Esc</button></div><div class="overview-grid" id="overview-grid"></div><p class="caption" style="margin-top:20px">← / → 翻页 · Home / End 首尾 · O 目录 · N 讲稿 · F 全屏 · Esc 关闭面板</p></div></div>
   <aside class="notes-panel" id="notes" aria-labelledby="notes-title" hidden><h2 id="notes-title">本页讲稿</h2><p id="notes-text"></p></aside>
   <div class="toast" id="toast" role="status" hidden></div>
@@ -993,6 +1008,19 @@ E At index 0 diff: 4 != 1</pre></div></div><div class="audit-reasoning"><strong>
     };
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+    const initialHash = location.hash;
+    const reportOrder = [
+      'architecture-intro', 'purpose', 'architecture', 'baselines', 'sequence',
+      'model-io', 'model-loop',
+      'workspace', 'public-hidden', 'sandbox-repro',
+      'pilot', 'dataset', 'metrics', 'cost', 'results', 'conditional', 'model-comparison',
+      'case-a', 'case-bc', 'generalization-demo', 'supplement', 'cases',
+      'conclusion'
+    ];
+    reportOrder.forEach(id => {
+      const section = document.getElementById(id);
+      if (section) $('#deck').append(section);
+    });
     const slides = $$('.slide');
     let current = 0;
     let selectedCase = '070';
@@ -1205,7 +1233,7 @@ E At index 0 diff: 4 != 1</pre></div></div><div class="audit-reasoning"><strong>
     }, {rootMargin:'-44% 0px -44% 0px', threshold:[0, .01]});
     slides.forEach(slide => activeObserver.observe(slide));
     selectCase(selectedCase);
-    const initial = slides.findIndex(slide => `#${slide.id}` === location.hash);
+    const initial = slides.findIndex(slide => `#${slide.id}` === initialHash);
     setActive(initial < 0 ? 0 : initial, false);
     requestAnimationFrame(() => go(initial < 0 ? 0 : initial, false, 'auto'));
     updateScrollProgress();
